@@ -1,0 +1,344 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <title>Заявки</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css">
+    <style>
+ .link-body-emphasis,
+.header-link {
+    color: #00abc2; /* Изменение цвета текста */
+}
+
+.btn-outline-primary {
+color:#00abc2;
+    border-color: #00abc2; /* Изменение цвета рамок */
+    background-color: transparent; /* Установка прозрачного фона */
+}
+
+.btn-outline-primary:hover {
+    border-color: #007ba7; /* Установка цвета рамок при наведении */
+    background-color: #007ba7; /* Установка прозрачного фона при наведении */
+    color: white;
+}
+
+.link-body-emphasis:hover,
+.header-link:hover {
+    color: #007ba7; /* Установка цвета текста при наведении */
+    background-color: transparent; /* Установка прозрачного фона при наведении */
+}
+
+
+  .icon-button {
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  }
+
+.filter-wrapper {
+  position: relative;
+  display: inline-block;
+}
+
+.filter-wrapper:hover .btn-primary {
+  border: 1px solid black;
+}
+
+.filter-dropdown {
+  position: absolute;
+  top: 100%;
+  right: 0;
+  z-index: 10;
+}
+
+.filter-form {
+  display: none;
+  padding: 10px;
+  background-color: #fff;
+  border: 1px solid #ccc;
+}
+
+.filter-toggle:checked + .filter-dropdown .filter-form {
+  display: block;
+}
+
+  .filter-toggle {
+  display: none;
+}
+
+.text-right {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+}
+
+.btn-primary {
+  background-color: transparent !important;
+  border: none;
+  margin-left: auto;
+}
+
+.btn-primary svg {
+  fill: #000000;
+}
+
+.opaque-button {
+  opacity: 1;
+  text-color: #000000;
+  border: 1px solid black;
+}
+
+.opaque-button:hover {
+  border: 1px solid black;
+}
+
+.filter-form {
+  width: 300px;
+}
+
+.tour-title {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.options-dropdown {
+  position: relative;
+}
+
+.dropdown-content {
+  position: absolute;
+  background-color: #f9f9f9;
+  min-width: 160px;
+  box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+  padding: 12px 16px;
+  top: 0;
+  right: 0;
+  display: none;
+}
+
+.options-dropdown:hover .dropdown-content {
+  display: flex; /* Используем flex-контейнер */
+  flex-direction: column; /* Выстраиваем элементы вертикально */
+  align-items: flex-start; /* Выравниваем по левому краю */
+}
+
+.order-title {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.options-button {
+  font-size: 1.5em;
+  cursor: pointer;
+}
+
+.dropdown-content {
+  position: absolute;
+  background-color: #f9f9f9;
+  min-width: 160px;
+  box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+  padding: 12px 16px;
+  top: 0;
+  right: 0;
+  display: none;
+}
+
+.options-dropdown:hover .dropdown-content {
+  display: block;
+}
+
+.dropdown-content a.btn,
+.dropdown-content button {
+  display: block;
+  width: 100%;
+  text-align: left;
+  padding: 4px 8px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.delete-button {
+    background: none;
+    border: none;
+    padding: 0;
+    margin: 0;
+    color: black;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+.accept-button,
+.reject-button {
+  display: block;
+  width: 100%;
+  text-align: left;
+  padding: 4px 8px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  color: white;
+  border: none;
+  cursor: pointer;
+  margin-bottom: 4px;
+  border-radius: 4px; /* Закругленные углы */
+}
+
+.accept-button {
+  background-color: #4caf50; /* Цвет для кнопки "Принять" */
+}
+
+.reject-button {
+  background-color: #f44336; /* Цвет для кнопки "Отклонить" */
+}
+
+.accept-button:hover {
+  background-color: #45a049; /* Цвет при наведении на кнопку "Принять" */
+}
+
+.reject-button:hover {
+  background-color: #d32f2f; /* Цвет при наведении на кнопку "Отклонить" */
+}
+</style>
+</head>
+<body>
+
+<svg xmlns="http://www.w3.org/2000/svg" class="d-none">
+    <symbol id="check" viewBox="0 0 16 16">
+        <title>Check</title>
+        <path d="M13.854 3.646a.5.5 0 0 1 0 .708l-7 7a.5.5 0 0 1-.708 0l-3.5-3.5a.5.5 0 1 1 .708-.708L6.5 10.293l6.646-6.647a.5.5 0 0 1 .708 0z"></path>
+    </symbol>
+</svg>
+
+<div class="container py-3">
+    <header th:insert="blocks/header :: header">
+    </header>
+
+    <div>
+        <canvas id="chart"></canvas>
+    </div>
+
+    <span>
+        <a href="/exportexcel"> Экспорт заказанных путёвок в Excel</a>
+    </span>
+
+    <div th:each="el : ${order}" class="alert alert-info mt-2">
+        <div class="order-card">
+            <div class="order-title">
+                <h3>Заявка №<span th:text="${el.order_id}"></span></h3>
+                <div class="options-dropdown">
+                    <div class="options-button">&#8942;</div>
+                    <div class="dropdown-content">
+                        <form th:action="@{/orders/accept/{order_id}(order_id=${el.order_id})}" method="post">
+                            <button class="accept-button">Принять</button>
+                        </form>
+                        <form th:action="@{/orders/delete/{order_id}(order_id=${el.order_id})}" method="post">
+                            <button class="reject-button">Удалить</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+            <div>
+                <h4>Данные пользователя:</h4>
+                <p>Имя: <span th:text="${el.User.first_name}"></span></p>
+                <p>Фамилия: <span th:text="${el.User.last_name}"></span></p>
+                <p>Email: <span th:text="${el.User.email}"></span></p>
+            </div>
+            <div>
+                <h4>Тур:</h4>
+                <p>Название: <span th:text="${el.Tour.title}"></span></p>
+                <p>Количество мест: <span th:text="${el.Tour.place_quantity}"></span></p>
+            </div>
+            <div th:if="${el.Service != null}">
+                <h4 >Дополнительные услуги:</h4>
+                <div>
+                    <p><span th:text="${el.Service.service_name}"></span></p>
+                </div>
+            </div>
+            <div>
+                <p>Необходимое количество мест: <span th:text="${el.place_quantity}"></span></p>
+                <p>Время поступления заявки: <span th:text="${#temporals.format(el.order_date, 'dd-MM-yyyy HH:mm')}"></span></p>
+            </div>
+            <a th:href="@{/orderinfo/{order_id}(order_id=${el.order_id})}" class="text-info">Подробнее</a>
+        </div>
+    </div>
+</div>
+<footer th:insert="blocks/footer :: footer"> </footer>
+</div>
+<script th:inline="javascript">
+    var orders = /*[[${order}]]*/ [];
+    var tours = /*[[${tour}]]*/ [];
+
+    // Создание объекта для хранения статистики
+    var stats = {};
+
+    // Подсчет статистики
+    orders.forEach(function(order) {
+      var tourId = order.tour.tour_id;
+
+      if (!stats[tourId]) {
+        stats[tourId] = 0;
+      }
+
+      stats[tourId] += 1; // Учитываем количество товаров
+    });
+
+    // Получение данных для диаграммы
+    var labels = Object.keys(stats);
+    var data = Object.values(stats);
+
+    // Получение имен подкатегорий
+    var tourNames = labels.map(function(tourId) {
+      var tour = tours.find(function(tour) {
+        return tour.tour_id === parseInt(tourId);
+      });
+      return tour ? tour.title : 'Неизвестный тур';
+    });
+    // Создание диаграммы
+    var ctx = document.getElementById('chart').getContext('2d');
+    new Chart(ctx, {
+      type: 'bar',
+      data: {
+        labels: tourNames, // Используем имена подкатегорий вместо идентификаторов
+        datasets: [{
+          label: 'Количество заявок',
+          data: data,
+          backgroundColor: getRandomColorArray(labels.length)
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false, // Отключение пропорционального масштабирования
+        scales: {
+          y: {
+            beginAtZero: true // Начало оси Y с нуля
+          }
+        },
+        legend: {
+          display: false
+        },
+        title: {
+          display: true,
+          text: 'Статистика заявок по турам'
+        }
+      }
+    });
+
+    // Генерация случайного массива цветов
+    function getRandomColorArray(length) {
+      var colors = [];
+      for (var i = 0; i < length; i++) {
+        var color = '#' + Math.floor(Math.random() * 16777215).toString(16);
+        colors.push(color);
+      }
+      return colors;
+    }
+</script>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js" integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL" crossorigin="anonymous"></script>
+</body>
+</html>

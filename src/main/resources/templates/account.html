@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Личный кабинет</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css">
+    <style>
+        .link-body-emphasis,
+        .header-link {
+            color: #00abc2; /* Изменение цвета текста */
+        }
+
+        .btn-outline-primary {
+            color:#00abc2;
+            border-color: #00abc2; /* Изменение цвета рамок */
+            background-color: transparent; /* Установка прозрачного фона */
+        }
+
+
+        .btn-outline-primary:hover {
+            border-color: #007ba7; /* Установка цвета рамок при наведении */
+            background-color: #007ba7; /* Установка прозрачного фона при наведении */
+            color: white;
+        }
+        .link-body-emphasis:hover,
+        .header-link:hover {
+            color: #007ba7; /* Установка цвета текста при наведении */
+            background-color: transparent; /* Установка прозрачного фона при наведении */
+        }
+                h1 {
+                    text-align: center;
+                }
+
+                .user-info {
+                    margin-bottom: 20px;
+
+                }
+
+                .user-info span {
+                    font-weight: bold;
+                }
+
+                .form-group {
+                    margin-bottom: 10px;
+                }
+
+                .form-group label {
+                    display: block;
+                    font-weight: bold;
+                }
+
+                .form-group input[type="text"],
+                .form-group input[type="email"],
+                .form-group input[type="password"] {
+                    width: 100%;
+                    padding: 5px;
+                }
+
+                .form-group button {
+                    padding: 8px 16px;
+                    background-color: #4CAF50;
+                    color: white;
+                    border: none;
+                    cursor: pointer;
+                }
+
+                .table-spacing {
+                border-collapse: separate;
+                border-spacing: 0 10px;
+            }
+
+            .download-button {
+          display: inline-block;
+          padding: 10px 20px;
+          background-color: #00abc2;
+          color: white;
+          border-radius: 10px;
+          text-decoration: none;
+        }
+        .download-button:hover {
+          color: white; /* Цвет текста при наведении такой же, как и обычно */
+          background-color: #007ba7;
+        }
+
+    </style>
+</head>
+<body>
+<div class="container py-3">
+    <header th:insert="blocks/header :: header"></header>
+
+    <div class="row justify-content-center">
+        <div th:each="el : ${user}" class="col-md-6">
+            <h1>Личный кабинет</h1>
+
+            <table class="table table-bordered table-info table-spacing mt-3">
+                <tbody>
+                <tr>
+                    <td class="rounded-start">Имя:</td>
+                    <td class="rounded-end" th:text="${el.first_name}"></td>
+                </tr>
+                <tr>
+                    <td class="rounded-start">Фамилия:</td>
+                    <td class="rounded-end" th:text="${el.last_name}"></td>
+                </tr>
+                <tr>
+                    <td class="rounded-start">Номер телефона:</td>
+                    <td class="rounded-end" th:text="${el.phone}"></td>
+                </tr>
+                <tr>
+                    <td class="rounded-start">Email:</td>
+                    <td class="rounded-end" th:text="${el.email}"></td>
+                </tr>
+                </tbody>
+            </table>
+
+            <div class="row mt-3">
+                <div class="col">
+                    <a th:href="@{/account/{idUser}/edit(idUser=${el.userId})}" class="download-button">Редактировать
+                        информацию</a>
+                    <a th:unless="${isAdmin}" th:href="@{/account/bookings/{idUser}(idUser=${el.userId})}"
+                       class="download-button">История путешествий</a>
+                    <a th:if="${isAdmin}" href="/orders" class="download-button mt-2">Просмотр заявок</a>
+                    <a href="/logout" class="download-button mt-2">Выход</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>
