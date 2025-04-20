@@ -14,33 +14,27 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 
-@Builder
-@Entity
-@Getter
 @Setter
+@Getter
+@Entity
+@Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@Table(name = "bookings")
-public class Booking {
+@Table(name = "orders")
+public class Order {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
+    @Column(name = "order_date")
+    private LocalDateTime orderDateTime;
 
     @Column(name = "place_quantity")
     private int placeQuantity;
-
-    @Column(name = "price")
-    private double price;
-
-    @Column(name = "check_in_date")
-    private LocalDate checkInDate;
-
-    @Column(name = "check_out_date")
-    private LocalDate checkOutDate;
 
     @ManyToOne
     @JoinColumn(name = "tour_id")
@@ -51,11 +45,6 @@ public class Booking {
     private User user;
 
     @ManyToOne
-    @JoinColumn(name = "hotel_id")
-    private Hotel hotel;
-
-    @ManyToOne
     @JoinColumn(name = "service_id")
     private AdditionalService additionalService;
 }
-

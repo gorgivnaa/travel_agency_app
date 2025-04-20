@@ -1,6 +1,6 @@
 package com.popytka.popytka.controllers;
 
-import com.popytka.popytka.models.Service;
+import com.popytka.popytka.models.AdditionalService;
 import com.popytka.popytka.repos.ServiceRepository;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
@@ -21,26 +21,26 @@ import static com.popytka.popytka.controllers.MainController.isAdmin;
 
 @Controller
     public class ServiceController {
-    List<Service> filteredServices = new ArrayList<>();
+    List<AdditionalService> filteredAdditionalServices = new ArrayList<>();
     @Autowired
     private ServiceRepository serviceRepository;
 
     @GetMapping("/services")
     public String servicesMain(Model model, @RequestParam(required = false) String sort, HttpSession session) {
-        List<Service> services = serviceRepository.getServices();
+        List<AdditionalService> additionalServices = serviceRepository.getServices();
         if (sort != null) {
             switch (sort) {
                 case "asc":
-                    services.sort(Comparator.comparing(Service::getService_name));
+                    additionalServices.sort(Comparator.comparing(AdditionalService::getName));
                     break;
                 case "desc":
-                    services.sort(Comparator.comparing(Service::getService_name).reversed());
+                    additionalServices.sort(Comparator.comparing(AdditionalService::getName).reversed());
                     break;
                 case "descPrice":
-                    services.sort(Comparator.comparing(Service::getPrice).reversed());
+                    additionalServices.sort(Comparator.comparing(AdditionalService::getPrice).reversed());
                     break;
                 case "ascPrice":
-                    services.sort(Comparator.comparing(Service::getPrice));
+                    additionalServices.sort(Comparator.comparing(AdditionalService::getPrice));
                     break;
             }
         }
@@ -50,7 +50,7 @@ import static com.popytka.popytka.controllers.MainController.isAdmin;
             model.addAttribute("userId", 1);
             model.addAttribute("isAdmin", isAdmin);
         }
-        model.addAttribute("service", services);
+        model.addAttribute("service", additionalServices);
         model.addAttribute("isAdmin", isAdmin);
         return "services";
     }
@@ -64,11 +64,11 @@ import static com.popytka.popytka.controllers.MainController.isAdmin;
             model.addAttribute("userId", 1);
             model.addAttribute("isAdmin", isAdmin);
         }
-        filteredServices = serviceRepository.searchService(query);
-        if (filteredServices.isEmpty()) {
+        filteredAdditionalServices = serviceRepository.searchServiceByName(query);
+        if (filteredAdditionalServices.isEmpty()) {
             model.addAttribute("message", "Результатов по данному запросу не найдено.");
         } else {
-            model.addAttribute("service", filteredServices);
+            model.addAttribute("service", filteredAdditionalServices);
         }
         model.addAttribute("isAdmin", isAdmin);
         if (UserID == null) {
@@ -82,10 +82,9 @@ import static com.popytka.popytka.controllers.MainController.isAdmin;
 
     @Transactional
     @PostMapping("/services/add")
-    public String addNewService(HttpServletRequest request, Model model, @RequestParam("service_name") String serviceName, @RequestParam("servicePrice") double price) {
-        // Обработка запроса на добавление нового отеля
-        // Например, установите атрибут модели, указывающий на необходимость отображения формы
-        serviceRepository.addService(serviceName, price);
+    public String addNewService(HttpServletRequest request, Model model, @RequestParam("service_name") String serviceName, @RequestParam("service_description") String serviceDescription, @RequestParam("servicePrice") double price) {
+
+        serviceRepository.addService(serviceName, serviceDescription, price);
         String referer = request.getHeader("Referer");
         return "redirect:" + referer;
     }

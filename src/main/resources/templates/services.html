@@ -200,7 +200,7 @@ color:#00abc2;
             <div class="row">
                 <div class="col-8 d-flex align-items-center">
                     <h1>Дополнительные услуги</h1>
-                    <form action="/services" method="GET">
+                    <form action="/additionalServices" method="GET">
                         <button type="submit" name="sort" value="asc" class="icon-button" style="padding-left: 10px;">
                             <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" fill="currentColor" class="bi bi-sort-alpha-down" viewBox="0 0 16 16">
                                 <path fill-rule="evenodd" d="M10.082 5.629 9.664 7H8.598l1.789-5.332h1.234L13.402 7h-1.12l-.419-1.371h-1.781zm1.57-.785L11 2.687h-.047l-.652 2.157h1.351"/>
@@ -230,7 +230,7 @@ color:#00abc2;
                     </form>
                 </div>
                 <div class="col-4 text-right">
-                    <form action="/services/search" role="search">
+                    <form action="/additionalServices/search" role="search">
                         <input class="form-control" type="search" name="query" pattern="^[\p{L}\d\s.,]+$" placeholder="Поиск" aria-label="Search">
                     </form>
                 </div>
@@ -240,7 +240,7 @@ color:#00abc2;
 
     <a th:if="${isAdmin}" class="download-button" data-toggle="modal" data-target="#addServiceModal">Добавить новый сервис</a>
 
-    <div th:each="el : ${service}" class="alert alert-info mt-2">
+    <div th:each="el : ${additionalService}" class="alert alert-info mt-2">
         <div class="tour-card">
             <div class="tour-title">
                 <h3 th:text="${el.service_name}"></h3>
@@ -265,10 +265,14 @@ color:#00abc2;
     <div class="modal-dialog">
         <div class="modal-content">
             <h5>Добавить новый сервис</h5>
-            <form action="/services/add" method="post">
+            <form action="/additionalServices/add" method="post">
                 <div class="mb-3">
                     <label for="serviceName" class="form-label">Название услуги</label>
                     <input type="text" name="service_name" class="form-control" id="serviceName" placeholder="Введите название услуги" required>
+                </div>
+                <div class="mb-3">
+                    <label for="serviceDescription" class="form-label">Описание услуги</label>
+                    <input type="text" name="service_description" class="form-control" id="serviceDescription" placeholder="Введите описание услуги" required>
                 </div>
                 <div class="mb-3">
                     <label for="servicePrice" class="form-label">Стоимость</label>

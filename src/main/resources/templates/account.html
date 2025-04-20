@@ -7,25 +7,24 @@
     <style>
         .link-body-emphasis,
         .header-link {
-            color: #00abc2; /* Изменение цвета текста */
+            color: #00abc2;
         }
 
         .btn-outline-primary {
             color:#00abc2;
-            border-color: #00abc2; /* Изменение цвета рамок */
-            background-color: transparent; /* Установка прозрачного фона */
+            border-color: #00abc2;
+            background-color: transparent;
         }
 
-
         .btn-outline-primary:hover {
-            border-color: #007ba7; /* Установка цвета рамок при наведении */
-            background-color: #007ba7; /* Установка прозрачного фона при наведении */
+            border-color: #007ba7;
+            background-color: #007ba7;
             color: white;
         }
         .link-body-emphasis:hover,
         .header-link:hover {
-            color: #007ba7; /* Установка цвета текста при наведении */
-            background-color: transparent; /* Установка прозрачного фона при наведении */
+            color: #007ba7;
+            background-color: transparent;
         }
                 h1 {
                     text-align: center;
@@ -78,7 +77,7 @@
           text-decoration: none;
         }
         .download-button:hover {
-          color: white; /* Цвет текста при наведении такой же, как и обычно */
+          color: white;
           background-color: #007ba7;
         }
 
@@ -119,7 +118,7 @@
                         информацию</a>
                     <a th:unless="${isAdmin}" th:href="@{/account/bookings/{idUser}(idUser=${el.userId})}"
                        class="download-button">История путешествий</a>
-                    <a th:if="${isAdmin}" href="/orders" class="download-button mt-2">Просмотр заявок</a>
+                    <a th:if="${isAdmin}" href="/order" class="download-button mt-2">Просмотр заявок</a>
                     <a href="/logout" class="download-button mt-2">Выход</a>
                 </div>
             </div>

@@ -79,7 +79,6 @@ public class TourController {
         }
 
         if (countryName == null && maxPrice == null) {
-            // Если оба параметра отсутствуют, выполните выборку всех данных
             tours = tourRepository.getToursFilter();
             filteredTours = tours;
         } else if (countryName != null && maxPrice == null) {
@@ -89,7 +88,6 @@ public class TourController {
             tours = tourRepository.findTourByPrice(maxPrice);
             filteredTours = tours;
         } else {
-            // Иначе, выполните выборку данных с применением фильтров
             tours = tourRepository.findTourByFilters(countryName, maxPrice);
             filteredTours = tours;
         }
@@ -156,8 +154,8 @@ public class TourController {
         List<Tour> tour = tourRepository.getTourById(tour_id);
         Hotel hotel = hotelRepository.getHotelByTourId(tour_id);
         User user = userRepository.getById(UserID);
-        List<Service> service = serviceRepository.getServices();
-        model.addAttribute("service", service);
+        List<AdditionalService> additionalService = serviceRepository.getServices();
+        model.addAttribute("service", additionalService);
         model.addAttribute("tour", tour);
         model.addAttribute("hotel", hotel);
         model.addAttribute("user", user);
@@ -216,8 +214,7 @@ public class TourController {
     @Transactional
     @PostMapping("/hotel/add")
     public String addNewHotel(HttpServletRequest request, Model model, @RequestParam("new_hotel_name") String hotelName, @RequestParam("country_name") String countryName, @RequestParam("new_hotel_description") String description, @RequestParam("rate") double rating) {
-        // Обработка запроса на добавление нового отеля
-        // Например, установите атрибут модели, указывающий на необходимость отображения формы
+
         hotelRepository.addHotel(hotelName, countryName, description, rating);
 
         String referer = request.getHeader("Referer");

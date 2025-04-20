@@ -1,28 +1,35 @@
 package com.popytka.popytka.repos;
 
-import com.popytka.popytka.models.Service;
+import com.popytka.popytka.models.AdditionalService;
+import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
-import org.springframework.data.repository.CrudRepository;
 import org.springframework.data.repository.query.Param;
 
 import java.util.List;
 
-public interface ServiceRepository  extends CrudRepository<Service, Long> {
+public interface ServiceRepository extends JpaRepository<AdditionalService, Long> {
+
     @Query("select s from Service as s")
-    List<Service> getServices();
+    List<AdditionalService> getServices();
 
     @Query("select s from Service as s where s.service_name = ?1")
-    Service getServiceByName(String serviceName);
+    AdditionalService getServiceByName(String serviceName);
 
-    @Query("SELECT s FROM Service as s WHERE s.service_name LIKE %:query%")
-    List<Service> searchService(@Param("query") String query);
+    @Query("""
+            SELECT s FROM Service as s
+            WHERE s.service_name LIKE %:service_name%
+            """)
+    List<AdditionalService> searchServiceByName(@Param("service_name") String serviceName);
 
     @Modifying(clearAutomatically = true)
-    @Query("INSERT INTO Service (service_name, price) VALUES (:service_name, :price)")
-    void addService(@Param("service_name") String service_name, @Param("price") double price);
-
-
-//    @Query("select s from Service where service_id =(select o.service_id from Orders as o where order_id = :order_id)")
-//    Service getServiceByOrderId(@Param("order_id") Long order_id);
+    @Query("""
+            INSERT INTO Service (service_name, price, description)
+            VALUES (:service_name, :price, :service_description)
+            """)
+    void addService(
+            @Param("service_name") String serviceName,
+            @Param("service_description") String serviceDescription,
+            @Param("price") double price
+    );
 }

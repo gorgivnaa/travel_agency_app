@@ -173,10 +173,10 @@ public class MainController {
         if (UserID == null) {
             model.addAttribute("userId", 0);
         } else {
-            model.addAttribute("iserId", 1);
+            model.addAttribute("userId", 1);
             model.addAttribute("isAdmin", isAdmin);
         }
-        // Добавляем данные пользователя в модель
+
         model.addAttribute("user", user);
         return "user-edit";
     }
@@ -191,7 +191,7 @@ public class MainController {
         if (UserID == null) {
             model.addAttribute("userId", 0);
         } else {
-            model.addAttribute("iserId", 1);
+            model.addAttribute("userId", 1);
             model.addAttribute("isAdmin", isAdmin);
         }
         model.addAttribute("user", user);
@@ -205,7 +205,7 @@ public class MainController {
         if (UserID == null) {
             model.addAttribute("userId", 0);
         } else {
-            model.addAttribute("iserId", 1);
+            model.addAttribute("userId", 1);
             model.addAttribute("isAdmin", isAdmin);
         }
         model.addAttribute("user", user);

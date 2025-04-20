@@ -222,9 +222,9 @@ color:#00abc2;
         <canvas id="chart"></canvas>
     </div>
 
-    <span>
-        <a href="/exportexcel"> Экспорт заказанных путёвок в Excel</a>
-    </span>
+<!--    <span>-->
+<!--        <a href="/exportexcel"> Экспорт заказанных путёвок в Excel</a>-->
+<!--    </span>-->
 
     <div th:each="el : ${order}" class="alert alert-info mt-2">
         <div class="order-card">
@@ -233,10 +233,10 @@ color:#00abc2;
                 <div class="options-dropdown">
                     <div class="options-button">&#8942;</div>
                     <div class="dropdown-content">
-                        <form th:action="@{/orders/accept/{order_id}(order_id=${el.order_id})}" method="post">
+                        <form th:action="@{/order/accept/{order_id}(order_id=${el.order_id})}" method="post">
                             <button class="accept-button">Принять</button>
                         </form>
-                        <form th:action="@{/orders/delete/{order_id}(order_id=${el.order_id})}" method="post">
+                        <form th:action="@{/order/delete/{order_id}(order_id=${el.order_id})}" method="post">
                             <button class="reject-button">Удалить</button>
                         </form>
                     </div>
@@ -263,47 +263,43 @@ color:#00abc2;
                 <p>Необходимое количество мест: <span th:text="${el.place_quantity}"></span></p>
                 <p>Время поступления заявки: <span th:text="${#temporals.format(el.order_date, 'dd-MM-yyyy HH:mm')}"></span></p>
             </div>
-            <a th:href="@{/orderinfo/{order_id}(order_id=${el.order_id})}" class="text-info">Подробнее</a>
+<!--            <a th:href="@{/orderinfo/{order_id}(order_id=${el.order_id})}" class="text-info">Подробнее</a>-->
         </div>
     </div>
 </div>
 <footer th:insert="blocks/footer :: footer"> </footer>
 </div>
 <script th:inline="javascript">
-    var orders = /*[[${order}]]*/ [];
+    var order = /*[[${order}]]*/ [];
     var tours = /*[[${tour}]]*/ [];
 
-    // Создание объекта для хранения статистики
     var stats = {};
 
-    // Подсчет статистики
-    orders.forEach(function(order) {
+    order.forEach(function(order) {
       var tourId = order.tour.tour_id;
 
       if (!stats[tourId]) {
         stats[tourId] = 0;
       }
 
-      stats[tourId] += 1; // Учитываем количество товаров
+      stats[tourId] += 1;
     });
 
-    // Получение данных для диаграммы
     var labels = Object.keys(stats);
     var data = Object.values(stats);
 
-    // Получение имен подкатегорий
     var tourNames = labels.map(function(tourId) {
       var tour = tours.find(function(tour) {
         return tour.tour_id === parseInt(tourId);
       });
       return tour ? tour.title : 'Неизвестный тур';
     });
-    // Создание диаграммы
+
     var ctx = document.getElementById('chart').getContext('2d');
     new Chart(ctx, {
       type: 'bar',
       data: {
-        labels: tourNames, // Используем имена подкатегорий вместо идентификаторов
+        labels: tourNames,
         datasets: [{
           label: 'Количество заявок',
           data: data,
@@ -312,10 +308,10 @@ color:#00abc2;
       },
       options: {
         responsive: true,
-        maintainAspectRatio: false, // Отключение пропорционального масштабирования
+        maintainAspectRatio: false,
         scales: {
           y: {
-            beginAtZero: true // Начало оси Y с нуля
+            beginAtZero: true
           }
         },
         legend: {
@@ -328,7 +324,6 @@ color:#00abc2;
       }
     });
 
-    // Генерация случайного массива цветов
     function getRandomColorArray(length) {
       var colors = [];
       for (var i = 0; i < length; i++) {

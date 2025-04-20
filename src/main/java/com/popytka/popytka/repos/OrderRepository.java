@@ -1,6 +1,6 @@
 package com.popytka.popytka.repos;
 
-import com.popytka.popytka.models.Orders;
+import com.popytka.popytka.models.Order;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
@@ -8,9 +8,9 @@ import org.springframework.data.repository.query.Param;
 
 import java.util.List;
 
-public interface OrderRepository extends CrudRepository<Orders, Long> {
+public interface OrderRepository extends CrudRepository<Order, Long> {
     @Query("select o from Orders o")
-    List<Orders> getAllOrders();
+    List<Order> getAllOrders();
 
 //    @Modifying(clearAutomatically = true)
 //    @Query("INSERT INTO Orders (user_id, tour_id, service_id, order_date, place_quantity) VALUES (:user_id, :tour_id, :service_id, :order_date, :numberOfPeople)")
@@ -33,5 +33,5 @@ public interface OrderRepository extends CrudRepository<Orders, Long> {
     void deleteOrder(Long id);
 
     @Query("Select o from Orders as o where order_id = :id_order")
-    Orders getOrderById(@Param("id_order") Long id);
+    Order getOrderById(@Param("id_order") Long id);
 }

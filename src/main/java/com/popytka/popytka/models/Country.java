@@ -1,46 +1,36 @@
 package com.popytka.popytka.models;
 
-import jakarta.persistence.*;
-import org.apache.tomcat.util.codec.binary.Base64;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.Lob;
+import jakarta.persistence.Table;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
+@Getter
+@Setter
 @Entity
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
+@Table(name = "countries")
 public class Country {
 
-    @Lob
-    private byte[] image;
-
-    public String generateBase64Image() {
-        return Base64.encodeBase64String(this.image);
-    }
-    public byte[] getImage() {
-        return image;
-    }
-
-    public void setImage(byte[] image) {
-        this.image = image;
-    }
-
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY  )
-    private Long country_id;
-    private String country_name;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id")
+    private Long id;
 
-    public Country() {
-    }
+    @Column(name = "name")
+    private String name;
 
-    public Long getCountry_id() {
-        return country_id;
-    }
-
-    public void setCountry_id(Long country_id) {
-        this.country_id = country_id;
-    }
-
-    public String getCountry_name() {
-        return country_name;
-    }
-
-    public void setCountry_name(String country_name) {
-        this.country_name = country_name;
-    }
+    @Lob
+    @Column(name = "image")
+    private byte[] image;
 }
