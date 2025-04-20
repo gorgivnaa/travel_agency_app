@@ -1,0 +1,21 @@
+package com.popytka.popytka.repository;
+
+import com.popytka.popytka.models.Tour;
+import org.springframework.data.jpa.repository.JpaRepository;
+
+import java.math.BigDecimal;
+import java.util.List;
+import java.util.Optional;
+
+public interface TourRepository extends JpaRepository<Tour, Long> {
+
+    List<Tour> findByCountryName(String countryName);
+
+    List<Tour> findByPriceLessThanEqual(BigDecimal price);
+
+    List<Tour> findByCountryNameAndPriceLessThanEqual(String countryName, BigDecimal price);
+
+    List<Tour> findByTitleContainingOrDescriptionContaining(String title, String description);
+
+    Optional<Tour> findByTitle(String title);
+}

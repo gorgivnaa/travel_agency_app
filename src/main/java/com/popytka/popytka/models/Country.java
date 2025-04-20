@@ -13,6 +13,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.util.Base64;
+
 @Getter
 @Setter
 @Entity
@@ -31,6 +33,10 @@ public class Country {
     private String name;
 
     @Lob
-    @Column(name = "image")
+    @Column(name = "image", columnDefinition = "LONGBLOB")
     private byte[] image;
+
+    public String getImageBase64() {
+        return image != null ? Base64.getEncoder().encodeToString(image) : null;
+    }
 }

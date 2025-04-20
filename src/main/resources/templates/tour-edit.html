@@ -202,7 +202,7 @@ countrySelect.addEventListener("change", function() {
   hotelSelect.innerHTML = ""; // Очистить текущие элементы списка отелей
 
   var xhr = new XMLHttpRequest();
-  xhr.open("GET", "/hotel?country=" + selectedCountry, true);
+  xhr.open("GET", "/hotel?countryName=" + selectedCountry, true);
   xhr.onreadystatechange = function() {
     if (xhr.readyState === 4 && xhr.status === 200) {
       var hotels = JSON.parse(xhr.responseText);

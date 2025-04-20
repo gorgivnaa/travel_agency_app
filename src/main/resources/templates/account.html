@@ -95,11 +95,11 @@
                 <tbody>
                 <tr>
                     <td class="rounded-start">Имя:</td>
-                    <td class="rounded-end" th:text="${el.first_name}"></td>
+                    <td class="rounded-end" th:text="${el.firstName}"></td>
                 </tr>
                 <tr>
                     <td class="rounded-start">Фамилия:</td>
-                    <td class="rounded-end" th:text="${el.last_name}"></td>
+                    <td class="rounded-end" th:text="${el.lastName}"></td>
                 </tr>
                 <tr>
                     <td class="rounded-start">Номер телефона:</td>
@@ -114,9 +114,9 @@
 
             <div class="row mt-3">
                 <div class="col">
-                    <a th:href="@{/account/{idUser}/edit(idUser=${el.userId})}" class="download-button">Редактировать
+                    <a th:href="@{/account/{idUser}/edit(idUser=${el.id})}" class="download-button">Редактировать
                         информацию</a>
-                    <a th:unless="${isAdmin}" th:href="@{/account/bookings/{idUser}(idUser=${el.userId})}"
+                    <a th:unless="${isAdmin}" th:href="@{/account/bookings/{idUser}(idUser=${el.id})}"
                        class="download-button">История путешествий</a>
                     <a th:if="${isAdmin}" href="/order" class="download-button mt-2">Просмотр заявок</a>
                     <a href="/logout" class="download-button mt-2">Выход</a>

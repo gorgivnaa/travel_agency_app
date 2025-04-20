@@ -193,7 +193,7 @@ color:#00abc2;
 </svg>
 
 <div class="container py-3">
-  <header th:insert="blocks/header :: header">
+  <header th:insert="~{blocks/header :: header}">
   </header>
 
   <div class="container mt-5">
@@ -285,8 +285,8 @@ color:#00abc2;
         <div th:if="${isAdmin}" class="options-dropdown">
           <button class="options-button">&#8942;</button>
           <div class="dropdown-content">
-            <a th:href="@{/tour/edit/{tour_id}(tour_id=${el.tour_id})}" class="btn-small" style="color: black;">Редактировать</a>
-            <form th:action="@{/tour/delete/{tour_id}(tour_id=${el.tour_id})}" method="post">
+            <a th:href="@{/tour/edit/{tour_id}(tour_id=${el.id})}" class="btn-small" style="color: black;">Редактировать</a>
+            <form th:action="@{/tour/delete/{tour_id}(tour_id=${el.id})}" method="post">
               <button type="submit" class="btn-small delete-button">Удалить</button>
             </form>
           </div>
@@ -294,13 +294,13 @@ color:#00abc2;
       </div>
       <p th:text="${el.description}"></p>
       <h5><span th:text="${el.price} + ' руб'"></span></h5>
-      <a th:href="@{/tourinfo/{tour_id}(tour_id=${el.tour_id})}" class="download-button">Подробнее</a>
+      <a th:href="@{/tourinfo/{tour_id}(tour_id=${el.id})}" class="download-button">Подробнее</a>
     </div>
     <div th:if="${noResults}">
       <p>Нет доступных туров, удовлетворяющих заданным фильтрам.</p>
     </div>
   </div>
-  <footer th:insert="blocks/footer :: footer"> </footer>
+  <footer th:insert="~{blocks/footer :: footer}"> </footer>
 </div>
 <script src="/docs/5.3/dist/js/bootstrap.bundle.min.js" crossorigin="anonymous"></script>
 </body>

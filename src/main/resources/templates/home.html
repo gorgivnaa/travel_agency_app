@@ -87,7 +87,7 @@
 </svg>
 
 <div class="container py-3">
-    <header th:insert="blocks/header :: header">
+    <header th:insert="~{blocks/header :: header}">
 
         <div class="pricing-header p-3 pb-md-4 mx-auto text-center">
             <h1 class="display-4 fw-normal text-body-emphasis">Pricing</h1>
@@ -105,11 +105,11 @@
                         <div class="card shadow-sm" style="height: 100%;">
                             <div class="card-body"
                                  style="height: 100%; display: flex; justify-content: center; align-items: center;">
-                                <img th:src="@{'data:image/png;base64,'+${el.generateBase64Image()}}"
+                                <img th:src="@{'data:image/png;base64,'+${el.getImageBase64()}}"
                                      style="width: 100%; height: auto;">
                                 <div class="card-img-overlay">
-                                    <a th:text="${el.country_name}"
-                                       th:href="@{/tourfilters(countryName=${el.country_name})}"></a>
+                                    <a th:text="${el.name}"
+                                       th:href="@{/tourfilters(countryName=${el.name})}"></a>
                                 </div>
                             </div>
                         </div>
@@ -135,7 +135,7 @@
             </form>
         </div>
     </main>
-    <footer th:insert="blocks/footer :: footer"></footer>
+    <footer th:insert="~{blocks/footer :: footer}"></footer>
 </div>
 </body>
 </html>

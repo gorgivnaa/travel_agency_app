@@ -188,7 +188,7 @@
 </svg>
 
 <div class="container py-3">
-    <header th:insert="blocks/header :: header">
+    <header th:insert="~{blocks/header :: header}">
     </header>
 
     <div th:each="el : ${tour}" class="card mt-2">
@@ -220,7 +220,7 @@
         </div>
     </div>
 </div>
-<footer th:insert="blocks/footer :: footer"></footer>
+<footer th:insert="~{blocks/footer :: footer}"></footer>
 </div>
 
 <div class="modal" id="orderModal">

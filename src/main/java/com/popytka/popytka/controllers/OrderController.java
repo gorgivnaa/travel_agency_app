@@ -7,11 +7,25 @@ import com.itextpdf.text.Font;
 import com.itextpdf.text.Paragraph;
 import com.itextpdf.text.pdf.BaseFont;
 import com.itextpdf.text.pdf.PdfWriter;
-import com.popytka.popytka.models.*;
-import com.popytka.popytka.repos.*;
+import com.popytka.popytka.models.AdditionalService;
+import com.popytka.popytka.models.Booking;
+import com.popytka.popytka.models.Hotel;
+import com.popytka.popytka.models.Order;
+import com.popytka.popytka.models.Tour;
+import com.popytka.popytka.models.User;
+import com.popytka.popytka.repository.BookingRepository;
+import com.popytka.popytka.repository.HotelRepository;
+import com.popytka.popytka.repository.OrderRepository;
+import com.popytka.popytka.repository.ServiceRepository;
+import com.popytka.popytka.repository.TourRepository;
+import com.popytka.popytka.repository.UserRepository;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.transaction.Transactional;
-import org.apache.poi.ss.usermodel.*;
+import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.CellStyle;
+import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
@@ -28,6 +42,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -52,8 +67,8 @@ public class OrderController {
 
     @GetMapping("/orders")
     public String showOrders(Model model) {
-        List<Order> order = orderRepository.getAllOrders();
-        List<Tour> tours = tourRepository.getTours();
+        List<Order> order = orderRepository.findAll();
+        List<Tour> tours = tourRepository.findAll();
         if (UserID == null) {
             model.addAttribute("userId", 0);
         } else {
@@ -69,9 +84,9 @@ public class OrderController {
     @Transactional
     @PostMapping("/order/add")
     public String addOrder(Model model, @RequestParam("tour_title") String tourTitle, @RequestParam("number_of_people") int numberOfPeople, @RequestParam("phone_number") String phone, @RequestParam("service_name") String servicename, @RequestParam("order_date") LocalDateTime orderDate) {
-        Tour tour = tourRepository.getTourByTitle(tourTitle);
-        User user = userRepository.getUserByPhone(phone);
-        AdditionalService additionalService = serviceRepository.getServiceByName(servicename);
+        Tour tour = tourRepository.findByTitle(tourTitle).get();
+        User user = userRepository.findByPhone(phone).get();
+        AdditionalService additionalService = serviceRepository.findByName(servicename).get();
         Order order = Order.builder()
                 .orderDateTime(orderDate)
                 .placeQuantity(numberOfPeople)
@@ -102,25 +117,25 @@ public class OrderController {
     @Transactional
     @PostMapping("/orders/delete/{order_id}")
     public String orderDelete(@PathVariable("order_id") Long id) {
-        orderRepository.deleteOrder(id);
+        orderRepository.deleteById(id);
         return "redirect:/orders";
     }
 
     @Transactional
     @PostMapping("/orders/accept/{order_id}")
     public String orderAccept(@PathVariable("order_id") Long id) {
-        double totalPrice;
-        User user = orderRepository.getOrderById(id).getUser();
-        Tour tour = orderRepository.getOrderById(id).getTour();
-        AdditionalService additionalService = orderRepository.getOrderById(id).getAdditionalService();
-        Hotel hotel = hotelRepository.getHotelByTourId(tour.getTour_id());
-        int place_qua = orderRepository.getPlaceQua(id);
-        LocalDate check_in_date = tourRepository.getCheckInDate(tour.getTour_id());
-        LocalDate check_out_date = tourRepository.getCheckOutDate(tour.getTour_id());
+        BigDecimal totalPrice;
+        User user = orderRepository.findById(id).get().getUser();
+        Tour tour = orderRepository.findById(id).get().getTour();
+        AdditionalService additionalService = orderRepository.findById(id).get().getAdditionalService();
+        Hotel hotel = tour.getHotel();
+        int place_qua = orderRepository.findById(id).get().getPlaceQuantity();
+        LocalDate check_in_date = tourRepository.findById(tour.getId()).get().getCheckInDate();
+        LocalDate check_out_date = tourRepository.findById(tour.getId()).get().getCheckOutDate();
         if (additionalService == null)
             totalPrice = tour.getPrice();
         else
-            totalPrice = tour.getPrice() + additionalService.getPrice();
+            totalPrice = tour.getPrice().add(additionalService.getPrice());
         Booking booking = Booking.builder()
                 .tour(tour)
                 .user(user)
@@ -132,8 +147,8 @@ public class OrderController {
                 .checkOutDate(check_out_date)
                 .build();
         bookingRepository.save(booking);
-        orderRepository.deleteOrder(id);
-        tour.setPlace_quantity(tour.getPlace_quantity() - place_qua);
+        orderRepository.deleteById(id);
+        tour.setPlaceQuantity(tour.getPlaceQuantity() - place_qua);
         tourRepository.save(tour);
         return "redirect:/orders";
 
@@ -151,10 +166,10 @@ public class OrderController {
             model.addAttribute("userId", 1);
             model.addAttribute("isAdmin", isAdmin);
         }
-        Order order = orderRepository.getOrderById(order_id);
-        Tour tour = orderRepository.getOrderById(order_id).getTour();
-        User user = orderRepository.getOrderById(order_id).getUser();
-        List<AdditionalService> additionalService = serviceRepository.getServices();
+        Order order = orderRepository.findById(order_id).get();
+        Tour tour = orderRepository.findById(order_id).get().getTour();
+        User user = orderRepository.findById(order_id).get().getUser();
+        List<AdditionalService> additionalService = serviceRepository.findAll();
         model.addAttribute("order", order);
         model.addAttribute("service", additionalService);
         model.addAttribute("tour", tour);
@@ -190,8 +205,8 @@ public class OrderController {
             User user = booking.getUser();
             document.add(new Paragraph("" + tour.getTitle(), font));
             document.add(new Paragraph("---------------------", font));
-            document.add(new Paragraph("Имя: " + user.getFirst_name(), font));
-            document.add(new Paragraph("Фамилия: " + user.getLast_name(), font));
+            document.add(new Paragraph("Имя: " + user.getFirstName(), font));
+            document.add(new Paragraph("Фамилия: " + user.getLastName(), font));
             document.add(new Paragraph("Количество мест: " + booking.getPlaceQuantity(), font));
             document.add(new Paragraph("---------------------", font));
             document.add(new Paragraph("Отель: " + hotel.getName(), font));
@@ -261,7 +276,7 @@ public class OrderController {
         for (Booking booking : bookingList) {
             Row dataRow = sheet.createRow(rowNum++);
             dataRow.createCell(0).setCellValue(booking.getId());
-            dataRow.createCell(1).setCellValue(booking.getUser().getUserId());
+            dataRow.createCell(1).setCellValue(booking.getUser().getId());
             dataRow.createCell(2).setCellValue(booking.getTour().getTitle());
             if (booking.getAdditionalService() != null)
                 dataRow.createCell(3).setCellValue(booking.getAdditionalService().getName());
@@ -274,9 +289,9 @@ public class OrderController {
             check_out_date_cell.setCellValue(booking.getCheckOutDate());
             check_out_date_cell.setCellStyle(dateCellStyle);
             if (booking.getAdditionalService() != null)
-                dataRow.createCell(6).setCellValue(booking.getPrice() + booking.getAdditionalService().getPrice());
+                dataRow.createCell(6).setCellValue(booking.getPrice().doubleValue() + booking.getAdditionalService().getPrice().doubleValue());
             else
-                dataRow.createCell(6).setCellValue(booking.getPrice());
+                dataRow.createCell(6).setCellValue(booking.getPrice().doubleValue());
 
         }
 

@@ -31,13 +31,13 @@ public class Hotel {
     @Column(name = "name")
     private String name;
 
-    @ManyToOne
-    @JoinColumn(name = "country_id")
-    private Country country;
-
     @Column(name = "rating")
     private double rating;
 
     @Column(name = "description")
     private String description;
+
+    @ManyToOne
+    @JoinColumn(name = "country_id")
+    private Country country;
 }

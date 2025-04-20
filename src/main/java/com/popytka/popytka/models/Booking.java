@@ -14,6 +14,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 
 @Builder
@@ -34,7 +35,7 @@ public class Booking {
     private int placeQuantity;
 
     @Column(name = "price")
-    private double price;
+    private BigDecimal price;
 
     @Column(name = "check_in_date")
     private LocalDate checkInDate;

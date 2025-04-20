@@ -9,10 +9,10 @@ import com.popytka.popytka.EmailService;
 import com.popytka.popytka.models.Booking;
 import com.popytka.popytka.models.Country;
 import com.popytka.popytka.models.User;
-import com.popytka.popytka.repos.BookingRepository;
-import com.popytka.popytka.repos.CountryRepository;
-import com.popytka.popytka.repos.OrderRepository;
-import com.popytka.popytka.repos.UserRepository;
+import com.popytka.popytka.repository.BookingRepository;
+import com.popytka.popytka.repository.CountryRepository;
+import com.popytka.popytka.repository.OrderRepository;
+import com.popytka.popytka.repository.UserRepository;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
@@ -65,7 +65,7 @@ public class MainController {
 //        } catch (IOException e) {
 //            e.printStackTrace();
 //        }
-        Iterable<Country> countries = countryRepository.getCountries();
+        List<Country> countries = countryRepository.findAll();
         if (UserID == null) {
             model.addAttribute("userId", 0);
         } else {
@@ -84,14 +84,30 @@ public class MainController {
 
     @Transactional
     @PostMapping("/registration")
-    public String addUser(@RequestParam String first_name, @RequestParam String last_name, @RequestParam String phone,
-                          @RequestParam String email, @RequestParam String password, Model model) {
+    public String addUser(
+            @RequestParam("firstName") String firstName,
+            @RequestParam("lastName") String lastName,
+            @RequestParam("phone") String phone,
+            @RequestParam("email") String email,
+            @RequestParam("password") String password,
+            Model model
+    ) {
         String hashedPassword = BCrypt.hashpw(password, BCrypt.gensalt());
-        if (userRepository.existsByEmail(email)) {
-            model.addAttribute("error_message", "Пользователь с данной почтой уже заргеистрирован");
+        if (userRepository.findByEmail(email).isPresent()) {
+            model.addAttribute(
+                    "error_message", "Пользователь с данной почтой уже заргеистрирован"
+            );
             return "registration";
         }
-        userRepository.addUser(first_name, last_name, phone, email, hashedPassword);
+
+        User createdUser = User.builder()
+                .firstName(firstName)
+                .lastName(lastName)
+                .phone(phone)
+                .email(email)
+                .password(hashedPassword)
+                .build();
+        userRepository.save(createdUser);
         return "redirect:/";
     }
 
@@ -115,12 +131,12 @@ public class MainController {
             model.addAttribute("userId", 1);
             model.addAttribute("isAdmin", isAdmin);
         }
-        if (userRepository.existsByEmail(email)) {
-            if (BCrypt.checkpw(password, userRepository.getPasswordUserByEmail(email))) {
-                String userId = String.valueOf(userRepository.getUsersIdByEmail(email));
+        if (userRepository.findByEmail(email).isPresent()) {
+            if (BCrypt.checkpw(password, userRepository.findByEmail(email).get().getPassword())) {
+                String userId = String.valueOf(userRepository.findByEmail(email));
                 HttpSession session = request.getSession();
                 session.setAttribute(SESSION_ID_KEY, userId);
-                isAdmin = userRepository.getRole(userRepository.getUsersIdByEmail(email));
+                isAdmin = userRepository.findByEmail(email).get().getIsAdmin();
                 MDC.put(SESSION_ID_KEY, userId);
                 UserID = Long.valueOf(userId);
                 log.info("Пользователь {} вошел в систему ", userId);
@@ -143,13 +159,14 @@ public class MainController {
         } else {
             model.addAttribute("userId", 1);
             model.addAttribute("isAdmin", isAdmin);
-            User user = userRepository.getById(UserID);
+            User user = userRepository.findById(UserID).get();
             model.addAttribute("user", user);
             return "account";
         }
     }
+
     @GetMapping("/logout")
-    public String logout(HttpServletRequest request, Model model){
+    public String logout(HttpServletRequest request, Model model) {
         if (UserID == null) {
             model.addAttribute("userId", 0);
         } else {
@@ -169,7 +186,7 @@ public class MainController {
 
     @GetMapping("/account/{idUser}/edit")
     public String userEdit(@PathVariable(value = "idUser") long id, Model model) {
-        User user = userRepository.getById(id);
+        User user = userRepository.findById(id).get();
         if (UserID == null) {
             model.addAttribute("userId", 0);
         } else {
@@ -183,25 +200,29 @@ public class MainController {
 
     @Transactional
     @PostMapping("/account/{idUser}/edit")
-    public String updateUser(@PathVariable(value = "idUser") long id, @RequestParam String first_name,
-                             @RequestParam String last_name, @RequestParam String phone, @RequestParam String email, Model model) {
+    public String updateUser(@PathVariable(value = "idUser") long id, @RequestParam String firstName,
+                             @RequestParam String lastName, @RequestParam String phone, @RequestParam String email, Model model) {
 
-        User user = userRepository.getById(id);
-        userRepository.updateUser(id, first_name, last_name, phone, email);
+        User user = userRepository.findById(id).get();
+        user.setFirstName(firstName);
+        user.setLastName(lastName);
+        user.setEmail(email);
+        user.setPhone(phone);
+        User updatedUser = userRepository.save(user);
         if (UserID == null) {
             model.addAttribute("userId", 0);
         } else {
             model.addAttribute("userId", 1);
             model.addAttribute("isAdmin", isAdmin);
         }
-        model.addAttribute("user", user);
+        model.addAttribute("user", updatedUser);
         return "redirect:/account";
     }
 
     @GetMapping("/account/bookings/{idUser}")
     public String bookingsUser(@PathVariable(value = "idUser") Long id, Model model) {
-        User user = userRepository.getById(id);
-        List<Booking> booking = bookingRepository.findByUser_UserId(id);
+        User user = userRepository.findById(id).get();
+        List<Booking> booking = bookingRepository.findByUser(user);
         if (UserID == null) {
             model.addAttribute("userId", 0);
         } else {
@@ -222,8 +243,8 @@ public class MainController {
     public String sendCode(@RequestParam("email") String email, Model model) {
         Random generateCode = new Random();
         CODE = generateCode.nextInt(1000, 9999);
-        UserID = userRepository.getUsersIdByEmail(email);
-        if(UserID == null){
+        UserID = userRepository.findByEmail(email).get().getId();
+        if (UserID == null) {
             model.addAttribute("error_message", "e-mail не существует");
             return "verification";
         }
@@ -243,8 +264,7 @@ public class MainController {
         int userCode = Integer.parseInt(code);
         if (userCode == CODE) {
             return "edit-password";
-        }
-        else
+        } else
             model.addAttribute("error_message", "Invalid code");
         return "redirect:/check-email";
     }
@@ -259,11 +279,12 @@ public class MainController {
 
         if (password.equals(password2)) {
             String hashPassword = BCrypt.hashpw(password, BCrypt.gensalt());
-            userRepository.setPasswordById(UserID, hashPassword);
+            User user = userRepository.findById(UserID).get();
+            user.setPassword(hashPassword);
+            userRepository.save(user);
             UserID = null;
             return "authorization";
-        }
-        else
+        } else
             model.addAttribute("error_message", "Passwords don't match");
         return "edit-password";
     }
@@ -288,7 +309,7 @@ public class MainController {
         }
         model.addAttribute("message_success", message_success);
         model.addAttribute("message_error", message_error);
-        Iterable<Country> countries = countryRepository.getCountries();
+        List<Country> countries = countryRepository.findAll();
         if (UserID == null) {
             model.addAttribute("userId", 0);
         } else {
@@ -303,7 +324,7 @@ public class MainController {
     @GetMapping("/export")
     public void exportData(HttpServletResponse response) {
         try {
-            List<User> users = userRepository.getAllUser();
+            List<User> users = userRepository.findAll();
 
             // Создаем ObjectMapper
             ObjectMapper objectMapper = new ObjectMapper();
