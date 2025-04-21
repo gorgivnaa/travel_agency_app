@@ -85,6 +85,7 @@ public class OrderController {
             @RequestParam("orderDate") LocalDateTime orderDate
     ) {
         Tour tour = tourRepository.findByTitle(tourTitle).orElse(null);
+        Hotel hotel = tour.getHotel();
         User user = userRepository.findByPhone(phone).get();
         AdditionalService additionalService = serviceRepository.findByName(serviceName).get();
         Order order = Order.builder()
@@ -101,6 +102,7 @@ public class OrderController {
             model.addAttribute("successMessage", "Ошибка при отправке заявки.");
         }
         model.addAttribute("tour", tour);
+        model.addAttribute("hotel", hotel);
         model.addAttribute("user", user);
         return "tour/tourinfo";
     }
@@ -243,11 +245,11 @@ public class OrderController {
         headerRow.createCell(6).setCellValue("Общая стоимость");
 
 
-        List<Booking> bookingList = (List<Booking>) bookingRepository.findAll(); // Replace with your actual code to fetch orders
+        List<Booking> bookingList = bookingRepository.findAll();
 
         int rowNum = 1;
         CellStyle dateCellStyle = workbook.createCellStyle();
-        short dateFormat = workbook.createDataFormat().getFormat("dd.MM.yyyy"); // Customize the date format as per your needs
+        short dateFormat = workbook.createDataFormat().getFormat("dd.MM.yyyy");
         dateCellStyle.setDataFormat(dateFormat);
         for (Booking booking : bookingList) {
             Row dataRow = sheet.createRow(rowNum++);
