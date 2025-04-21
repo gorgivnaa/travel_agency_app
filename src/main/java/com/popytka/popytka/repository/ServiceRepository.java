@@ -1,6 +1,6 @@
 package com.popytka.popytka.repository;
 
-import com.popytka.popytka.models.AdditionalService;
+import com.popytka.popytka.entity.AdditionalService;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;
@@ -10,5 +10,5 @@ public interface ServiceRepository extends JpaRepository<AdditionalService, Long
 
     Optional<AdditionalService> findByName(String serviceName);
 
-    List<AdditionalService> findByNameContaining(String serviceName);
+    List<AdditionalService> findByNameContainingOrDescriptionContaining(String name, String description);
 }

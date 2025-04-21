@@ -1,4 +1,4 @@
-package com.popytka.popytka.models;
+package com.popytka.popytka.entity;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -14,28 +14,44 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-@Setter
+import java.math.BigDecimal;
+import java.time.LocalDate;
+
 @Getter
+@Setter
 @Entity
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@Table(name = "hotels")
-public class Hotel {
+@Table(name = "tours")
+public class Tour {
 
     @Id
     @Column(name = "id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "name")
-    private String name;
-
-    @Column(name = "rating")
-    private double rating;
+    @Column(name = "title")
+    private String title;
 
     @Column(name = "description")
     private String description;
+
+    @Column(name = "price")
+    private BigDecimal price;
+
+    @Column(name = "place_quantity")
+    private int placeQuantity;
+
+    @Column(name = "check_in_date")
+    private LocalDate checkInDate;
+
+    @Column(name = "check_out_date")
+    private LocalDate checkOutDate;
+
+    @ManyToOne
+    @JoinColumn(name = "hotel_id")
+    private Hotel hotel;
 
     @ManyToOne
     @JoinColumn(name = "country_id")

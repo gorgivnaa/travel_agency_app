@@ -1,27 +1,26 @@
-package com.popytka.popytka.controllers;
+package com.popytka.popytka.controller;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
-import com.popytka.popytka.EmailService;
-import com.popytka.popytka.models.Booking;
-import com.popytka.popytka.models.Country;
-import com.popytka.popytka.models.User;
+import com.popytka.popytka.entity.Booking;
+import com.popytka.popytka.entity.Country;
+import com.popytka.popytka.entity.User;
 import com.popytka.popytka.repository.BookingRepository;
 import com.popytka.popytka.repository.CountryRepository;
-import com.popytka.popytka.repository.OrderRepository;
 import com.popytka.popytka.repository.UserRepository;
+import com.popytka.popytka.service.EmailService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import jakarta.transaction.Transactional;
+import lombok.RequiredArgsConstructor;
 import org.mindrot.jbcrypt.BCrypt;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.slf4j.MDC;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -32,46 +31,43 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Optional;
 import java.util.Random;
 
 @Controller
+@RequiredArgsConstructor
 public class MainController {
-    @Autowired
-    private CountryRepository countryRepository;
-    @Autowired
-    private UserRepository userRepository;
-    @Autowired
-    private EmailService emailService;
-    @Autowired
-    private OrderRepository orderRepository;
-    @Autowired
-    private BookingRepository bookingRepository;
+
+    private final EmailService emailService;
+    private final UserRepository userRepository;
+    private final CountryRepository countryRepository;
+    private final BookingRepository bookingRepository;
     private static final Logger log = LoggerFactory.getLogger(MainController.class);
     private static final String SESSION_ID_KEY = "sessionId";
-    public static Long UserID;
-    public static boolean isAdmin;
+    public static Long UserID = null;
+    public static boolean isAdmin = false;
 
     private static int CODE;
 
     @GetMapping("/")
     public String home(Model model) throws JsonProcessingException {
-//        ObjectMapper objectMapper = new ObjectMapper();
-//
-//        List<User> data = (List<User>) userRepository.getAllUser(); // Полученные данные из таблицы
-//        String json = objectMapper.writeValueAsString(data);
-//        String filePath = "src/main/resources/kurs.json";
-//        try (FileWriter fileWriter = new FileWriter(filePath)) {
-//            fileWriter.write(json);
-//        } catch (IOException e) {
-//            e.printStackTrace();
-//        }
+/*        ObjectMapper objectMapper = new ObjectMapper();
+
+        List<User> data = (List<User>) userRepository.getAllUser(); // Полученные данные из таблицы
+        String json = objectMapper.writeValueAsString(data);
+        String filePath = "src/main/resources/kurs.json";
+        try (FileWriter fileWriter = new FileWriter(filePath)) {
+            fileWriter.write(json);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }*/
         List<Country> countries = countryRepository.findAll();
         if (UserID == null) {
             model.addAttribute("userId", 0);
         } else {
             model.addAttribute("userId", 1);
-            model.addAttribute("isAdmin", isAdmin);
         }
+        model.addAttribute("isAdmin", isAdmin);
         model.addAttribute("country", countries);
         model.addAttribute("title", "Главная страница");
         return "home";
@@ -79,7 +75,7 @@ public class MainController {
 
     @GetMapping("/registration")
     public String registration(Model model) {
-        return "registration";
+        return "user/registration";
     }
 
     @Transactional
@@ -95,9 +91,9 @@ public class MainController {
         String hashedPassword = BCrypt.hashpw(password, BCrypt.gensalt());
         if (userRepository.findByEmail(email).isPresent()) {
             model.addAttribute(
-                    "error_message", "Пользователь с данной почтой уже заргеистрирован"
+                    "errorMessage", "Пользователь с данной почтой уже заргеистрирован"
             );
-            return "registration";
+            return "user/registration";
         }
 
         User createdUser = User.builder()
@@ -106,6 +102,7 @@ public class MainController {
                 .phone(phone)
                 .email(email)
                 .password(hashedPassword)
+                .isAdmin(false)
                 .build();
         userRepository.save(createdUser);
         return "redirect:/";
@@ -117,37 +114,44 @@ public class MainController {
             model.addAttribute("userId", 0);
         } else {
             model.addAttribute("userId", 1);
-            model.addAttribute("isAdmin", isAdmin);
         }
-        return "authorization";
+        model.addAttribute("isAdmin", isAdmin);
+        return "user/authorization";
     }
 
     @Transactional
     @PostMapping("/authorization")
-    public String login(@RequestParam String email, @RequestParam String password, HttpServletRequest request, Model model) {
+    public String login(
+            @RequestParam String email,
+            @RequestParam String password,
+            HttpServletRequest request,
+            Model model
+    ) {
         if (UserID == null) {
             model.addAttribute("userId", 0);
         } else {
             model.addAttribute("userId", 1);
             model.addAttribute("isAdmin", isAdmin);
         }
-        if (userRepository.findByEmail(email).isPresent()) {
-            if (BCrypt.checkpw(password, userRepository.findByEmail(email).get().getPassword())) {
-                String userId = String.valueOf(userRepository.findByEmail(email));
+        Optional<User> userOptional = userRepository.findByEmail(email);
+        if (userOptional.isPresent()) {
+            User loggedUser = userOptional.get();
+            if (BCrypt.checkpw(password, loggedUser.getPassword())) {
+                String userId = String.valueOf(loggedUser.getId());
                 HttpSession session = request.getSession();
                 session.setAttribute(SESSION_ID_KEY, userId);
-                isAdmin = userRepository.findByEmail(email).get().getIsAdmin();
+                isAdmin = loggedUser.getIsAdmin();
                 MDC.put(SESSION_ID_KEY, userId);
                 UserID = Long.valueOf(userId);
                 log.info("Пользователь {} вошел в систему ", userId);
                 return "redirect:/account";
             } else {
-                model.addAttribute("error_message", "Неверный пароль!");
-                return "authorization";
+                model.addAttribute("errorMessage", "Неверный пароль!");
+                return "user/authorization";
             }
         } else {
-            model.addAttribute("error_message", "Пользователя с данной почтой нет!");
-            return "authorization";
+            model.addAttribute("errorMessage", "Пользователя с данной почтой нет!");
+            return "user/authorization";
         }
     }
 
@@ -161,7 +165,7 @@ public class MainController {
             model.addAttribute("isAdmin", isAdmin);
             User user = userRepository.findById(UserID).get();
             model.addAttribute("user", user);
-            return "account";
+            return "user/account";
         }
     }
 
@@ -184,9 +188,9 @@ public class MainController {
         return "redirect:/authorization";
     }
 
-    @GetMapping("/account/{idUser}/edit")
-    public String userEdit(@PathVariable(value = "idUser") long id, Model model) {
-        User user = userRepository.findById(id).get();
+    @GetMapping("/account/{userId}/edit")
+    public String userEdit(@PathVariable(value = "userId") Long id, Model model) {
+        User user = userRepository.findById(id).orElse(null);
         if (UserID == null) {
             model.addAttribute("userId", 0);
         } else {
@@ -195,7 +199,7 @@ public class MainController {
         }
 
         model.addAttribute("user", user);
-        return "user-edit";
+        return "user/user-edit";
     }
 
     @Transactional
@@ -251,12 +255,12 @@ public class MainController {
         String subject = "Verification";
         String message = "Your verification code: " + CODE;
         emailService.sendEmail(email, subject, message);
-        return "check-email";
+        return "user/check-email";
     }
 
     @GetMapping("/check-email")
     public String checkEmail(Model model) {
-        return "check-email";
+        return "user/check-email";
     }
 
     @PostMapping("/check-email")
@@ -271,7 +275,7 @@ public class MainController {
 
     @GetMapping("/edit-password")
     public String editPassword(Model model) {
-        return "edit-password";
+        return "user/edit-password";
     }
 
     @PostMapping("/edit-password")
@@ -283,10 +287,11 @@ public class MainController {
             user.setPassword(hashPassword);
             userRepository.save(user);
             UserID = null;
-            return "authorization";
-        } else
+            return "user/authorization";
+        } else {
             model.addAttribute("error_message", "Passwords don't match");
-        return "edit-password";
+        }
+        return "user/edit-password";
     }
 
     @PostMapping("/import")
@@ -344,22 +349,4 @@ public class MainController {
             // Обработка ошибки
         }
     }
-
-//    @GetMapping("/tour")
-//    public String tourAdmin(HttpServletRequest request, Model model) {
-//        // Получаем идентификатор пользователя из сессии
-//        HttpSession session = request.getSession();
-//        String userIdString = (String) session.getAttribute(SESSION_ID_KEY);
-//
-//        // Преобразуем строку в тип Long
-//        Long userId = Long.valueOf(userIdString);
-//        // Загружаем данные пользователя
-//        boolean admin = userRepository.getRole(userId);
-//
-//        // Добавляем данные пользователя в модель
-//        model.addAttribute("isAdmin", admin);
-//
-//        return "tour";
-//    }
-
 }

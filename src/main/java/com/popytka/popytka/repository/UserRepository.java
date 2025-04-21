@@ -1,6 +1,6 @@
 package com.popytka.popytka.repository;
 
-import com.popytka.popytka.models.User;
+import com.popytka.popytka.entity.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.Optional;

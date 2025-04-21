@@ -1,4 +1,4 @@
-package com.popytka.popytka.controllers;
+package com.popytka.popytka.controller;
 
 
 import com.itextpdf.text.Document;
@@ -7,27 +7,26 @@ import com.itextpdf.text.Font;
 import com.itextpdf.text.Paragraph;
 import com.itextpdf.text.pdf.BaseFont;
 import com.itextpdf.text.pdf.PdfWriter;
-import com.popytka.popytka.models.AdditionalService;
-import com.popytka.popytka.models.Booking;
-import com.popytka.popytka.models.Hotel;
-import com.popytka.popytka.models.Order;
-import com.popytka.popytka.models.Tour;
-import com.popytka.popytka.models.User;
+import com.popytka.popytka.entity.AdditionalService;
+import com.popytka.popytka.entity.Booking;
+import com.popytka.popytka.entity.Hotel;
+import com.popytka.popytka.entity.Order;
+import com.popytka.popytka.entity.Tour;
+import com.popytka.popytka.entity.User;
 import com.popytka.popytka.repository.BookingRepository;
-import com.popytka.popytka.repository.HotelRepository;
 import com.popytka.popytka.repository.OrderRepository;
 import com.popytka.popytka.repository.ServiceRepository;
 import com.popytka.popytka.repository.TourRepository;
 import com.popytka.popytka.repository.UserRepository;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.transaction.Transactional;
+import lombok.RequiredArgsConstructor;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellStyle;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -47,23 +46,18 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 
-import static com.popytka.popytka.controllers.MainController.UserID;
-import static com.popytka.popytka.controllers.MainController.isAdmin;
+import static com.popytka.popytka.controller.MainController.UserID;
+import static com.popytka.popytka.controller.MainController.isAdmin;
 
 @Controller
+@RequiredArgsConstructor
 public class OrderController {
-    @Autowired
-    private OrderRepository orderRepository;
-    @Autowired
-    private HotelRepository hotelRepository;
-    @Autowired
-    private TourRepository tourRepository;
-    @Autowired
-    private ServiceRepository serviceRepository;
-    @Autowired
-    private UserRepository userRepository;
-    @Autowired
-    private BookingRepository bookingRepository;
+
+    private final UserRepository userRepository;
+    private final TourRepository tourRepository;
+    private final OrderRepository orderRepository;
+    private final ServiceRepository serviceRepository;
+    private final BookingRepository bookingRepository;
 
     @GetMapping("/orders")
     public String showOrders(Model model) {
@@ -72,8 +66,7 @@ public class OrderController {
         if (UserID == null) {
             model.addAttribute("userId", 0);
         } else {
-            model.addAttribute("iserId", 1);
-            model.addAttribute("isAdmin", isAdmin);
+            model.addAttribute("userId", 1);
         }
         model.addAttribute("order", order);
         model.addAttribute("tour", tours);
@@ -82,11 +75,18 @@ public class OrderController {
     }
 
     @Transactional
-    @PostMapping("/order/add")
-    public String addOrder(Model model, @RequestParam("tour_title") String tourTitle, @RequestParam("number_of_people") int numberOfPeople, @RequestParam("phone_number") String phone, @RequestParam("service_name") String servicename, @RequestParam("order_date") LocalDateTime orderDate) {
-        Tour tour = tourRepository.findByTitle(tourTitle).get();
+    @PostMapping("/orders/add")
+    public String addOrder(
+            Model model,
+            @RequestParam("tourTitle") String tourTitle,
+            @RequestParam("numberOfPeople") int numberOfPeople,
+            @RequestParam("phoneNumber") String phone,
+            @RequestParam("serviceName") String serviceName,
+            @RequestParam("orderDate") LocalDateTime orderDate
+    ) {
+        Tour tour = tourRepository.findByTitle(tourTitle).orElse(null);
         User user = userRepository.findByPhone(phone).get();
-        AdditionalService additionalService = serviceRepository.findByName(servicename).get();
+        AdditionalService additionalService = serviceRepository.findByName(serviceName).get();
         Order order = Order.builder()
                 .orderDateTime(orderDate)
                 .placeQuantity(numberOfPeople)
@@ -95,7 +95,6 @@ public class OrderController {
                 .tour(tour)
                 .build();
         orderRepository.save(order);
-        // Проверяем успешность добавления заявки
         if (tour != null) {
             model.addAttribute("successMessage", "Заявка успешно отправлена.");
         } else {
@@ -103,16 +102,8 @@ public class OrderController {
         }
         model.addAttribute("tour", tour);
         model.addAttribute("user", user);
-        return "tourinfo";
+        return "tour/tourinfo";
     }
-
-//    @GetMapping("/orders")
-//    public String showOrders(Model model) {
-//        List<Orders> order = orderRepository.getAllOrders();
-//        model.addAttribute("order", order);
-//        model.addAttribute("isAdmin", isAdmin);
-//        return "orders";
-//    }
 
     @Transactional
     @PostMapping("/orders/delete/{order_id}")
@@ -151,11 +142,6 @@ public class OrderController {
         tour.setPlaceQuantity(tour.getPlaceQuantity() - place_qua);
         tourRepository.save(tour);
         return "redirect:/orders";
-
-//        bookingRepository.acceptBooking(user_id, tour_id, service_id, hotel_id, place_qua, check_in_date, check_out_date);
-//        orderRepository.deleteOrder(id);
-//        return "redirect:/orders";
-//    }
     }
 
     @GetMapping("/orderinfo/{order_id}")
@@ -176,16 +162,6 @@ public class OrderController {
         model.addAttribute("user", user);
         return "orderinfo";
     }
-
-//    @Transactional
-//    @PostMapping("/orderinfo/{order_id}")
-//    public String orderUpdate(@PathVariable("order_id") Long id, @RequestParam("first_name") String firstName, @RequestParam("last_name") String lastname, @RequestParam("email") String email, @RequestParam("title") String title, @RequestParam("req_place_qua") int place_qua, Model model) {
-//        Long hotel_id = hotelRepository.getHotelsIdByName(hotelName);
-//        tourRepository.updateTour(id, hotel_id, title, description, countryName, price, place_quantity);
-//        List<Tour> tour = tourRepository.getTourById(id);
-//        model.addAttribute("tour", tour);
-//        return "redirect:/tour";
-//    }
 
     public byte[] generateBookingPdf(Booking booking) throws IOException, DocumentException {
         ByteArrayOutputStream baos = new ByteArrayOutputStream();

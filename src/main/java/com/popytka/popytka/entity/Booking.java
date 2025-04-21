@@ -1,4 +1,4 @@
-package com.popytka.popytka.models;
+package com.popytka.popytka.entity;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;

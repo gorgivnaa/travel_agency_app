@@ -3,34 +3,32 @@
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
     <title>Туры</title>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css">
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"
-            integrity="sha384-5aB0Mw5DvRhB7RZyP+V2M6zks2guhQJrG7+8c9hZudA+BohXyB2yj9w9aLz7u0Uo"
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.2.3/css/bootstrap.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.2.3/js/bootstrap.bundle.min.js"
             crossorigin="anonymous"></script>
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css">
     <style>
 .link-body-emphasis,
 .header-link {
-    color: #00abc2; /* Изменение цвета текста */
+    color: #00abc2;
 }
 
 .btn-outline-primary {
 color:#00abc2;
-    border-color: #00abc2; /* Изменение цвета рамок */
-    background-color: transparent; /* Установка прозрачного фона */
+    border-color: #00abc2;
+    background-color: transparent;
 }
 
 .btn-outline-primary:hover {
-    border-color: #007ba7; /* Установка цвета рамок при наведении */
-    background-color: #007ba7; /* Установка прозрачного фона при наведении */
+    border-color: #007ba7;
+    background-color: #007ba7;
     color: white;
 }
 
 .link-body-emphasis:hover,
 .header-link:hover {
-    color: #007ba7; /* Установка цвета текста при наведении */
-    background-color: transparent; /* Установка прозрачного фона при наведении */
+    color: #007ba7;
+    background-color: transparent;
 }
 
     .modal {
@@ -72,16 +70,16 @@ color:#00abc2;
 }
 
 .download-button:hover {
-  color: white; /* Цвет текста при наведении такой же, как и обычно */
+  color: white;
   background-color: #007ba7;
 }
 </style>
 </head>
 <body>
 <div class="container py-3">
-    <header th:insert="blocks/header :: header">
+    <header th:insert="~{blocks/header :: header}">
     </header>
-    <form action="/additionalService/add" method="post">
+    <form action="/tours/add" method="post">
         <div class="row g-3">
             <div class="col-md-6">
                 <label for="hotelName" class="form-label">Название отеля</label>
@@ -115,8 +113,8 @@ color:#00abc2;
 
             <div class="col-md-6">
                 <label for="countryName" class="form-label">Страна</label>
-                <select name="country_name" class="form-select" id="countryName" required>
-                    <option th:each="el : ${country}" th:value="${el.country_name}" th:text="${el.country_name}"></option>
+                <select id="countryName" name="countryName" class="form-select" required>
+                    <option th:each="el : ${country}" th:value="${el.name}" th:text="${el.name}"></option>
                 </select>
                 <div class="invalid-feedback">
                     Пожалуйста, выберите страну.
@@ -125,12 +123,30 @@ color:#00abc2;
 
             <div class="col-md-6">
                 <label for="price" class="form-label">Стоимость</label>
-                <input type="number" step="0.01" name="price"
-                       placeholder="Введите стоимость путёвки" class="form-control" id="price"
-                       required>
+                <input id="price" type="number" step="0.01" name="price"
+                       placeholder="Введите стоимость путёвки" class="form-control"
+                       required max="100000">
                 <div class="invalid-feedback">
                     Укажите стоимость.
                 </div>
+            </div>
+
+            <div class="col-md-6">
+                <label for="placeQuantity" class="form-label">Количество мест</label>
+                <input id="placeQuantity" type="number" name="placeQuantity" class="form-control" required min="1" max="15">
+                <div class="invalid-feedback">Пожалуйста, укажите количество мест.</div>
+            </div>
+
+            <div class="col-md-6">
+                <label for="startDate" class="form-label">Дата начала тура</label>
+                <input id="startDate" type="date" name="startDate" class="form-control" required>
+                <div class="invalid-feedback">Пожалуйста, выберите дату начала тура.</div>
+            </div>
+
+            <div class="col-md-6">
+                <label for="endDate" class="form-label">Дата окончания тура</label>
+                <input id="endDate" type="date" name="endDate" class="form-control" required>
+                <div class="invalid-feedback">Пожалуйста, выберите дату окончания тура.</div>
             </div>
         </div>
 
@@ -156,31 +172,31 @@ color:#00abc2;
                         Пожалуйста, выберите страну.
                     </div>
                 </div>
-                <div class="mb-3">
-                    <label for="newHotelName" class="form-label">Название отеля</label>
-                    <input type="text" name="new_hotel_name" class="form-control" id="newHotelName" placeholder="Введите название отеля" required>
-                </div>
-                <div class="mb-3">
-                    <label for="newHotelDescription" class="form-label">Описание отеля</label>
-                    <textarea name="new_hotel_description" class="form-control" id="newHotelDescription" rows="3" required></textarea>
-                </div>
+                    <div class="mb-3">
+                        <label for="newHotelName" class="form-label">Название отеля</label>
+                        <input type="text" name="new_hotel_name" class="form-control" id="newHotelName" placeholder="Введите название отеля" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="newHotelDescription" class="form-label">Описание отеля</label>
+                        <textarea name="new_hotel_description" class="form-control" id="newHotelDescription" rows="3" required></textarea>
+                    </div>
                 <div class="mb-3">
                     <label for="rate" class="form-label">Рейтинг</label>
                     <input type="number" step="0.1" name="rate"
                            placeholder="Введите рейтинг отеля" class="form-control" id="rate"
-                           required max="5">
+                           required min="1" max="5">
                     <div class="invalid-feedback">
                         Укажите рейтинг.
                     </div>
                 </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Отмена</button>
-                    <button type="submit" class="download-button">Добавить</button>
-                </div>
-            </form>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Отмена</button>
+                        <button type="submit" class="download-button">Добавить</button>
+                    </div>
+                </form>
+            </div>
         </div>
     </div>
-</div>
 </div>
 
 <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"></script>

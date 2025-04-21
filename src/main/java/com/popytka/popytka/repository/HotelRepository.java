@@ -1,7 +1,7 @@
 package com.popytka.popytka.repository;
 
-import com.popytka.popytka.models.Country;
-import com.popytka.popytka.models.Hotel;
+import com.popytka.popytka.entity.Country;
+import com.popytka.popytka.entity.Hotel;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;

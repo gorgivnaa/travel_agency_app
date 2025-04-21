@@ -1,22 +1,22 @@
-package com.popytka.popytka.controllers;
+package com.popytka.popytka.controller;
 
-import com.popytka.popytka.models.AdditionalService;
-import com.popytka.popytka.models.Country;
-import com.popytka.popytka.models.Hotel;
-import com.popytka.popytka.models.Tour;
-import com.popytka.popytka.models.User;
+import com.popytka.popytka.entity.AdditionalService;
+import com.popytka.popytka.entity.Country;
+import com.popytka.popytka.entity.Hotel;
+import com.popytka.popytka.entity.Tour;
+import com.popytka.popytka.entity.User;
 import com.popytka.popytka.repository.CountryRepository;
 import com.popytka.popytka.repository.HotelRepository;
 import com.popytka.popytka.repository.ServiceRepository;
 import com.popytka.popytka.repository.TourRepository;
 import com.popytka.popytka.repository.UserRepository;
 import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpSession;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -29,8 +29,8 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 
-import static com.popytka.popytka.controllers.MainController.UserID;
-import static com.popytka.popytka.controllers.MainController.isAdmin;
+import static com.popytka.popytka.controller.MainController.UserID;
+import static com.popytka.popytka.controller.MainController.isAdmin;
 
 @Controller
 @RequiredArgsConstructor
@@ -44,13 +44,12 @@ public class TourController {
     private final CountryRepository countryRepository;
     private final ServiceRepository serviceRepository;
 
-    @GetMapping("/tour")
-    public String tourMain(Model model, @RequestParam(required = false) String sort, HttpSession session) {
+    @GetMapping("/tours")
+    public String tourMain(Model model, @RequestParam(required = false) String sort) {
         if (UserID == null) {
             model.addAttribute("userId", 0);
         } else {
             model.addAttribute("userId", 1);
-            model.addAttribute("isAdmin", isAdmin);
         }
         List<Tour> tours = tourRepository.findAll();
 
@@ -65,14 +64,9 @@ public class TourController {
                 tours.sort(Comparator.comparing(Tour::getPrice));
             }
         }
-        if (UserID == null) {
-            model.addAttribute("userId", 0);
-        } else {
-            model.addAttribute("iserId", 1);
-        }
-        model.addAttribute("tour", tours);
+        model.addAttribute("tours", tours);
         model.addAttribute("isAdmin", isAdmin);
-        return "tour";
+        return "tour/tour";
     }
 
     @GetMapping("/tourfilters")
@@ -113,7 +107,7 @@ public class TourController {
         }
 
         model.addAttribute("tour", filteredTours);
-        return "tourfilters";
+        return "tour/tourfilters";
     }
 
     @GetMapping("/tourfilters/{sort}")
@@ -150,7 +144,7 @@ public class TourController {
             model.addAttribute("isAdmin", isAdmin);
         }
         model.addAttribute("tour", tours);
-        return "tourfilters";
+        return "tour/tourfilters";
     }
 
     @GetMapping("/tourinfo/{tourId}")
@@ -166,16 +160,16 @@ public class TourController {
 
         Tour tour = tourRepository.findById(tourId).get();
         Hotel hotel = tour.getHotel();
-        List<AdditionalService> additionalService = serviceRepository.findAll();
+        List<AdditionalService> additionalServices = serviceRepository.findAll();
 
-        model.addAttribute("service", additionalService);
+        model.addAttribute("additionalServices", additionalServices);
         model.addAttribute("tour", tour);
         model.addAttribute("hotel", hotel);
         model.addAttribute("user", user);
-        return "tourinfo";
+        return "tour/tourinfo";
     }
 
-    @GetMapping("/tour/add")
+    @GetMapping("/tours/add")
     public String tourAdd(Model model) {
         if (UserID == null) {
             model.addAttribute("userId", 0);
@@ -187,26 +181,20 @@ public class TourController {
         model.addAttribute("country", countries);
         List<Hotel> hotels = hotelRepository.findAll();
         model.addAttribute("hotel", hotels);
-        if (UserID == null) {
-            model.addAttribute("userId", 0);
-        } else {
-            model.addAttribute("userId", 1);
-            model.addAttribute("isAdmin", isAdmin);
-        }
-        return "tour-add";
+        return "tour/tour-add";
     }
 
     @Transactional
-    @PostMapping("/tour/add")
+    @PostMapping("/tours/add")
     public String tourAddInfo(
             @RequestParam("hotel_name") String hotelName,
             @RequestParam("title") String title,
             @RequestParam("description") String description,
-            @RequestParam("country_name") String countryName,
+            @RequestParam("countryName") String countryName,
             @RequestParam("price") double price,
-            @RequestParam("place_quantity") int placeQuantity,
-            @RequestParam("start_date") @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate startDate,
-            @RequestParam("end_date") @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate endDate,
+            @RequestParam("placeQuantity") int placeQuantity,
+            @RequestParam("startDate") @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate startDate,
+            @RequestParam("endDate") @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate endDate,
             Model model
     ) {
         Country country = countryRepository.findByName(countryName).get();
@@ -267,27 +255,28 @@ public class TourController {
         return "redirect:" + referer;
     }
 
-    @GetMapping("/tour/edit/{tour_id}")
-    public String tourEdit(@PathVariable("tour_id") Long tourId, Model model) {
-        Tour tour = tourRepository.findById(tourId).get();
+    @GetMapping("/tours/edit/{id}")
+    public String tourEdit(@PathVariable("id") Long id, Model model) {
+        if (UserID == null) {
+            model.addAttribute("userId", 0);
+        } else {
+            model.addAttribute("userId", 1);
+            model.addAttribute("isAdmin", isAdmin);
+        }
+
+        Tour tour = tourRepository.findById(id).get();
         List<Country> country = countryRepository.findAll();
         List<Hotel> hotel = hotelRepository.findAll();
         model.addAttribute("tour", tour);
         model.addAttribute("country", country);
         model.addAttribute("hotel", hotel);
-        if (UserID == null) {
-            model.addAttribute("userId", 0);
-        } else {
-            model.addAttribute("iserId", 1);
-            model.addAttribute("isAdmin", isAdmin);
-        }
-        return "tour-edit";
+        return "tour/tour-edit";
     }
 
     @Transactional
-    @PostMapping("/tour/edit/{tour_id}")
+    @PostMapping("/tours/edit/{id}")
     public String tourUpdate(
-            @PathVariable("tour_id") Long id,
+            @PathVariable("id") Long id,
             @RequestParam("hotel_name") String hotelName,
             @RequestParam("title") String title,
             @RequestParam("description") String description,
@@ -315,8 +304,8 @@ public class TourController {
     }
 
     @Transactional
-    @PostMapping("/tour/delete/{tour_id}")
-    public String tourDelete(@PathVariable("tour_id") Long id) {
+    @DeleteMapping("/tours/{id}")
+    public String deleteTour(@PathVariable("id") Long id) {
         tourRepository.deleteById(id);
         return "redirect:/tour";
     }
@@ -327,22 +316,14 @@ public class TourController {
             model.addAttribute("userId", 0);
         } else {
             model.addAttribute("userId", 1);
-            model.addAttribute("isAdmin", isAdmin);
         }
+        model.addAttribute("isAdmin", isAdmin);
         filteredTours = tourRepository.findByTitleContainingOrDescriptionContaining(query, query);
         if (filteredTours.isEmpty()) {
             model.addAttribute("message", "Результатов по данному запросу не найдено.");
         } else {
             model.addAttribute("tour", filteredTours);
         }
-        model.addAttribute("isAdmin", isAdmin);
-        if (UserID == null) {
-            model.addAttribute("userId", 0);
-        } else {
-            model.addAttribute("userId", 1);
-            model.addAttribute("isAdmin", isAdmin);
-        }
-        return "tourfilters";
+        return "tour/tourfilters";
     }
-
 }

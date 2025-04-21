@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <title>Вход</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.2.3/css/bootstrap.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.2.3/js/bootstrap.bundle.min.js"
+            crossorigin="anonymous"></script>
+    <style>
+        .link-body-emphasis,
+        .header-link {
+            color: #00abc2; /* Изменение цвета текста */
+        }
+
+        .btn-outline-primary {
+        color:#00abc2;
+            border-color: #00abc2; /* Изменение цвета рамок */
+            background-color: transparent; /* Установка прозрачного фона */
+        }
+
+        .btn-outline-primary:hover {
+            border-color: #007ba7; /* Установка цвета рамок при наведении */
+            background-color: #007ba7; /* Установка прозрачного фона при наведении */
+            color: white;
+        }
+
+        .link-body-emphasis:hover,
+        .header-link:hover {
+            color: #007ba7; /* Установка цвета текста при наведении */
+            background-color: transparent; /* Установка прозрачного фона при наведении */
+        }
+
+    </style>
+</head>
+
+<body class="d-flex align-items-center py-4 bg-body-tertiary">
+
+<div class="container" th:each="el : ${user}">
+    <header th:insert="~{blocks/header :: header}"></header>
+    <main class="form-signin w-50 m-auto">
+        <form method="post">
+            <h1 class="h3 mb-3 fw-normal">Введите данные пользователя</h1>
+            <div class="form-floating mb-2">
+                <input type="text" class="form-control" name="firstName" id="firstName" th:value="${el.firstName}"
+                       placeholder="">
+                <label for="firstName">Имя</label>
+            </div>
+            <div class="form-floating mb-2">
+                <input type="text" class="form-control" name="lastName" id="lastName" th:value="${el.lastName}"
+                       placeholder="">
+                <label for="lastName">Фамилия</label>
+            </div>
+            <div class="form-floating mb-2">
+                <input type="text" class="form-control" name="phone" id="phone" th:value="${el.phone}"
+                       placeholder="+XXXXXXXXXXXX">
+                <label for="phone">Номер телефона</label>
+            </div>
+            <div class="form-floating mb-2">
+                <input type="email" class="form-control" name="email" id="email" th:value="${el.email}"
+                       placeholder="name@example.com">
+                <label for="email">Адрес электронной почты</label>
+            </div>
+
+
+            <button class="btn btn-primary w-100 py-2" type="submit">Сохранить изменения</button>
+            <p class="mt-5 mb-3 text-body-secondary">© 2017–2023</p>
+        </form>
+    </main>
+    <script src="/docs/5.3/dist/js/bootstrap.bundle.min.js"
+            integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL"
+            crossorigin="anonymous"></script>
+</div>
+</body>
+</html>

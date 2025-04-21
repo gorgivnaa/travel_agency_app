@@ -1,6 +1,6 @@
 package com.popytka.popytka.repository;
 
-import com.popytka.popytka.models.Tour;
+import com.popytka.popytka.entity.Tour;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.math.BigDecimal;

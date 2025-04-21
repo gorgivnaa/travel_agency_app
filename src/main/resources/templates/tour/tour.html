@@ -192,7 +192,7 @@ color:#00abc2;
 </svg>
 
 <div class="container py-3">
-  <header th:insert="blocks/header :: header">
+  <header th:insert="~{blocks/header :: header}">
   </header>
 
   <div class="container mt-5">
@@ -248,21 +248,12 @@ color:#00abc2;
                     <option value="Испания">Испания</option>
                     <option value="Франция">Франция</option>
                     <option value="Греция">Греция</option>
-                    <!-- Добавьте другие варианты стран из вашей базы данных -->
                   </select>
                 </div>
                 <div>
                   <label for="maxPrice">Максимальная стоимость:</label>
                   <input type="number" id="maxPrice" class="form-control" min="0" name="maxPrice">
                 </div>
-<!--                <div>-->
-<!--                  <label for="startDate">Дата начала тура:</label>-->
-<!--                  <input type="date" id="startDate" class="form-control" name="startDate">-->
-<!--                </div>-->
-<!--                <div>-->
-<!--                  <label for="endDate">Дата окончания тура:</label>-->
-<!--                  <input type="date" id="endDate" class="form-control" name="endDate">-->
-<!--                </div>-->
                 <div>
                 <div>
                   <button type="submit" class="btn mt-2 opaque-button">Применить</button>
@@ -278,17 +269,17 @@ color:#00abc2;
     </div>
   </div>
 
-  <a th:if="${isAdmin}" href="/tour/add" class="download-button">Добавить новый тур</a>
+  <a th:if="${isAdmin}" href="/tours/add" class="download-button">Добавить новый тур</a>
 
-  <div th:each="el : ${tour}" class="alert alert-info mt-2">
+  <div th:each="el : ${tours}" class="alert alert-info mt-2">
     <div class="tour-card">
       <div class="tour-title">
         <h3 th:text="${el.title}"></h3>
         <div th:if="${isAdmin}" class="options-dropdown">
           <button class="options-button">&#8942;</button>
           <div class="dropdown-content">
-            <a th:href="@{/tour/edit/{tour_id}(tour_id=${el.tour_id})}" class="btn-small" style="color: black;">Редактировать</a>
-            <form th:action="@{/tour/delete/{tour_id}(tour_id=${el.tour_id})}" method="post">
+            <a th:href="@{/tours/edit/{tourId}(tourId=${el.id})}" class="btn-small" style="color: black;">Редактировать</a>
+            <form th:action="@{/tours/{tourId}(tourId=${el.id})}" method="DELETE">
               <button type="submit" class="btn-small delete-button">Удалить</button>
             </form>
           </div>
@@ -296,12 +287,12 @@ color:#00abc2;
       </div>
       <p th:text="${el.description}"></p>
       <h5><span th:text="${el.price} + ' руб'"></span></h5>
-      <a th:href="@{/tourinfo/{tour_id}(tour_id=${el.tour_id})}" class="download-button">Подробнее</a>
+      <a th:href="@{/tourinfo/{tourId}(tourId=${el.id})}" class="download-button">Подробнее</a>
     </div>
   </div>
 
 </div>
-  <footer th:insert="blocks/footer :: footer"> </footer>
+  <footer th:insert="~{blocks/footer :: footer}"> </footer>
 </div>
 </body>
 </html>

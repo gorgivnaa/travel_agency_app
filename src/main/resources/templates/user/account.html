@@ -85,7 +85,7 @@
 </head>
 <body>
 <div class="container py-3">
-    <header th:insert="blocks/header :: header"></header>
+    <header th:insert="~{blocks/header :: header}"></header>
 
     <div class="row justify-content-center">
         <div th:each="el : ${user}" class="col-md-6">
@@ -114,9 +114,9 @@
 
             <div class="row mt-3">
                 <div class="col">
-                    <a th:href="@{/account/{idUser}/edit(idUser=${el.id})}" class="download-button">Редактировать
+                    <a th:href="@{/account/{userId}/edit(userId=${el.id})}" class="download-button">Редактировать
                         информацию</a>
-                    <a th:unless="${isAdmin}" th:href="@{/account/bookings/{idUser}(idUser=${el.id})}"
+                    <a th:unless="${isAdmin}" th:href="@{/account/bookings/{userId}(userId=${el.id})}"
                        class="download-button">История путешествий</a>
                     <a th:if="${isAdmin}" href="/order" class="download-button mt-2">Просмотр заявок</a>
                     <a href="/logout" class="download-button mt-2">Выход</a>

@@ -1,15 +1,15 @@
-package com.popytka.popytka.controllers;
+package com.popytka.popytka.controller;
 
-import com.popytka.popytka.models.AdditionalService;
+import com.popytka.popytka.entity.AdditionalService;
 import com.popytka.popytka.repository.ServiceRepository;
 import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpSession;
 import jakarta.transaction.Transactional;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import java.math.BigDecimal;
@@ -17,17 +17,25 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 
-import static com.popytka.popytka.controllers.MainController.UserID;
-import static com.popytka.popytka.controllers.MainController.isAdmin;
+import static com.popytka.popytka.controller.MainController.UserID;
+import static com.popytka.popytka.controller.MainController.isAdmin;
 
 @Controller
-public class ServiceController {
-    List<AdditionalService> filteredAdditionalServices = new ArrayList<>();
-    @Autowired
-    private ServiceRepository serviceRepository;
+@RequiredArgsConstructor
+@RequestMapping("/additionalServices")
+public class AdditionalServiceController {
 
-    @GetMapping("/services")
-    public String servicesMain(Model model, @RequestParam(required = false) String sort, HttpSession session) {
+    private final ServiceRepository serviceRepository;
+    private List<AdditionalService> filteredAdditionalServices = new ArrayList<>();
+
+    @GetMapping
+    public String getServices(Model model, @RequestParam(required = false) String sort) {
+        if (UserID == null) {
+            model.addAttribute("userId", 0);
+        } else {
+            model.addAttribute("userId", 1);
+        }
+        model.addAttribute("isAdmin", isAdmin);
         List<AdditionalService> additionalServices = serviceRepository.findAll();
         if (sort != null) {
             switch (sort) {
@@ -45,58 +53,42 @@ public class ServiceController {
                     break;
             }
         }
-        if (UserID == null) {
-            model.addAttribute("userId", 0);
-        } else {
-            model.addAttribute("userId", 1);
-            model.addAttribute("isAdmin", isAdmin);
-        }
-        model.addAttribute("service", additionalServices);
-        model.addAttribute("isAdmin", isAdmin);
-        return "services";
+        model.addAttribute("additionalServices", additionalServices);
+        return "additional-service/services";
     }
 
-
-    @GetMapping("/services/search")
+    @GetMapping("/search")
     public String searchTour(@RequestParam("query") String query, Model model) {
         if (UserID == null) {
             model.addAttribute("userId", 0);
         } else {
             model.addAttribute("userId", 1);
-            model.addAttribute("isAdmin", isAdmin);
         }
-        filteredAdditionalServices = serviceRepository.findByNameContaining(query);
+        model.addAttribute("isAdmin", isAdmin);
+        filteredAdditionalServices = serviceRepository.findByNameContainingOrDescriptionContaining(query, query);
         if (filteredAdditionalServices.isEmpty()) {
             model.addAttribute("message", "Результатов по данному запросу не найдено.");
         } else {
-            model.addAttribute("service", filteredAdditionalServices);
+            model.addAttribute("additionalServices", filteredAdditionalServices);
         }
-        model.addAttribute("isAdmin", isAdmin);
-        if (UserID == null) {
-            model.addAttribute("userId", 0);
-        } else {
-            model.addAttribute("iserId", 1);
-            model.addAttribute("isAdmin", isAdmin);
-        }
-        return "services";
+        return "additional-service/services";
     }
 
+    @PostMapping
     @Transactional
-    @PostMapping("/services/add")
     public String addNewService(
             HttpServletRequest request,
-            @RequestParam("service_name") String serviceName,
-            @RequestParam("service_description") String serviceDescription,
-            @RequestParam("servicePrice") double price
+            @RequestParam("name") String name,
+            @RequestParam("description") String description,
+            @RequestParam("price") double price
     ) {
         AdditionalService createdAdditionalService = AdditionalService.builder()
-                .name(serviceName)
-                .description(serviceDescription)
+                .name(name)
+                .description(description)
                 .price(new BigDecimal(price))
                 .build();
         serviceRepository.save(createdAdditionalService);
         String referer = request.getHeader("Referer");
         return "redirect:" + referer;
     }
-
 }
