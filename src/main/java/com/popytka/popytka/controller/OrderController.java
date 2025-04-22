@@ -1,6 +1,5 @@
 package com.popytka.popytka.controller;
 
-
 import com.itextpdf.text.Document;
 import com.itextpdf.text.DocumentException;
 import com.itextpdf.text.Font;
@@ -33,6 +32,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -61,17 +61,17 @@ public class OrderController {
 
     @GetMapping("/orders")
     public String showOrders(Model model) {
-        List<Order> order = orderRepository.findAll();
+        List<Order> orders = orderRepository.findAll();
         List<Tour> tours = tourRepository.findAll();
         if (UserID == null) {
             model.addAttribute("userId", 0);
         } else {
             model.addAttribute("userId", 1);
         }
-        model.addAttribute("order", order);
-        model.addAttribute("tour", tours);
+        model.addAttribute("orders", orders);
+        model.addAttribute("tours", tours);
         model.addAttribute("isAdmin", isAdmin);
-        return "orders-new";
+        return "order/orders-new";
     }
 
     @Transactional
@@ -104,65 +104,67 @@ public class OrderController {
         model.addAttribute("tour", tour);
         model.addAttribute("hotel", hotel);
         model.addAttribute("user", user);
-        return "tour/tourinfo";
+        return "tour/tour-info";
     }
 
     @Transactional
-    @PostMapping("/orders/delete/{order_id}")
-    public String orderDelete(@PathVariable("order_id") Long id) {
+    @DeleteMapping("/orders/{id}")
+    public String orderDelete(@PathVariable("id") Long id) {
         orderRepository.deleteById(id);
         return "redirect:/orders";
     }
 
     @Transactional
-    @PostMapping("/orders/accept/{order_id}")
-    public String orderAccept(@PathVariable("order_id") Long id) {
+    @PostMapping("/orders/accept/{id}")
+    public String orderAccept(@PathVariable("id") Long id) {
         BigDecimal totalPrice;
-        User user = orderRepository.findById(id).get().getUser();
-        Tour tour = orderRepository.findById(id).get().getTour();
-        AdditionalService additionalService = orderRepository.findById(id).get().getAdditionalService();
+        Order order = orderRepository.findById(id).get();
+        User user = order.getUser();
+        Tour tour = order.getTour();
+        AdditionalService additionalService = order.getAdditionalService();
         Hotel hotel = tour.getHotel();
-        int place_qua = orderRepository.findById(id).get().getPlaceQuantity();
-        LocalDate check_in_date = tourRepository.findById(tour.getId()).get().getCheckInDate();
-        LocalDate check_out_date = tourRepository.findById(tour.getId()).get().getCheckOutDate();
-        if (additionalService == null)
+        int placeQuantity = order.getPlaceQuantity();
+        LocalDate checkInDate = tour.getCheckInDate();
+        LocalDate checkOutDate = tour.getCheckOutDate();
+        if (additionalService == null) {
             totalPrice = tour.getPrice();
-        else
+        } else {
             totalPrice = tour.getPrice().add(additionalService.getPrice());
+        }
         Booking booking = Booking.builder()
                 .tour(tour)
                 .user(user)
                 .hotel(hotel)
                 .additionalService(additionalService)
-                .placeQuantity(place_qua)
+                .placeQuantity(placeQuantity)
                 .price(totalPrice)
-                .checkInDate(check_in_date)
-                .checkOutDate(check_out_date)
+                .checkInDate(checkInDate)
+                .checkOutDate(checkOutDate)
                 .build();
         bookingRepository.save(booking);
         orderRepository.deleteById(id);
-        tour.setPlaceQuantity(tour.getPlaceQuantity() - place_qua);
+        tour.setPlaceQuantity(tour.getPlaceQuantity() - placeQuantity);
         tourRepository.save(tour);
         return "redirect:/orders";
     }
 
-    @GetMapping("/orderinfo/{order_id}")
-    public String showOrderInfo(@PathVariable("order_id") Long order_id, Model model) {
+    @GetMapping("/orderinfo/{id}")
+    public String showOrderInfo(@PathVariable("id") Long id, Model model) {
         if (UserID == null) {
             model.addAttribute("userId", 0);
         } else {
             model.addAttribute("userId", 1);
-            model.addAttribute("isAdmin", isAdmin);
         }
-        Order order = orderRepository.findById(order_id).get();
-        Tour tour = orderRepository.findById(order_id).get().getTour();
-        User user = orderRepository.findById(order_id).get().getUser();
-        List<AdditionalService> additionalService = serviceRepository.findAll();
+        model.addAttribute("isAdmin", isAdmin);
+        Order order = orderRepository.findById(id).get();
+        Tour tour = order.getTour();
+        User user = order.getUser();
+        List<AdditionalService> additionalServices = serviceRepository.findAll();
         model.addAttribute("order", order);
-        model.addAttribute("service", additionalService);
+        model.addAttribute("additionalServices", additionalServices);
         model.addAttribute("tour", tour);
         model.addAttribute("user", user);
-        return "orderinfo";
+        return "order/order-info";
     }
 
     public byte[] generateBookingPdf(Booking booking) throws IOException, DocumentException {
@@ -209,11 +211,10 @@ public class OrderController {
         return baos.toByteArray();
     }
 
-    @GetMapping("/bookings/download/{bookingId}")
-    public ResponseEntity<byte[]> downloadBookingPdf(@PathVariable("bookingId") Long bookingId) throws IOException, DocumentException {
-        Booking booking = bookingRepository.findById(bookingId).orElse(null);
+    @GetMapping("/bookings/download/{id}")
+    public ResponseEntity<byte[]> downloadBookingPdf(@PathVariable("id") Long id) throws IOException, DocumentException {
+        Booking booking = bookingRepository.findById(id).orElse(null);
         if (booking == null) {
-
             return ResponseEntity.notFound().build();
         }
 

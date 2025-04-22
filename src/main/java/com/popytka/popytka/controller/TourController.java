@@ -107,7 +107,7 @@ public class TourController {
         }
 
         model.addAttribute("tour", filteredTours);
-        return "tour/tourfilters";
+        return "tour/tour-filters";
     }
 
     @GetMapping("/tourfilters/{sort}")
@@ -144,7 +144,7 @@ public class TourController {
             model.addAttribute("isAdmin", isAdmin);
         }
         model.addAttribute("tour", tours);
-        return "tour/tourfilters";
+        return "tour/tour-filters";
     }
 
     @GetMapping("/tourinfo/{tourId}")
@@ -166,7 +166,7 @@ public class TourController {
         model.addAttribute("tour", tour);
         model.addAttribute("hotel", hotel);
         model.addAttribute("user", user);
-        return "tour/tourinfo";
+        return "tour/tour-info";
     }
 
     @GetMapping("/tours/add")
@@ -178,9 +178,9 @@ public class TourController {
             model.addAttribute("isAdmin", isAdmin);
         }
         List<Country> countries = countryRepository.findAll();
-        model.addAttribute("country", countries);
+        model.addAttribute("countries", countries);
         List<Hotel> hotels = hotelRepository.findAll();
-        model.addAttribute("hotel", hotels);
+        model.addAttribute("hotels", hotels);
         return "tour/tour-add";
     }
 
@@ -324,6 +324,6 @@ public class TourController {
         } else {
             model.addAttribute("tour", filteredTours);
         }
-        return "tour/tourfilters";
+        return "tour/tour-filters";
     }
 }

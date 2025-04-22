@@ -279,7 +279,7 @@ color:#00abc2;
           <button class="options-button">&#8942;</button>
           <div class="dropdown-content">
             <a th:href="@{/tours/edit/{tourId}(tourId=${el.id})}" class="btn-small" style="color: black;">Редактировать</a>
-            <form th:action="@{/tours/{tourId}(tourId=${el.id})}" method="DELETE">
+            <form th:action="@{/tours/{tourId}(tourId=${el.id})}" th:method="DELETE">
               <button type="submit" class="btn-small delete-button">Удалить</button>
             </form>
           </div>

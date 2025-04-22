@@ -38,7 +38,7 @@
 <div class="container" th:each="el : ${user}">
     <header th:insert="~{blocks/header :: header}"></header>
     <main class="form-signin w-50 m-auto">
-        <form method="post">
+        <form th:method="POST">
             <h1 class="h3 mb-3 fw-normal">Введите данные пользователя</h1>
             <div class="form-floating mb-2">
                 <input type="text" class="form-control" name="firstName" id="firstName" th:value="${el.firstName}"

@@ -223,10 +223,10 @@ public class MainController {
         return "redirect:/account";
     }
 
-    @GetMapping("/account/bookings/{idUser}")
-    public String bookingsUser(@PathVariable(value = "idUser") Long id, Model model) {
+    @GetMapping("/account/bookings/{userId}")
+    public String bookingsUser(@PathVariable(value = "userId") Long id, Model model) {
         User user = userRepository.findById(id).get();
-        List<Booking> booking = bookingRepository.findByUser(user);
+        List<Booking> bookings = bookingRepository.findByUser(user);
         if (UserID == null) {
             model.addAttribute("userId", 0);
         } else {
@@ -234,7 +234,7 @@ public class MainController {
             model.addAttribute("isAdmin", isAdmin);
         }
         model.addAttribute("user", user);
-        model.addAttribute("booking", booking);
+        model.addAttribute("bookings", bookings);
         return "bookings";
     }
 

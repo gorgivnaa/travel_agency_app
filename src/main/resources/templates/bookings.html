@@ -215,8 +215,6 @@
        color: white;
        background-color: #007ba7;
      }
-
-
     </style>
 </head>
 <body>
@@ -232,7 +230,7 @@
     <header th:insert="~{blocks/header :: header}">
     </header>
 
-    <div th:each="el : ${booking}" class="alert alert-info mt-2 booking-card">
+    <div th:each="el : ${bookings}" class="alert alert-info mt-2 booking-card">
         <div class="booking-title">
             <h3>Билет №<span th:text="${el.id}"></span></h3>
         </div>
@@ -241,7 +239,7 @@
             <p>Дата отъезда: <span th:text="${el.checkInDate}"></span></p>
             <p>Дата возвращения: <span th:text="${el.checkOutDate}"></span></p>
         </div>
-        <a th:href="@{/bookings/download/{bookingId}(bookingId=${el.id})}" class="download-button">Скачать
+        <a th:href="@{/bookings/download/{id}(id=${el.id})}" class="download-button">Скачать
             электронные билеты</a>
     </div>
 </div>
