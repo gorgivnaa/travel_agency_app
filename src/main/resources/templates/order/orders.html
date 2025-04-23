@@ -153,8 +153,8 @@
             </div>
             <div>
                 <p>Необходимое количество мест: <span th:text="${el.placeQuantity}"></span></p>
-                <p>Время поступления заявки: <span
-                        th:text="${#temporals.format(el.orderDateTime, 'dd-MM-yyyy HH:mm')}"></span></p>
+                <p>Дата поступления заявки: <span
+                        th:text="${#temporals.format(el.orderDateTime, 'dd-MM-yyyy')}"></span></p>
             </div>
         </div>
     </div>

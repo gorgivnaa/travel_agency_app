@@ -20,6 +20,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import java.math.BigDecimal;
@@ -32,6 +33,7 @@ import static com.popytka.popytka.controller.MainController.UserID;
 import static com.popytka.popytka.controller.MainController.isAdmin;
 
 @Controller
+@RequestMapping("/tours")
 @RequiredArgsConstructor
 public class TourController {
 
@@ -43,7 +45,7 @@ public class TourController {
     private final CountryRepository countryRepository;
     private final ServiceRepository serviceRepository;
 
-    @GetMapping("/tours")
+    @GetMapping
     public String getAllTours(Model model, @RequestParam(required = false) String sort) {
         if (UserID == null) {
             model.addAttribute("userId", 0);
@@ -68,7 +70,7 @@ public class TourController {
         return "tour/tour";
     }
 
-    @GetMapping("/tourfilters")
+    @GetMapping("/filters")
     public String getFilteredTours(
             Model model,
             @RequestParam(required = false) String countryName,
@@ -102,18 +104,11 @@ public class TourController {
         if (filteredTours.isEmpty()) {
             model.addAttribute("noResults", true);
         }
-        if (UserID == null) {
-            model.addAttribute("userId", 0);
-        } else {
-            model.addAttribute("iserId", 1);
-            model.addAttribute("isAdmin", isAdmin);
-        }
-
         model.addAttribute("tour", filteredTours);
         return "tour/tour-filters";
     }
 
-    @GetMapping("/tourfilters/{sort}")
+    @GetMapping("/filters/{sort}")
     public String getFilteredAndSortedTours(@PathVariable(value = "sort") String sort, Model model) {
         if (UserID == null) {
             model.addAttribute("userId", 0);
@@ -140,17 +135,11 @@ public class TourController {
                 break;
             }
         }
-        if (UserID == null) {
-            model.addAttribute("userId", 0);
-        } else {
-            model.addAttribute("iserId", 1);
-            model.addAttribute("isAdmin", isAdmin);
-        }
         model.addAttribute("tour", tours);
         return "tour/tour-filters";
     }
 
-    @GetMapping("/tours/{id}")
+    @GetMapping("/{id}")
     public String getById(@PathVariable("id") Long tourId, Model model) {
         User user = null;
         if (UserID == null) {
@@ -172,8 +161,8 @@ public class TourController {
         return "tour/tour-info";
     }
 
-    @GetMapping("/tours/edit/{id}")
-    public String tourEdit(@PathVariable("id") Long id, Model model) {
+    @GetMapping("edit/{id}")
+    public String getTourForEdit(@PathVariable("id") Long id, Model model) {
         if (UserID == null) {
             model.addAttribute("userId", 0);
         } else {
@@ -190,8 +179,8 @@ public class TourController {
         return "tour/tour-edit";
     }
 
-    @GetMapping("/tours/add")
-    public String tourAdd(Model model) {
+    @GetMapping("/add")
+    public String getTourForCreate(Model model) {
         if (UserID == null) {
             model.addAttribute("userId", 0);
         } else {
@@ -206,8 +195,8 @@ public class TourController {
     }
 
     @Transactional
-    @PostMapping("/tours/add")
-    public String tourAddInfo(
+    @PostMapping("/add")
+    public String createTour(
             @RequestParam("hotelName") String hotelName,
             @RequestParam("title") String title,
             @RequestParam("description") String description,
@@ -241,7 +230,7 @@ public class TourController {
     }
 
     @Transactional
-    @PutMapping("/tours/{id}")
+    @PutMapping("/{id}")
     public String tourUpdate(
             @PathVariable("id") Long id,
             @RequestParam("hotelName") String hotelName,
@@ -271,7 +260,7 @@ public class TourController {
     }
 
     @Transactional
-    @DeleteMapping("/tours/{id}")
+    @DeleteMapping("/{id}")
     public String deleteTour(@PathVariable("id") Long id) {
         tourRepository.deleteById(id);
         return "redirect:/tours";

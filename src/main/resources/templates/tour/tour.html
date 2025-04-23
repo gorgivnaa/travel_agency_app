@@ -177,7 +177,7 @@
             <div class="row">
                 <div class="col-8 d-flex align-items-center">
                     <h1>Наши туры</h1>
-                    <form action="/tour" method="GET">
+                    <form action="/tours" method="GET">
                         <button type="submit" name="sort" value="asc" class="icon-button" style="padding-left: 10px;">
                             <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" fill="currentColor"
                                  class="bi bi-sort-alpha-down" viewBox="0 0 16 16">
@@ -226,7 +226,7 @@
                         </label>
                         <input type="checkbox" id="filterToggle" class="filter-toggle">
                         <div class="filter-dropdown">
-                            <form id="filterForm" action="/tourfilters" method="get" class="filter-form">
+                            <form id="filterForm" action="/tours/filters" th:method="GET" class="filter-form">
                                 <div>
                                     <label for="countryName">Выберите страну:</label>
                                     <select id="countryName" name="countryName">
@@ -249,7 +249,7 @@
                             </form>
                         </div>
                     </div>
-                    <form action="/search" role="search">
+                    <form action="/tours/search" role="search">
                         <input class="form-control" type="search" name="query" pattern="^[\p{L}\d\s.,]+$"
                                placeholder="Поиск" aria-label="Search">
                     </form>
@@ -276,7 +276,7 @@
             </div>
             <p th:text="${el.description}"></p>
             <h5><span th:text="${el.price} + ' руб'"></span></h5>
-            <a th:href="@{/tours/{id}(id=${el.id})}" th:method="GET"class="download-button">Подробнее</a>
+            <a th:href="@{/tours/{id}(id=${el.id})}" th:formmethod="GET" class="download-button">Подробнее</a>
         </div>
     </div>
 
