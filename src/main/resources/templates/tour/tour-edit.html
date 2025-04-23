@@ -54,79 +54,83 @@
 <body>
 <div class="container py-3">
     <header th:insert="~{blocks/header :: header}"></header>
-    <form th:method="PUT">
-        <div th:each="tour : ${tour}" class="row g-3">
-            <div class="col-md-6">
-                <label for="hotelName" class="form-label">Название отеля</label>
-                <div class="input-group">
-                    <select name="hotelName" class="form-select" id="hotelName" required>
-                        <option th:each="el : ${hotels}" th:value="${el.name}" th:text="${el.name}"></option>
-                    </select>
-                    <a class="btn btn-secondary text-white" data-toggle="modal" data-target="#addHotelModal">Добавить
-                        новый</a>
+    <div th:each="tour : ${tour}">
+        <form th:action="@{/tours/{id}(id=${tour.id})}" th:method="PUT">
+            <div class="row g-3">
+                <div class="col-md-6">
+                    <label for="hotelName" class="form-label">Название отеля</label>
+                    <div class="input-group">
+                        <select name="hotelName" class="form-select" id="hotelName" required>
+                            <option th:each="el : ${hotels}" th:value="${el.name}" th:text="${el.name}"></option>
+                        </select>
+                        <a class="btn btn-secondary text-white" data-toggle="modal" data-target="#addHotelModal">Добавить
+                            новый</a>
+                    </div>
+                    <div class="invalid-feedback">Пожалуйста, выберите отель.</div>
                 </div>
-                <div class="invalid-feedback">Пожалуйста, выберите отель.</div>
-            </div>
 
-            <div class="col-md-6">
-                <label for="title" class="form-label">Название тура</label>
-                <input type="text" name="title" class="form-control" id="title" th:value="${tour.title}"
-                       placeholder="Введите название тура" required>
-                <div class="invalid-feedback">Valid title is required.</div>
-            </div>
+                <div class="col-md-6">
+                    <label for="title" class="form-label">Название тура</label>
+                    <input type="text" name="title" class="form-control" id="title" th:value="${tour.title}"
+                           placeholder="Введите название тура" required>
+                    <div class="invalid-feedback">Valid title is required.</div>
+                </div>
 
-            <div class="col-md-12">
-                <label for="description" class="form-label">Описание</label>
-                <input type="text" name="description" class="form-control" id="description" th:value="${tour.description}"
-                       required>
-                <div class="invalid-feedback">Пожалуйста, введите описание.</div>
-            </div>
+                <div class="col-md-12">
+                    <label for="description" class="form-label">Описание</label>
+                    <input type="text" name="description" class="form-control" id="description"
+                           th:value="${tour.description}"
+                           required>
+                    <div class="invalid-feedback">Пожалуйста, введите описание.</div>
+                </div>
 
-            <div class="col-md-6">
-                <label for="countryName" class="form-label">Страна</label>
-                <select name="countryName" class="form-select" id="countryName" required>
-                    <option th:each="el : ${countries}" th:value="${el.name}"
-                            th:text="${el.name}"></option>
-                </select>
-                <div class="invalid-feedback">Пожалуйста, выберите страну.</div>
-            </div>
+                <div class="col-md-6">
+                    <label for="countryName" class="form-label">Страна</label>
+                    <select name="countryName" class="form-select" id="countryName" required>
+                        <option th:each="el : ${countries}" th:value="${el.name}"
+                                th:text="${el.name}"></option>
+                    </select>
+                    <div class="invalid-feedback">Пожалуйста, выберите страну.</div>
+                </div>
 
-            <div class="col-md-6">
-                <label for="price" class="form-label">Стоимость</label>
-                <input type="number" step="0.01" name="price"
-                       placeholder="Введите стоимость путёвки" class="form-control" th:value="${tour.price}" id="price"
-                       required max="100000">
-                <div class="invalid-feedback">Укажите стоимость.</div>
-            </div>
+                <div class="col-md-6">
+                    <label for="price" class="form-label">Стоимость</label>
+                    <input type="number" step="0.01" name="price"
+                           placeholder="Введите стоимость путёвки" class="form-control" th:value="${tour.price}"
+                           id="price"
+                           required max="100000">
+                    <div class="invalid-feedback">Укажите стоимость.</div>
+                </div>
 
-            <div class="col-md-6">
-                <label for="placeQuantity" class="form-label">Количество мест</label>
-                <input type="number" name="placeQuantity" class="form-control" id="placeQuantity"
-                       th:value="${tour.placeQuantity}" required min="1" max="15">
-                <div class="invalid-feedback">Пожалуйста, укажите количество мест.</div>
-            </div>
+                <div class="col-md-6">
+                    <label for="placeQuantity" class="form-label">Количество мест</label>
+                    <input type="number" name="placeQuantity" class="form-control" id="placeQuantity"
+                           th:value="${tour.placeQuantity}" required min="1" max="15">
+                    <div class="invalid-feedback">Пожалуйста, укажите количество мест.</div>
+                </div>
 
-            <div class="col-md-6">
-                <label for="startDate" class="form-label">Дата начала тура</label>
-                <input type="date" name="startDate" class="form-control" id="startDate" th:value="${tour.checkInDate}"
-                       required>
-                <div class="invalid-feedback">Пожалуйста, выберите дату начала тура.</div>
-            </div>
+                <div class="col-md-6">
+                    <label for="startDate" class="form-label">Дата начала тура</label>
+                    <input type="date" name="startDate" class="form-control" id="startDate"
+                           th:value="${tour.checkInDate}"
+                           required>
+                    <div class="invalid-feedback">Пожалуйста, выберите дату начала тура.</div>
+                </div>
 
-            <div class="col-md-6">
-                <label for="endDate" class="form-label">Дата окончания тура</label>
-                <input type="date" name="endDate" class="form-control" id="endDate" th:value="${tour.checkOutDate}"
-                       required>
-                <div class="invalid-feedback">Пожалуйста, выберите дату окончания тура.</div>
-            </div>
-        </div>
+                <div class="col-md-6">
+                    <label for="endDate" class="form-label">Дата окончания тура</label>
+                    <input type="date" name="endDate" class="form-control" id="endDate" th:value="${tour.checkOutDate}"
+                           required>
+                    <div class="invalid-feedback">Пожалуйста, выберите дату окончания тура.</div>
+                </div>
 
-        <div class="row mt-3 justify-content-center align-items-end">
-            <div class="col-md-4 text-center">
-                <button class="download-button w-100 py-2" type="submit">Применить</button>
-            </div>
-        </div>
-    </form>
+                <div class="row mt-3 justify-content-center align-items-end">
+                    <div class="col-md-4 text-center">
+                        <button class="download-button w-100 py-2" type="submit">Применить</button>
+                    </div>
+                </div>
+        </form>
+    </div>
 </div>
 
 <div class="modal" id="addHotelModal">

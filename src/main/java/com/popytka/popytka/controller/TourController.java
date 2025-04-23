@@ -195,7 +195,7 @@ public class TourController {
     }
 
     @Transactional
-    @PostMapping("/add")
+    @PostMapping
     public String createTour(
             @RequestParam("hotelName") String hotelName,
             @RequestParam("title") String title,
