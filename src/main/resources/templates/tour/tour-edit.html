@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<html xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
     <title>Туры</title>
@@ -7,107 +7,86 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.2.3/js/bootstrap.bundle.min.js"
             crossorigin="anonymous"></script>
     <style>
-.link-body-emphasis,
-.header-link {
-    color: #00abc2; /* Изменение цвета текста */
-}
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+        }
 
-.btn-outline-primary {
-color:#00abc2;
-    border-color: #00abc2; /* Изменение цвета рамок */
-    background-color: transparent; /* Установка прозрачного фона */
-}
+        .modal:target {
+            display: block;
+        }
 
-.btn-outline-primary:hover {
-    border-color: #007ba7; /* Установка цвета рамок при наведении */
-    background-color: #007ba7; /* Установка прозрачного фона при наведении */
-    color: white;
-}
+        .modal-dialog {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100%;
+        }
 
-.link-body-emphasis:hover,
-.header-link:hover {
-    color: #007ba7; /* Установка цвета текста при наведении */
-    background-color: transparent; /* Установка прозрачного фона при наведении */
-}
+        .modal-content {
+            background-color: #fff;
+            padding: 20px;
+            max-width: 400px;
+        }
 
+        .download-button {
+            display: inline-block;
+            padding: 10px 20px;
+            background-color: #00abc2;
+            color: white;
+            border-radius: 10px;
+            text-decoration: none;
+            outline: none;
+            border: none;
+        }
 
-    .modal {
-        display: none;
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        background-color: rgba(0, 0, 0, 0.5);
-    }
-
-    .modal:target {
-        display: block;
-    }
-
-    .modal-dialog {
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        height: 100%;
-    }
-
-    .modal-content {
-        background-color: #fff;
-        padding: 20px;
-        max-width: 400px;
-    }
-
-    .download-button {
-  display: inline-block;
-  padding: 10px 20px;
-  background-color: #00abc2;
-  color: white;
-  border-radius: 10px;
-  text-decoration: none;
-  outline: none;
-  border: none;
-}
-
-.download-button:hover {
-  color: white; /* Цвет текста при наведении такой же, как и обычно */
-  background-color: #007ba7;
-}
-</style>
+        .download-button:hover {
+            color: white;
+            background-color: #007ba7;
+        }
+    </style>
 </head>
 <body>
 <div class="container py-3">
-    <header th:insert="blocks/header :: header"></header>
-    <form th:method="POST">
-        <div th:each="t : ${tour}" class="row g-3">
+    <header th:insert="~{blocks/header :: header}"></header>
+    <form th:method="PUT">
+        <div th:each="tour : ${tour}" class="row g-3">
             <div class="col-md-6">
                 <label for="hotelName" class="form-label">Название отеля</label>
                 <div class="input-group">
-                    <select name="hotel_name" class="form-select" id="hotelName" required>
-                        <option th:each="el : ${hotel}" th:value="${el.name}" th:text="${el.name}"></option>
+                    <select name="hotelName" class="form-select" id="hotelName" required>
+                        <option th:each="el : ${hotels}" th:value="${el.name}" th:text="${el.name}"></option>
                     </select>
-                    <a class="btn btn-secondary text-white" data-toggle="modal" data-target="#addHotelModal">Добавить новый</a>
+                    <a class="btn btn-secondary text-white" data-toggle="modal" data-target="#addHotelModal">Добавить
+                        новый</a>
                 </div>
                 <div class="invalid-feedback">Пожалуйста, выберите отель.</div>
             </div>
 
             <div class="col-md-6">
                 <label for="title" class="form-label">Название тура</label>
-                <input type="text" name="title" class="form-control" id="title" th:value="${t.title}"
+                <input type="text" name="title" class="form-control" id="title" th:value="${tour.title}"
                        placeholder="Введите название тура" required>
                 <div class="invalid-feedback">Valid title is required.</div>
             </div>
 
             <div class="col-md-12">
                 <label for="description" class="form-label">Описание</label>
-                <input type="text" name="description" class="form-control" id="description" th:value="${t.description}" required>
+                <input type="text" name="description" class="form-control" id="description" th:value="${tour.description}"
+                       required>
                 <div class="invalid-feedback">Пожалуйста, введите описание.</div>
             </div>
 
             <div class="col-md-6">
                 <label for="countryName" class="form-label">Страна</label>
-                <select name="country_name" class="form-select" id="countryName" required>
-                    <option th:each="el : ${country}" th:value="${el.country_name}" th:text="${el.country_name}"></option>
+                <select name="countryName" class="form-select" id="countryName" required>
+                    <option th:each="el : ${countries}" th:value="${el.name}"
+                            th:text="${el.name}"></option>
                 </select>
                 <div class="invalid-feedback">Пожалуйста, выберите страну.</div>
             </div>
@@ -115,30 +94,32 @@ color:#00abc2;
             <div class="col-md-6">
                 <label for="price" class="form-label">Стоимость</label>
                 <input type="number" step="0.01" name="price"
-                       placeholder="Введите стоимость путёвки" class="form-control" th:value="${t.price}" id="price"
+                       placeholder="Введите стоимость путёвки" class="form-control" th:value="${tour.price}" id="price"
                        required max="100000">
                 <div class="invalid-feedback">Укажите стоимость.</div>
             </div>
 
             <div class="col-md-6">
                 <label for="placeQuantity" class="form-label">Количество мест</label>
-                <input type="number" name="place_quantity" class="form-control" id="placeQuantity" th:value="${t.place_quantity}" required min="1" max="15">
+                <input type="number" name="placeQuantity" class="form-control" id="placeQuantity"
+                       th:value="${tour.placeQuantity}" required min="1" max="15">
                 <div class="invalid-feedback">Пожалуйста, укажите количество мест.</div>
             </div>
 
             <div class="col-md-6">
                 <label for="startDate" class="form-label">Дата начала тура</label>
-                <input type="date" name="start_date" class="form-control" id="startDate" th:value="${t.check_in_date}" required>
+                <input type="date" name="startDate" class="form-control" id="startDate" th:value="${tour.checkInDate}"
+                       required>
                 <div class="invalid-feedback">Пожалуйста, выберите дату начала тура.</div>
             </div>
 
             <div class="col-md-6">
                 <label for="endDate" class="form-label">Дата окончания тура</label>
-                <input type="date" name="end_date" class="form-control" id="endDate" th:value="${t.check_out_date}" required>
+                <input type="date" name="endDate" class="form-control" id="endDate" th:value="${tour.checkOutDate}"
+                       required>
                 <div class="invalid-feedback">Пожалуйста, выберите дату окончания тура.</div>
             </div>
         </div>
-
 
         <div class="row mt-3 justify-content-center align-items-end">
             <div class="col-md-4 text-center">
@@ -152,11 +133,12 @@ color:#00abc2;
     <div class="modal-dialog">
         <div class="modal-content">
             <h5>Добавить новый отель</h5>
-            <form action="/hotel/add" th:method="POST">
+            <form action="/hotels/add" th:method="POST">
                 <div class="mb-3">
                     <label for="hotelCountryName" class="form-label">Страна</label>
-                    <select name="country_name" class="form-select" id="hotelCountryName" required>
-                        <option th:each="el : ${country}" th:value="${el.country_name}" th:text="${el.country_name}"></option>
+                    <select name="hotelCountryName" class="form-select" id="hotelCountryName" required>
+                        <option th:each="el : ${countries}" th:value="${el.name}"
+                                th:text="${el.name}"></option>
                     </select>
                     <div class="invalid-feedback">
                         Пожалуйста, выберите страну.
@@ -164,11 +146,13 @@ color:#00abc2;
                 </div>
                 <div class="mb-3">
                     <label for="newHotelName" class="form-label">Название отеля</label>
-                    <input type="text" name="new_hotel_name" class="form-control" id="newHotelName" placeholder="Введите название отеля" required>
+                    <input type="text" name="newHotelName" class="form-control" id="newHotelName"
+                           placeholder="Введите название отеля" required>
                 </div>
                 <div class="mb-3">
                     <label for="newHotelDescription" class="form-label">Описание отеля</label>
-                    <textarea name="new_hotel_description" class="form-control" id="newHotelDescription" rows="3" required></textarea>
+                    <textarea name="newHotelDescription" class="form-control" id="newHotelDescription" rows="3"
+                              required></textarea>
                 </div>
                 <div class="mb-3">
                     <label for="rate" class="form-label">Рейтинг</label>
@@ -193,38 +177,39 @@ color:#00abc2;
 <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
 
 <script>
-  var countrySelect = document.getElementById("countryName");
-var hotelSelect = document.getElementById("hotelName");
+    var countrySelect = document.getElementById("countryName");
+    var hotelSelect = document.getElementById("hotelName");
 
-countrySelect.addEventListener("change", function() {
-  var selectedCountry = countrySelect.value;
+    countrySelect.addEventListener("change", function () {
+        var selectedCountry = countrySelect.value;
 
-  hotelSelect.innerHTML = ""; // Очистить текущие элементы списка отелей
+        hotelSelect.innerHTML = "";
 
-  var xhr = new XMLHttpRequest();
-  xhr.open("GET", "/hotel?countryName=" + selectedCountry, true);
-  xhr.onreadystatechange = function() {
-    if (xhr.readyState === 4 && xhr.status === 200) {
-      var hotels = JSON.parse(xhr.responseText);
+        var xhr = new XMLHttpRequest();
+        xhr.open("GET", "/hotels/" + selectedCountry, true);
+        xhr.onreadystatechange = function () {
+            if (xhr.readyState === 4 && xhr.status === 200) {
+                var hotels = JSON.parse(xhr.responseText);
 
-      hotels.forEach(function(hotel) {
-        addOption(hotel.name);
-      });
+                hotels.forEach(function (hotel) {
+                    addOption(hotel.name);
+                });
+            }
+        };
+        xhr.send();
+    });
+
+    function addOption(text) {
+        var option = document.createElement("option");
+        option.text = text;
+        option.value = text;
+        hotelSelect.appendChild(option);
     }
-  };
-  xhr.send();
-});
 
-  function addOption(text) {
-    var option = document.createElement("option");
-    option.text = text;
-    option.value = text;
-    hotelSelect.appendChild(option);
-  }
-  hotelSelect.addEventListener("change", function() {
-  var selectedHotel = hotelSelect.value;
+    hotelSelect.addEventListener("change", function () {
+        var selectedHotel = hotelSelect.value;
 
-});
+    });
 </script>
 
 </body>

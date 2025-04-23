@@ -1,6 +1,5 @@
 package com.popytka.popytka.controller;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
@@ -41,26 +40,15 @@ public class MainController {
     private final EmailService emailService;
     private final UserRepository userRepository;
     private final CountryRepository countryRepository;
-    private final BookingRepository bookingRepository;
+
     private static final Logger log = LoggerFactory.getLogger(MainController.class);
     private static final String SESSION_ID_KEY = "sessionId";
     public static Long UserID = null;
     public static boolean isAdmin = false;
-
     private static int CODE;
 
     @GetMapping("/")
-    public String home(Model model) throws JsonProcessingException {
-/*        ObjectMapper objectMapper = new ObjectMapper();
-
-        List<User> data = (List<User>) userRepository.getAllUser(); // Полученные данные из таблицы
-        String json = objectMapper.writeValueAsString(data);
-        String filePath = "src/main/resources/kurs.json";
-        try (FileWriter fileWriter = new FileWriter(filePath)) {
-            fileWriter.write(json);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }*/
+    public String home(Model model) {
         List<Country> countries = countryRepository.findAll();
         if (UserID == null) {
             model.addAttribute("userId", 0);
@@ -68,13 +56,12 @@ public class MainController {
             model.addAttribute("userId", 1);
         }
         model.addAttribute("isAdmin", isAdmin);
-        model.addAttribute("country", countries);
-        model.addAttribute("title", "Главная страница");
+        model.addAttribute("countries", countries);
         return "home";
     }
 
     @GetMapping("/registration")
-    public String registration(Model model) {
+    public String registration() {
         return "user/registration";
     }
 
@@ -131,8 +118,8 @@ public class MainController {
             model.addAttribute("userId", 0);
         } else {
             model.addAttribute("userId", 1);
-            model.addAttribute("isAdmin", isAdmin);
         }
+        model.addAttribute("isAdmin", isAdmin);
         Optional<User> userOptional = userRepository.findByEmail(email);
         if (userOptional.isPresent()) {
             User loggedUser = userOptional.get();
@@ -156,7 +143,7 @@ public class MainController {
     }
 
     @GetMapping("/account")
-    public String account(HttpServletRequest request, Model model) {
+    public String account(Model model) {
         if (UserID == null) {
             model.addAttribute("userId", 0);
             return "redirect:/authorization";
@@ -188,25 +175,29 @@ public class MainController {
         return "redirect:/authorization";
     }
 
-    @GetMapping("/account/{userId}/edit")
-    public String userEdit(@PathVariable(value = "userId") Long id, Model model) {
+    @GetMapping("/account/{id}/edit")
+    public String userEdit(@PathVariable(value = "id") Long id, Model model) {
         User user = userRepository.findById(id).orElse(null);
         if (UserID == null) {
             model.addAttribute("userId", 0);
         } else {
             model.addAttribute("userId", 1);
-            model.addAttribute("isAdmin", isAdmin);
         }
-
+        model.addAttribute("isAdmin", isAdmin);
         model.addAttribute("user", user);
         return "user/user-edit";
     }
 
     @Transactional
-    @PostMapping("/account/{idUser}/edit")
-    public String updateUser(@PathVariable(value = "idUser") long id, @RequestParam String firstName,
-                             @RequestParam String lastName, @RequestParam String phone, @RequestParam String email, Model model) {
-
+    @PostMapping("/account/{id}/edit")
+    public String updateUser(
+            @PathVariable(value = "id") Long id,
+            @RequestParam String firstName,
+            @RequestParam String lastName,
+            @RequestParam String phone,
+            @RequestParam String email,
+            Model model
+    ) {
         User user = userRepository.findById(id).get();
         user.setFirstName(firstName);
         user.setLastName(lastName);
@@ -217,30 +208,15 @@ public class MainController {
             model.addAttribute("userId", 0);
         } else {
             model.addAttribute("userId", 1);
-            model.addAttribute("isAdmin", isAdmin);
         }
+        model.addAttribute("isAdmin", isAdmin);
         model.addAttribute("user", updatedUser);
         return "redirect:/account";
     }
 
-    @GetMapping("/account/bookings/{userId}")
-    public String bookingsUser(@PathVariable(value = "userId") Long id, Model model) {
-        User user = userRepository.findById(id).get();
-        List<Booking> bookings = bookingRepository.findByUser(user);
-        if (UserID == null) {
-            model.addAttribute("userId", 0);
-        } else {
-            model.addAttribute("userId", 1);
-            model.addAttribute("isAdmin", isAdmin);
-        }
-        model.addAttribute("user", user);
-        model.addAttribute("bookings", bookings);
-        return "bookings";
-    }
-
     @GetMapping("/verification")
-    public String verification(Model model) {
-        return "verification";
+    public String verification() {
+        return "user/verification";
     }
 
     @PostMapping("/verification")
@@ -249,8 +225,8 @@ public class MainController {
         CODE = generateCode.nextInt(1000, 9999);
         UserID = userRepository.findByEmail(email).get().getId();
         if (UserID == null) {
-            model.addAttribute("error_message", "e-mail не существует");
-            return "verification";
+            model.addAttribute("errorMessage", "e-mail не существует");
+            return "user/verification";
         }
         String subject = "Verification";
         String message = "Your verification code: " + CODE;
@@ -259,7 +235,7 @@ public class MainController {
     }
 
     @GetMapping("/check-email")
-    public String checkEmail(Model model) {
+    public String checkEmail() {
         return "user/check-email";
     }
 
@@ -267,19 +243,23 @@ public class MainController {
     public String checkCode(@RequestParam("code") String code, Model model) {
         int userCode = Integer.parseInt(code);
         if (userCode == CODE) {
-            return "edit-password";
+            return "user/edit-password";
         } else
-            model.addAttribute("error_message", "Invalid code");
+            model.addAttribute("errorMessage", "Invalid code");
         return "redirect:/check-email";
     }
 
     @GetMapping("/edit-password")
-    public String editPassword(Model model) {
+    public String editPassword() {
         return "user/edit-password";
     }
 
     @PostMapping("/edit-password")
-    public String setCode(@RequestParam("password") String password, @RequestParam("password2") String password2, Model model) {
+    public String setCode(
+            @RequestParam("password") String password,
+            @RequestParam("password2") String password2,
+            Model model
+    ) {
 
         if (password.equals(password2)) {
             String hashPassword = BCrypt.hashpw(password, BCrypt.gensalt());
@@ -289,31 +269,28 @@ public class MainController {
             UserID = null;
             return "user/authorization";
         } else {
-            model.addAttribute("error_message", "Passwords don't match");
+            model.addAttribute("errorMessage", "Passwords don't match");
         }
         return "user/edit-password";
     }
 
     @PostMapping("/import")
     public String handleFileUpload(@RequestParam("file") MultipartFile file, Model model) {
-        String message_success = null;
-        String message_error = null;
+        String message;
         if (!file.isEmpty()) {
             try {
                 ObjectMapper objectMapper = new ObjectMapper();
                 List<User> data = objectMapper.readValue(file.getBytes(), new TypeReference<>() {
                 });
                 userRepository.saveAll(data);
-                System.out.println("Данные успешно сохранены в базу данных.");
-                message_success = "Данные успешно сохранены в базу данных.";
+                message = "Данные успешно сохранены в базу данных.";
+                model.addAttribute("messageSuccess", message);
             } catch (Exception e) {
                 e.printStackTrace();
-                message_error = "Ошибка при импорте данных";
-
+                message = "Ошибка при импорте данных";
+                model.addAttribute("messageError", message);
             }
         }
-        model.addAttribute("message_success", message_success);
-        model.addAttribute("message_error", message_error);
         List<Country> countries = countryRepository.findAll();
         if (UserID == null) {
             model.addAttribute("userId", 0);
@@ -331,22 +308,16 @@ public class MainController {
         try {
             List<User> users = userRepository.findAll();
 
-            // Создаем ObjectMapper
             ObjectMapper objectMapper = new ObjectMapper();
-
-            // Настраиваем ObjectMapper для сериализации даты и времени в формат ISO8601
             objectMapper.registerModule(new JavaTimeModule());
             objectMapper.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
 
-            // Устанавливаем заголовки для ответа
             response.setContentType("application/json");
             response.setHeader("Content-Disposition", "attachment; filename=\"users.json\"");
 
-            // Преобразуем данные в JSON и записываем в выходной поток
             objectMapper.writeValue(response.getOutputStream(), users);
         } catch (IOException e) {
             e.printStackTrace();
-            // Обработка ошибки
         }
     }
 }

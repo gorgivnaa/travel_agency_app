@@ -1,19 +1,20 @@
 <div th:fragment="header">
     <style>
-        .download-button-enter{
-    background-color: transparent;
-    color:#00abc2;
-    border-color: #00abc2;
-}
-.download-button-enter:hover {
-  background-color: #00abc2;
-  color:white;
-}
+        .download-button-enter {
+            background-color: transparent;
+            color: #00abc2;
+            border-color: #00abc2;
+        }
 
-.download-button-enter:active {
-  background-color: #00abc2;
-  color:white;
-}
+        .download-button-enter:hover {
+            background-color: #00abc2;
+            color: white;
+        }
+
+        .download-button-enter:active {
+            background-color: #00abc2;
+            color: white;
+        }
     </style>
     <div class="d-flex flex-column flex-md-row align-items-center pb-3 mb-4 border-bottom">
         <a href="/" class="d-flex align-items-center link-body-emphasis text-decoration-none">
@@ -26,7 +27,8 @@
 
         <nav class="d-inline-flex mt-2 mt-md-0 ms-md-auto">
             <a class="me-3 py-2 link-body-emphasis text-decoration-none" href="/tours">Туры</a>
-            <a class="me-3 py-2 link-body-emphasis text-decoration-none" href="/additionalServices">Дополнительные услуги</a>
+            <a class="me-3 py-2 link-body-emphasis text-decoration-none" href="/additionalServices">Дополнительные
+                услуги</a>
             <a th:if="${userId == 0}" type="button"
                class="w-60 btn btn-sm download-button-enter d-flex justify-content-center" href="/authorization">
                 <div class="align-self-center">Войти</div>

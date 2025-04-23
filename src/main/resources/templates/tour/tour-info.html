@@ -4,186 +4,94 @@
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
     <title>Туры</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.2.3/css/bootstrap.min.css">
+    <link th:href="@{/styles/common.css}" rel="stylesheet"/>
+
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.2.3/js/bootstrap.bundle.min.js"
             crossorigin="anonymous"></script>
     <style>
-
-        .link-body-emphasis,
-
-        .header-link {
-
-        color: #00abc2;
-
+        .btn-outline-primary {
+            color: #00abc2;
+            border-color: #00abc2;
+            background-color: transparent;
         }
 
-        css
+        .btn-outline-primary:hover {
+            border-color: #007ba7;
+            background-color: #007ba7;
+            color: white;
+        }
 
-        Copy
-           .btn-outline-primary {
-           color:#00abc2;
-               border-color: #00abc2;
-               background-color: transparent;
-           }
+        .card {
+            border: 1px solid #00abc2;
+        }
 
-           .btn-outline-primary:hover {
-               border-color: #007ba7;
-               background-color: #007ba7;
-               color: white;
-           }
+        .toggle-checkbox {
+            display: none;
+        }
 
-           .link-body-emphasis:hover,
-           .header-link:hover {
-               color: #007ba7;
-               background-color: transparent;
-           }
-             .icon-button {
-             background: none;
-             border: none;
-             padding: 0;
-             cursor: pointer;
-             }
+        .toggle-label {
+            cursor: pointer;
+        }
 
-           .filter-wrapper {
-             position: relative;
-             display: inline-block;
-           }
+        .hotel-info {
+            display: none;
+        }
 
-           .filter-wrapper:hover .btn-primary {
-             border: 1px solid black;
-           }
+        .toggle-checkbox:checked ~ .hotel-info {
+            display: block;
+        }
 
-           .filter-dropdown {
-             position: absolute;
-             top: 100%;
-             right: 0;
-             z-index: 10;
-           }
+        .modal-content {
+            border-radius: 10px;
+        }
 
-           .filter-form {
-             display: none;
-             padding: 10px;
-             background-color: #fff;
-             border: 1px solid #ccc;
-           }
+        .modal-header {
+            background-color: #f8f9fa;
+            border-bottom: none;
+        }
 
-           .filter-toggle:checked + .filter-dropdown .filter-form {
-             display: block;
-           }
+        .modal-title {
+            color: #333;
+        }
 
-             .filter-toggle {
-             display: none;
-           }
+        .modal-body {
+            padding: 20px;
+        }
 
-           .text-right {
-             display: flex;
-             justify-content: flex-end;
-             align-items: center;
-           }
+        .modal-footer {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
 
-           .opaque-button {
-             opacity: 1;
-             text-color: #000000;
-             border: 1px solid black;
-           }
+        .btn-secondary {
+            background-color: #6c757d;
+            color: #fff;
+        }
 
-           .opaque-button:hover {
-             border: 1px solid black;
-           }
+        #orderModal {
+            background-color: blue;
+            color: white;
+        }
 
-           .card {
-               border: 1px solid #00abc2;
-           }
+        .form-label {
+            font-weight: bold;
+        }
 
-           .toggle-checkbox {
-               display: none;
-           }
+        .invalid-feedback {
+            color: red;
+        }
 
-           .toggle-label {
-               cursor: pointer;
-           }
-
-           .hotel-info {
-               display: none;
-           }
-
-           .toggle-checkbox:checked ~ .hotel-info {
-               display: block;
-           }
-
-           .modal-content {
-               border-radius: 10px;
-           }
-
-           .modal-header {
-               background-color: #f8f9fa;
-               border-bottom: none;
-           }
-
-           .modal-title {
-               color: #333;
-           }
-
-           .modal-body {
-               padding: 20px;
-           }
-
-           .modal-footer {
-               display: flex;
-               justify-content: center;
-               align-items: center;
-           }
-
-           .btn-secondary {
-               background-color: #6c757d;
-               color: #fff;
-           }
-
-           .btn-primary {
-               background-color: #007bff;
-               color: #fff;
-           }
-
-           #orderModal .btn-primary {
-               background-color: blue;
-               color: white;
-           }
-
-           .form-label {
-               font-weight: bold;
-           }
-
-           .invalid-feedback {
-               color: red;
-           }
-
-           #overlay {
-                   position: fixed;
-                   top: 0;
-                   left: 0;
-                   width: 100%;
-                   height: 100%;
-                   background-color: rgba(0, 0, 0, 0.5);
-                   z-index: 9999;
-               }
-
-               #modalContainer {
-                   position: fixed;
-                   top: 50%;
-                   left: 50%;
-                   transform: translate(-50%, -50%);
-                   z-index: 10000;
-               }
-
-               #successModal {
-                   background-color: #fff;
-                   padding: 20px;
-                   border-radius: 5px;
-                   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
-               }
+        #successModal {
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 5px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+        }
     </style>
 </head>
-<body>
+<body class="full-dvh container p-3 vertical-flex">
 
 <svg xmlns="http://www.w3.org/2000/svg" class="d-none">
     <symbol id="check" viewBox="0 0 16 16">
@@ -191,9 +99,8 @@
         <path d="M13.854 3.646a.5.5 0 0 1 0 .708l-7 7a.5.5 0 0 1-.708 0l-3.5-3.5a.5.5 0 1 1 .708-.708L6.5 10.293l6.646-6.647a.5.5 0 0 1 .708 0z"></path>
     </symbol>
 </svg>
-
-<div class="container py-3">
-    <header th:insert="~{blocks/header :: header}"></header>
+<header th:insert="~{blocks/header :: header}"></header>
+<main class="py-3 full-flex">
     <div th:each="el : ${tour}" class="card mt-2">
         <div class="card-body">
             <h3 th:text="${el.title}"></h3>
@@ -220,7 +127,7 @@
             </a>
         </div>
     </div>
-</div>
+</main>
 <footer th:insert="~{blocks/footer :: footer}"></footer>
 
 <div class="modal fade" id="orderModal" tabindex="-1" role="dialog" aria-labelledby="orderModalLabel"
@@ -289,7 +196,7 @@
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Отмена</button>
-                <a href="/authorization" methods="GET">
+                <a href="/authorization" th:methods="GET">
                     <button type="button" class="btn btn-outline-primary">Авторизация</button>
                 </a>
             </div>
@@ -313,7 +220,7 @@
 </div>
 
 <script>
-    $(document).ready(function() {
+    $(document).ready(function () {
         var successMessage = "[[${successMessage}]]";
         if (successMessage && successMessage.length > 0) {
             $('#successModal').modal('show');

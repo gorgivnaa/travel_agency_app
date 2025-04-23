@@ -8,70 +8,47 @@
             crossorigin="anonymous"></script>
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css">
     <style>
-        .link-body-emphasis,
-        .header-link {
-            color: #00abc2;
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
         }
 
-        .btn-outline-primary {
-        color:#00abc2;
-            border-color: #00abc2;
-            background-color: transparent;
+        .modal:target {
+            display: block;
         }
 
-        .btn-outline-primary:hover {
-            border-color: #007ba7;
-            background-color: #007ba7;
+        .modal-dialog {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100%;
+        }
+
+        .modal-content {
+            background-color: #fff;
+            padding: 20px;
+            max-width: 400px;
+        }
+
+        .download-button {
+            display: inline-block;
+            padding: 10px 20px;
+            background-color: #00abc2;
             color: white;
-        }
-
-        .link-body-emphasis:hover,
-        .header-link:hover {
-            color: #007ba7;
-            background-color: transparent;
-        }
-
-            .modal {
-                display: none;
-                position: fixed;
-                top: 0;
-                left: 0;
-                width: 100%;
-                height: 100%;
-                background-color: rgba(0, 0, 0, 0.5);
-            }
-
-            .modal:target {
-                display: block;
-            }
-
-            .modal-dialog {
-                display: flex;
-                justify-content: center;
-                align-items: center;
-                height: 100%;
-            }
-
-            .modal-content {
-                background-color: #fff;
-                padding: 20px;
-                max-width: 400px;
-            }
-
-            .download-button {
-          display: inline-block;
-          padding: 10px 20px;
-          background-color: #00abc2;
-          color: white;
-          border-radius: 10px;
-          text-decoration: none;
-          outline: none;
-          border: none;
+            border-radius: 10px;
+            text-decoration: none;
+            outline: none;
+            border: none;
         }
 
         .download-button:hover {
-          color: white;
-          background-color: #007ba7;
+            color: white;
+            background-color: #007ba7;
         }
     </style>
 </head>
@@ -164,10 +141,10 @@
     <div class="modal-dialog">
         <div class="modal-content">
             <h5>Добавить новый отель</h5>
-            <form action="/hotel/add" th:method="POST">
+            <form action="/hotels/add" th:method="POST">
                 <div class="mb-3">
                     <label for="hotelCountryName" class="form-label">Страна</label>
-                    <select name="country_name" class="form-select" id="hotelCountryName" required>
+                    <select name="hotelCountryName" class="form-select" id="hotelCountryName" required>
                         <option th:each="el : ${countries}" th:value="${el.name}" th:text="${el.name}"></option>
                     </select>
                     <div class="invalid-feedback">
@@ -176,12 +153,12 @@
                 </div>
                 <div class="mb-3">
                     <label for="newHotelName" class="form-label">Название отеля</label>
-                    <input type="text" name="new_hotel_name" class="form-control" id="newHotelName"
+                    <input type="text" name="newHotelName" class="form-control" id="newHotelName"
                            placeholder="Введите название отеля" required>
                 </div>
                 <div class="mb-3">
                     <label for="newHotelDescription" class="form-label">Описание отеля</label>
-                    <textarea name="new_hotel_description" class="form-control" id="newHotelDescription" rows="3"
+                    <textarea name="newHotelDescription" class="form-control" id="newHotelDescription" rows="3"
                               required></textarea>
                 </div>
                 <div class="mb-3">
@@ -208,37 +185,37 @@
 
 <script>
     var countrySelect = document.getElementById("countryName");
-  var hotelSelect = document.getElementById("hotelName");
+    var hotelSelect = document.getElementById("hotelName");
 
-  countrySelect.addEventListener("change", function() {
-    var selectedCountry = countrySelect.value;
+    countrySelect.addEventListener("change", function () {
+        var selectedCountry = countrySelect.value;
 
-    hotelSelect.innerHTML = ""; // Очистить текущие элементы списка отелей
+        hotelSelect.innerHTML = "";
 
-    var xhr = new XMLHttpRequest();
-    xhr.open("GET", "/hotel?country=" + selectedCountry, true);
-    xhr.onreadystatechange = function() {
-      if (xhr.readyState === 4 && xhr.status === 200) {
-        var hotels = JSON.parse(xhr.responseText);
+        var xhr = new XMLHttpRequest();
+        xhr.open("GET", "/hotels/" + selectedCountry, true);
+        xhr.onreadystatechange = function () {
+            if (xhr.readyState === 4 && xhr.status === 200) {
+                var hotels = JSON.parse(xhr.responseText);
 
-        hotels.forEach(function(hotel) {
-          addOption(hotel.name);
-        });
-      }
-    };
-    xhr.send();
-  });
+                hotels.forEach(function (hotel) {
+                    addOption(hotel.name);
+                });
+            }
+        };
+        xhr.send();
+    });
 
     function addOption(text) {
-      var option = document.createElement("option");
-      option.text = text;
-      option.value = text;
-      hotelSelect.appendChild(option);
+        var option = document.createElement("option");
+        option.text = text;
+        option.value = text;
+        hotelSelect.appendChild(option);
     }
-    hotelSelect.addEventListener("change", function() {
-    var selectedHotel = hotelSelect.value;
 
-  });
+    hotelSelect.addEventListener("change", function () {
+        var selectedHotel = hotelSelect.value;
+    });
 </script>
 
 </body>

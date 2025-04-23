@@ -10,7 +10,6 @@ import com.popytka.popytka.repository.HotelRepository;
 import com.popytka.popytka.repository.ServiceRepository;
 import com.popytka.popytka.repository.TourRepository;
 import com.popytka.popytka.repository.UserRepository;
-import jakarta.servlet.http.HttpServletRequest;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -20,8 +19,8 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -45,7 +44,7 @@ public class TourController {
     private final ServiceRepository serviceRepository;
 
     @GetMapping("/tours")
-    public String tourMain(Model model, @RequestParam(required = false) String sort) {
+    public String getAllTours(Model model, @RequestParam(required = false) String sort) {
         if (UserID == null) {
             model.addAttribute("userId", 0);
         } else {
@@ -70,13 +69,17 @@ public class TourController {
     }
 
     @GetMapping("/tourfilters")
-    public String tourFilters(Model model, @RequestParam(required = false) String countryName, @RequestParam(required = false) BigDecimal maxPrice) {
+    public String getFilteredTours(
+            Model model,
+            @RequestParam(required = false) String countryName,
+            @RequestParam(required = false) BigDecimal maxPrice
+    ) {
         if (UserID == null) {
             model.addAttribute("userId", 0);
         } else {
             model.addAttribute("userId", 1);
-            model.addAttribute("isAdmin", isAdmin);
         }
+        model.addAttribute("isAdmin", isAdmin);
         List<Tour> tours;
         if ("".equals(countryName)) {
             countryName = null;
@@ -111,13 +114,13 @@ public class TourController {
     }
 
     @GetMapping("/tourfilters/{sort}")
-    public String tourFiltersSort(@PathVariable(value = "sort") String sort, Model model) {
+    public String getFilteredAndSortedTours(@PathVariable(value = "sort") String sort, Model model) {
         if (UserID == null) {
             model.addAttribute("userId", 0);
         } else {
             model.addAttribute("userId", 1);
-            model.addAttribute("isAdmin", isAdmin);
         }
+        model.addAttribute("isAdmin", isAdmin);
         List<Tour> tours = filteredTours;
         switch (sort) {
             case "asc": {
@@ -147,16 +150,16 @@ public class TourController {
         return "tour/tour-filters";
     }
 
-    @GetMapping("/tourinfo/{tourId}")
-    public String showTourInfo(@PathVariable("tourId") Long tourId, Model model) {
+    @GetMapping("/tours/{id}")
+    public String getById(@PathVariable("id") Long tourId, Model model) {
         User user = null;
         if (UserID == null) {
             model.addAttribute("userId", 0);
         } else {
             user = userRepository.findById(UserID).orElse(null);
             model.addAttribute("userId", 1);
-            model.addAttribute("isAdmin", isAdmin);
         }
+        model.addAttribute("isAdmin", isAdmin);
 
         Tour tour = tourRepository.findById(tourId).get();
         Hotel hotel = tour.getHotel();
@@ -169,14 +172,32 @@ public class TourController {
         return "tour/tour-info";
     }
 
+    @GetMapping("/tours/edit/{id}")
+    public String tourEdit(@PathVariable("id") Long id, Model model) {
+        if (UserID == null) {
+            model.addAttribute("userId", 0);
+        } else {
+            model.addAttribute("userId", 1);
+        }
+        model.addAttribute("isAdmin", isAdmin);
+
+        Tour tour = tourRepository.findById(id).get();
+        List<Country> countries = countryRepository.findAll();
+        List<Hotel> hotels = hotelRepository.findAll();
+        model.addAttribute("tour", tour);
+        model.addAttribute("countries", countries);
+        model.addAttribute("hotels", hotels);
+        return "tour/tour-edit";
+    }
+
     @GetMapping("/tours/add")
     public String tourAdd(Model model) {
         if (UserID == null) {
             model.addAttribute("userId", 0);
         } else {
             model.addAttribute("userId", 1);
-            model.addAttribute("isAdmin", isAdmin);
         }
+        model.addAttribute("isAdmin", isAdmin);
         List<Country> countries = countryRepository.findAll();
         model.addAttribute("countries", countries);
         List<Hotel> hotels = hotelRepository.findAll();
@@ -187,7 +208,7 @@ public class TourController {
     @Transactional
     @PostMapping("/tours/add")
     public String tourAddInfo(
-            @RequestParam("hotel_name") String hotelName,
+            @RequestParam("hotelName") String hotelName,
             @RequestParam("title") String title,
             @RequestParam("description") String description,
             @RequestParam("countryName") String countryName,
@@ -214,77 +235,23 @@ public class TourController {
             model.addAttribute("userId", 0);
         } else {
             model.addAttribute("userId", 1);
-            model.addAttribute("isAdmin", isAdmin);
         }
-        return "redirect:/tour";
-    }
-
-    @GetMapping("/hotel")
-    @ResponseBody
-    public List<Hotel> getHotelsByCountry(@RequestParam("countryName") String countryName, Model model) {
-        Country country = countryRepository.findByName(countryName).get();
-        List<Hotel> hotels = hotelRepository.findByCountry(country);
-        if (UserID == null) {
-            model.addAttribute("userId", 0);
-        } else {
-            model.addAttribute("userId", 1);
-            model.addAttribute("isAdmin", isAdmin);
-        }
-        return hotels;
+        model.addAttribute("isAdmin", isAdmin);
+        return "redirect:/tours";
     }
 
     @Transactional
-    @PostMapping("/hotel/add")
-    public String addNewHotel(
-            HttpServletRequest request,
-            @RequestParam("new_hotel_name") String hotelName,
-            @RequestParam("country_name") String countryName,
-            @RequestParam("new_hotel_description") String description,
-            @RequestParam("rate") double rating
-    ) {
-        Country country = countryRepository.findByName(countryName).get();
-        Hotel createdHotel = Hotel.builder()
-                .name(hotelName)
-                .description(description)
-                .rating(rating)
-                .country(country)
-                .build();
-        hotelRepository.save(createdHotel);
-
-        String referer = request.getHeader("Referer");
-        return "redirect:" + referer;
-    }
-
-    @GetMapping("/tours/edit/{id}")
-    public String tourEdit(@PathVariable("id") Long id, Model model) {
-        if (UserID == null) {
-            model.addAttribute("userId", 0);
-        } else {
-            model.addAttribute("userId", 1);
-            model.addAttribute("isAdmin", isAdmin);
-        }
-
-        Tour tour = tourRepository.findById(id).get();
-        List<Country> country = countryRepository.findAll();
-        List<Hotel> hotel = hotelRepository.findAll();
-        model.addAttribute("tour", tour);
-        model.addAttribute("country", country);
-        model.addAttribute("hotel", hotel);
-        return "tour/tour-edit";
-    }
-
-    @Transactional
-    @PostMapping("/tours/edit/{id}")
+    @PutMapping("/tours/{id}")
     public String tourUpdate(
             @PathVariable("id") Long id,
-            @RequestParam("hotel_name") String hotelName,
+            @RequestParam("hotelName") String hotelName,
             @RequestParam("title") String title,
             @RequestParam("description") String description,
-            @RequestParam("country_name") String countryName,
+            @RequestParam("countryName") String countryName,
             @RequestParam("price") double price,
-            @RequestParam("place_quantity") int placeQuantity,
-            @RequestParam("start_date") @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate startDate,
-            @RequestParam("end_date") @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate endDate,
+            @RequestParam("placeQuantity") int placeQuantity,
+            @RequestParam("startDate") @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate startDate,
+            @RequestParam("endDate") @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate endDate,
             Model model
     ) {
         Hotel hotel = hotelRepository.findByName(hotelName).get();
@@ -300,14 +267,14 @@ public class TourController {
         foundTour.setCheckOutDate(endDate);
         Tour savedTour = tourRepository.save(foundTour);
         model.addAttribute("tour", savedTour);
-        return "redirect:/tour";
+        return "redirect:/tours";
     }
 
     @Transactional
     @DeleteMapping("/tours/{id}")
     public String deleteTour(@PathVariable("id") Long id) {
         tourRepository.deleteById(id);
-        return "redirect:/tour";
+        return "redirect:/tours";
     }
 
     @GetMapping("/search")

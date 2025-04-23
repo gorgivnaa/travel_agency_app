@@ -1,0 +1,11 @@
+.full-dvh {
+    height: 100dvh;
+}
+
+.vertical-flex {
+    display: flex;
+    flex-direction: column;
+}
+.full-flex {
+    flex: 1;
+}
