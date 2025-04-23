@@ -46,11 +46,7 @@ public class OrderController {
     public String getAllOrders(Model model) {
         List<Order> orders = orderRepository.findAll();
         List<Tour> tours = tourRepository.findAll();
-        if (UserID == null) {
-            model.addAttribute("userId", 0);
-        } else {
-            model.addAttribute("userId", 1);
-        }
+        model.addAttribute("userId", UserID == null ? 0 : 1);
         model.addAttribute("orders", orders);
         model.addAttribute("tours", tours);
         model.addAttribute("isAdmin", isAdmin);
@@ -131,5 +127,3 @@ public class OrderController {
         return "redirect:/orders";
     }
 }
-
-

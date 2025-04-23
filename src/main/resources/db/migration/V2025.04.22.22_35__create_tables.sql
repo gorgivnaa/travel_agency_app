@@ -1,7 +1,7 @@
 -- Таблица "countries" (страны)
 CREATE TABLE countries (
     id BIGINT PRIMARY KEY AUTO_INCREMENT,
-    name VARCHAR(255) NOT NULL,
+    name VARCHAR(255) NOT NULL UNIQUE,
     image LONGBLOB NOT NULL
 );
 

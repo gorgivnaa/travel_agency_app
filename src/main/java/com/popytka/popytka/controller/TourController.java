@@ -10,6 +10,7 @@ import com.popytka.popytka.repository.HotelRepository;
 import com.popytka.popytka.repository.ServiceRepository;
 import com.popytka.popytka.repository.TourRepository;
 import com.popytka.popytka.repository.UserRepository;
+import com.popytka.popytka.service.TourService;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -39,6 +40,7 @@ public class TourController {
 
     private List<Tour> filteredTours = new ArrayList<>();
 
+    private final TourService tourService;
     private final UserRepository userRepository;
     private final TourRepository tourRepository;
     private final HotelRepository hotelRepository;
@@ -47,22 +49,15 @@ public class TourController {
 
     @GetMapping
     public String getAllTours(Model model, @RequestParam(required = false) String sort) {
-        if (UserID == null) {
-            model.addAttribute("userId", 0);
-        } else {
-            model.addAttribute("userId", 1);
-        }
-        List<Tour> tours = tourRepository.findAll();
+        model.addAttribute("userId", UserID == null ? 0 : 1);
+        List<Tour> tours = tourService.getAllServices().getData();
 
         if (sort != null) {
-            if (sort.equals("asc")) {
-                tours.sort(Comparator.comparing(Tour::getTitle));
-            } else if (sort.equals("desc")) {
-                tours.sort(Comparator.comparing(Tour::getTitle).reversed());
-            } else if (sort.equals("descPrice")) {
-                tours.sort(Comparator.comparing(Tour::getPrice).reversed());
-            } else if (sort.equals("ascPrice")) {
-                tours.sort(Comparator.comparing(Tour::getPrice));
+            switch (sort) {
+                case "asc" -> tours.sort(Comparator.comparing(Tour::getTitle));
+                case "desc" -> tours.sort(Comparator.comparing(Tour::getTitle).reversed());
+                case "ascPrice" -> tours.sort(Comparator.comparing(Tour::getPrice));
+                case "descPrice" -> tours.sort(Comparator.comparing(Tour::getPrice).reversed());
             }
         }
         model.addAttribute("tours", tours);
@@ -76,29 +71,18 @@ public class TourController {
             @RequestParam(required = false) String countryName,
             @RequestParam(required = false) BigDecimal maxPrice
     ) {
-        if (UserID == null) {
-            model.addAttribute("userId", 0);
-        } else {
-            model.addAttribute("userId", 1);
-        }
+        model.addAttribute("userId", UserID == null ? 0 : 1);
         model.addAttribute("isAdmin", isAdmin);
-        List<Tour> tours;
-        if ("".equals(countryName)) {
-            countryName = null;
-        }
+        countryName = countryName.isEmpty() ? null : countryName;
 
         if (countryName == null && maxPrice == null) {
-            tours = tourRepository.findAll();
-            filteredTours = tours;
+            filteredTours = tourRepository.findAll();
         } else if (countryName != null && maxPrice == null) {
-            tours = tourRepository.findByCountryName(countryName);
-            filteredTours = tours;
-        } else if (countryName == null && maxPrice != null) {
-            tours = tourRepository.findByPriceLessThanEqual(maxPrice);
-            filteredTours = tours;
+            filteredTours = tourRepository.findByCountryName(countryName);
+        } else if (countryName == null) {
+            filteredTours = tourRepository.findByPriceLessThanEqual(maxPrice);
         } else {
-            tours = tourRepository.findByCountryNameAndPriceLessThanEqual(countryName, maxPrice);
-            filteredTours = tours;
+            filteredTours = tourRepository.findByCountryNameAndPriceLessThanEqual(countryName, maxPrice);
         }
 
         if (filteredTours.isEmpty()) {
@@ -110,47 +94,25 @@ public class TourController {
 
     @GetMapping("/filters/{sort}")
     public String getFilteredAndSortedTours(@PathVariable(value = "sort") String sort, Model model) {
-        if (UserID == null) {
-            model.addAttribute("userId", 0);
-        } else {
-            model.addAttribute("userId", 1);
-        }
+        model.addAttribute("userId", UserID == null ? 0 : 1);
         model.addAttribute("isAdmin", isAdmin);
         List<Tour> tours = filteredTours;
         switch (sort) {
-            case "asc": {
-                tours.sort(Comparator.comparing(Tour::getTitle));
-            }
-            break;
-            case "desc": {
-                tours.sort(Comparator.comparing(Tour::getTitle).reversed());
-                break;
-            }
-            case "ascPrice": {
-                tours.sort(Comparator.comparing(Tour::getPrice).reversed());
-                break;
-            }
-            case "descPrice": {
-                tours.sort(Comparator.comparing(Tour::getPrice));
-                break;
-            }
+            case "asc" -> tours.sort(Comparator.comparing(Tour::getTitle));
+            case "desc" -> tours.sort(Comparator.comparing(Tour::getTitle).reversed());
+            case "ascPrice" -> tours.sort(Comparator.comparing(Tour::getPrice));
+            case "descPrice" -> tours.sort(Comparator.comparing(Tour::getPrice).reversed());
         }
         model.addAttribute("tour", tours);
         return "tour/tour-filters";
     }
 
     @GetMapping("/{id}")
-    public String getById(@PathVariable("id") Long tourId, Model model) {
-        User user = null;
-        if (UserID == null) {
-            model.addAttribute("userId", 0);
-        } else {
-            user = userRepository.findById(UserID).orElse(null);
-            model.addAttribute("userId", 1);
-        }
+    public String getById(@PathVariable("id") Long id, Model model) {
+        model.addAttribute("userId", UserID == null ? 0 : 1);
         model.addAttribute("isAdmin", isAdmin);
-
-        Tour tour = tourRepository.findById(tourId).get();
+        User user = userRepository.findById(UserID).orElse(null);
+        Tour tour = tourService.getById(id).getData().getFirst();
         Hotel hotel = tour.getHotel();
         List<AdditionalService> additionalServices = serviceRepository.findAll();
 
@@ -163,11 +125,7 @@ public class TourController {
 
     @GetMapping("edit/{id}")
     public String getTourForEdit(@PathVariable("id") Long id, Model model) {
-        if (UserID == null) {
-            model.addAttribute("userId", 0);
-        } else {
-            model.addAttribute("userId", 1);
-        }
+        model.addAttribute("userId", UserID == null ? 0 : 1);
         model.addAttribute("isAdmin", isAdmin);
 
         Tour tour = tourRepository.findById(id).get();
@@ -181,11 +139,7 @@ public class TourController {
 
     @GetMapping("/add")
     public String getTourForCreate(Model model) {
-        if (UserID == null) {
-            model.addAttribute("userId", 0);
-        } else {
-            model.addAttribute("userId", 1);
-        }
+        model.addAttribute("userId", UserID == null ? 0 : 1);
         model.addAttribute("isAdmin", isAdmin);
         List<Country> countries = countryRepository.findAll();
         model.addAttribute("countries", countries);
@@ -220,11 +174,7 @@ public class TourController {
                 .hotel(hotel)
                 .build();
         tourRepository.save(createdTour);
-        if (UserID == null) {
-            model.addAttribute("userId", 0);
-        } else {
-            model.addAttribute("userId", 1);
-        }
+        model.addAttribute("userId", UserID == null ? 0 : 1);
         model.addAttribute("isAdmin", isAdmin);
         return "redirect:/tours";
     }
@@ -268,11 +218,7 @@ public class TourController {
 
     @GetMapping("/search")
     public String searchTour(@RequestParam("query") String query, Model model) {
-        if (UserID == null) {
-            model.addAttribute("userId", 0);
-        } else {
-            model.addAttribute("userId", 1);
-        }
+        model.addAttribute("userId", UserID == null ? 0 : 1);
         model.addAttribute("isAdmin", isAdmin);
         filteredTours = tourRepository.findByTitleContainingOrDescriptionContaining(query, query);
         if (filteredTours.isEmpty()) {

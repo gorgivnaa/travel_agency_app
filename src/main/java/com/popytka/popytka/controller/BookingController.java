@@ -52,11 +52,7 @@ public class BookingController {
     public String getBookingsByUser(@PathVariable(value = "userId") Long userId, Model model) {
         User user = userRepository.findById(userId).get();
         List<Booking> bookings = bookingRepository.findByUser(user);
-        if (UserID == null) {
-            model.addAttribute("userId", 0);
-        } else {
-            model.addAttribute("userId", 1);
-        }
+        model.addAttribute("userId", UserID==null?0:1);
         model.addAttribute("isAdmin", isAdmin);
         model.addAttribute("user", user);
         model.addAttribute("bookings", bookings);

@@ -4,10 +4,8 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
-import com.popytka.popytka.entity.Booking;
 import com.popytka.popytka.entity.Country;
 import com.popytka.popytka.entity.User;
-import com.popytka.popytka.repository.BookingRepository;
 import com.popytka.popytka.repository.CountryRepository;
 import com.popytka.popytka.repository.UserRepository;
 import com.popytka.popytka.service.EmailService;
@@ -50,11 +48,7 @@ public class MainController {
     @GetMapping("/")
     public String home(Model model) {
         List<Country> countries = countryRepository.findAll();
-        if (UserID == null) {
-            model.addAttribute("userId", 0);
-        } else {
-            model.addAttribute("userId", 1);
-        }
+        model.addAttribute("userId", UserID == null ? 0 : 1);
         model.addAttribute("isAdmin", isAdmin);
         model.addAttribute("countries", countries);
         return "home";
@@ -97,11 +91,7 @@ public class MainController {
 
     @GetMapping("/authorization")
     public String authorization(Model model) {
-        if (UserID == null) {
-            model.addAttribute("userId", 0);
-        } else {
-            model.addAttribute("userId", 1);
-        }
+        model.addAttribute("userId", UserID == null ? 0 : 1);
         model.addAttribute("isAdmin", isAdmin);
         return "user/authorization";
     }
@@ -114,11 +104,7 @@ public class MainController {
             HttpServletRequest request,
             Model model
     ) {
-        if (UserID == null) {
-            model.addAttribute("userId", 0);
-        } else {
-            model.addAttribute("userId", 1);
-        }
+        model.addAttribute("userId", UserID == null ? 0 : 1);
         model.addAttribute("isAdmin", isAdmin);
         Optional<User> userOptional = userRepository.findByEmail(email);
         if (userOptional.isPresent()) {
@@ -158,12 +144,8 @@ public class MainController {
 
     @GetMapping("/logout")
     public String logout(HttpServletRequest request, Model model) {
-        if (UserID == null) {
-            model.addAttribute("userId", 0);
-        } else {
-            model.addAttribute("userId", 1);
-            model.addAttribute("isAdmin", isAdmin);
-        }
+        model.addAttribute("userId", UserID == null ? 0 : 1);
+        model.addAttribute("isAdmin", isAdmin);
         HttpSession session = request.getSession();
         String userId = (String) session.getAttribute(SESSION_ID_KEY);
         if (userId != null) {
@@ -178,11 +160,7 @@ public class MainController {
     @GetMapping("/account/{id}/edit")
     public String userEdit(@PathVariable(value = "id") Long id, Model model) {
         User user = userRepository.findById(id).orElse(null);
-        if (UserID == null) {
-            model.addAttribute("userId", 0);
-        } else {
-            model.addAttribute("userId", 1);
-        }
+        model.addAttribute("userId", UserID == null ? 0 : 1);
         model.addAttribute("isAdmin", isAdmin);
         model.addAttribute("user", user);
         return "user/user-edit";
@@ -204,11 +182,7 @@ public class MainController {
         user.setEmail(email);
         user.setPhone(phone);
         User updatedUser = userRepository.save(user);
-        if (UserID == null) {
-            model.addAttribute("userId", 0);
-        } else {
-            model.addAttribute("userId", 1);
-        }
+        model.addAttribute("userId", UserID == null ? 0 : 1);
         model.addAttribute("isAdmin", isAdmin);
         model.addAttribute("user", updatedUser);
         return "redirect:/account";
@@ -257,11 +231,10 @@ public class MainController {
     @PostMapping("/edit-password")
     public String setCode(
             @RequestParam("password") String password,
-            @RequestParam("password2") String password2,
+            @RequestParam("password2") String copyPassword,
             Model model
     ) {
-
-        if (password.equals(password2)) {
+        if (password.equals(copyPassword)) {
             String hashPassword = BCrypt.hashpw(password, BCrypt.gensalt());
             User user = userRepository.findById(UserID).get();
             user.setPassword(hashPassword);
@@ -269,7 +242,7 @@ public class MainController {
             UserID = null;
             return "user/authorization";
         } else {
-            model.addAttribute("errorMessage", "Passwords don't match");
+            model.addAttribute("errorMessage", "Пароли не совпадают!");
         }
         return "user/edit-password";
     }
@@ -292,12 +265,8 @@ public class MainController {
             }
         }
         List<Country> countries = countryRepository.findAll();
-        if (UserID == null) {
-            model.addAttribute("userId", 0);
-        } else {
-            model.addAttribute("userId", 1);
-            model.addAttribute("isAdmin", isAdmin);
-        }
+        model.addAttribute("userId", UserID == null ? 0 : 1);
+        model.addAttribute("isAdmin", isAdmin);
         model.addAttribute("country", countries);
         model.addAttribute("title", "Главная страница");
         return "home";
@@ -307,7 +276,6 @@ public class MainController {
     public void exportData(HttpServletResponse response) {
         try {
             List<User> users = userRepository.findAll();
-
             ObjectMapper objectMapper = new ObjectMapper();
             objectMapper.registerModule(new JavaTimeModule());
             objectMapper.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);

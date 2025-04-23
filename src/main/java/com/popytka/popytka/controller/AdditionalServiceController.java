@@ -30,11 +30,7 @@ public class AdditionalServiceController {
 
     @GetMapping
     public String getServices(Model model, @RequestParam(required = false) String sort) {
-        if (UserID == null) {
-            model.addAttribute("userId", 0);
-        } else {
-            model.addAttribute("userId", 1);
-        }
+        model.addAttribute("userId", UserID==null?0:1);
         model.addAttribute("isAdmin", isAdmin);
         List<AdditionalService> additionalServices = serviceRepository.findAll();
         if (sort != null) {
@@ -59,11 +55,7 @@ public class AdditionalServiceController {
 
     @GetMapping("/search")
     public String searchTour(@RequestParam("query") String query, Model model) {
-        if (UserID == null) {
-            model.addAttribute("userId", 0);
-        } else {
-            model.addAttribute("userId", 1);
-        }
+        model.addAttribute("userId", UserID==null?0:1);
         model.addAttribute("isAdmin", isAdmin);
         filteredAdditionalServices = serviceRepository.findByNameContainingOrDescriptionContaining(query, query);
         if (filteredAdditionalServices.isEmpty()) {
