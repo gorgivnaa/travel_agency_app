@@ -1,5 +1,6 @@
 package com.popytka.popytka.controller;
 
+import com.popytka.popytka.controller.filter.TourFilter;
 import com.popytka.popytka.entity.AdditionalService;
 import com.popytka.popytka.entity.Country;
 import com.popytka.popytka.entity.Hotel;
@@ -11,13 +12,17 @@ import com.popytka.popytka.repository.ServiceRepository;
 import com.popytka.popytka.repository.TourRepository;
 import com.popytka.popytka.repository.UserRepository;
 import com.popytka.popytka.service.TourService;
+import com.popytka.popytka.util.CustomPage;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -48,19 +53,14 @@ public class TourController {
     private final ServiceRepository serviceRepository;
 
     @GetMapping
-    public String getAllTours(Model model, @RequestParam(required = false) String sort) {
+    public String getAllTours(Model model, @RequestParam(required = false) String sort,
+                              @ModelAttribute TourFilter filter,
+                              Pageable pageable) {
         model.addAttribute("userId", UserID == null ? 0 : 1);
-        List<Tour> tours = tourService.getAllServices().getData();
-
-        if (sort != null) {
-            switch (sort) {
-                case "asc" -> tours.sort(Comparator.comparing(Tour::getTitle));
-                case "desc" -> tours.sort(Comparator.comparing(Tour::getTitle).reversed());
-                case "ascPrice" -> tours.sort(Comparator.comparing(Tour::getPrice));
-                case "descPrice" -> tours.sort(Comparator.comparing(Tour::getPrice).reversed());
-            }
-        }
-        model.addAttribute("tours", tours);
+        Page<Tour> pageTours = tourService.getAllServices(filter, pageable);
+        CustomPage<Tour> tourCustomPage = new CustomPage<>(pageTours);
+        //тут были сортировки, надо не забыть добавить их на фронт!
+        model.addAttribute("tours", tourCustomPage);
         model.addAttribute("isAdmin", isAdmin);
         return "tour/tour";
     }
@@ -112,7 +112,7 @@ public class TourController {
         model.addAttribute("userId", UserID == null ? 0 : 1);
         model.addAttribute("isAdmin", isAdmin);
         User user = userRepository.findById(UserID).orElse(null);
-        Tour tour = tourService.getById(id).getData().getFirst();
+        Tour tour = tourService.getById(id).get();
         Hotel hotel = tour.getHotel();
         List<AdditionalService> additionalServices = serviceRepository.findAll();
 

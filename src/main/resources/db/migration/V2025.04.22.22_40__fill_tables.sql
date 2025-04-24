@@ -1,10 +1,10 @@
 -- Вставка в таблицу countries
 INSERT INTO countries (name, image)
-VALUES ('Россия', LOAD_FILE('C:/ProgramData/MySQL/MySQL Server 8.0/Uploads/Russia-Moscow-GUM.png')),
- 		('Франция', LOAD_FILE('C:/ProgramData/MySQL/MySQL Server 8.0/Uploads/France.png')),
- 		('Италия', LOAD_FILE('C:/ProgramData/MySQL/MySQL Server 8.0/Uploads/Italy.png')),
- 		('Испания', LOAD_FILE('C:/ProgramData/MySQL/MySQL Server 8.0/Uploads/Spain.png')),
- 		('Греция', LOAD_FILE('C:/ProgramData/MySQL/MySQL Server 8.0/Uploads/Greece.png'));
+VALUES ('Россия', LOAD_FILE('/images/Russia-Moscow-GUM.png')),
+ 		('Франция', LOAD_FILE('/images/France.png')),
+ 		('Италия', LOAD_FILE('/images/Italy.png')),
+ 		('Испания', LOAD_FILE('/images/Spain.png')),
+ 		('Греция', LOAD_FILE('/images/Greece.png'));
 
 -- Вставка данных в таблицу users
 INSERT INTO users (first_name, last_name, email, phone, password) VALUES
