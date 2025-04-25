@@ -1,8 +1,9 @@
-package com.popytka.popytka.service;
+package com.popytka.popytka.service.impl;
 
 import com.popytka.popytka.controller.filter.TourFilter;
 import com.popytka.popytka.entity.Tour;
 import com.popytka.popytka.repository.TourRepository;
+import com.popytka.popytka.service.TourService;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -14,7 +15,7 @@ import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor(access = AccessLevel.PACKAGE)
-public class TourServiceImpl implements TourService {
+class TourServiceImpl implements TourService {
 
     private final TourRepository tourRepository;
 
