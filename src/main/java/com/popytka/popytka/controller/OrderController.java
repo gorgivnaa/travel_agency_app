@@ -39,8 +39,8 @@ public class OrderController {
     private final UserRepository userRepository;
     private final TourRepository tourRepository;
     private final OrderRepository orderRepository;
-    private final AdditionalServiceRepository additionalServiceRepository;
     private final BookingRepository bookingRepository;
+    private final AdditionalServiceRepository additionalServiceRepository;
 
     @GetMapping
     public String getAllOrders(Model model) {

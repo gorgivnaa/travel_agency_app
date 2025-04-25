@@ -40,7 +40,6 @@ public class BookingController {
         }
 
         byte[] pdfBytes = bookingGeneratorService.generateBookingPdf(booking);
-
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_PDF);
         headers.setContentDispositionFormData("attachment", "booking.pdf");
