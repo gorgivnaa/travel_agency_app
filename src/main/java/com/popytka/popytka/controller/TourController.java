@@ -13,12 +13,13 @@ import com.popytka.popytka.repository.TourRepository;
 import com.popytka.popytka.repository.UserRepository;
 import com.popytka.popytka.service.TourService;
 import com.popytka.popytka.util.CustomPage;
-import jakarta.transaction.Transactional;
+import com.popytka.popytka.util.FilterUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.stereotype.Controller;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -31,20 +32,18 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.List;
 
 import static com.popytka.popytka.controller.MainController.UserID;
 import static com.popytka.popytka.controller.MainController.isAdmin;
 
 @Controller
-@RequestMapping("/tours")
 @RequiredArgsConstructor
+@RequestMapping("/tours")
+@Transactional(readOnly = true)
 public class TourController {
 
-    private List<Tour> filteredTours = new ArrayList<>();
-
+    private final FilterUtil filterUtil;
     private final TourService tourService;
     private final UserRepository userRepository;
     private final TourRepository tourRepository;
@@ -53,58 +52,20 @@ public class TourController {
     private final ServiceRepository serviceRepository;
 
     @GetMapping
-    public String getAllTours(Model model, @RequestParam(required = false) String sort,
-                              @ModelAttribute TourFilter filter,
-                              Pageable pageable) {
-        model.addAttribute("userId", UserID == null ? 0 : 1);
-        Page<Tour> pageTours = tourService.getAllServices(filter, pageable);
-        CustomPage<Tour> tourCustomPage = new CustomPage<>(pageTours);
-        //тут были сортировки, надо не забыть добавить их на фронт!
-        model.addAttribute("tours", tourCustomPage);
-        model.addAttribute("isAdmin", isAdmin);
-        return "tour/tour";
-    }
-
-    @GetMapping("/filters")
-    public String getFilteredTours(
+    public String getAllTours(
             Model model,
-            @RequestParam(required = false) String countryName,
-            @RequestParam(required = false) BigDecimal maxPrice
+            @ModelAttribute TourFilter filter,
+            Pageable pageable
     ) {
         model.addAttribute("userId", UserID == null ? 0 : 1);
+        filterUtil.addPriceFilter(filter);
+        Page<Tour> pageTours = tourService.getAllServices(filter, pageable);
+        List<Country> countries = countryRepository.findAll();
+        CustomPage<Tour> tourCustomPage = new CustomPage<>(pageTours);
+        model.addAttribute("tours", tourCustomPage);
+        model.addAttribute("countries", countries);
         model.addAttribute("isAdmin", isAdmin);
-        countryName = countryName.isEmpty() ? null : countryName;
-
-        if (countryName == null && maxPrice == null) {
-            filteredTours = tourRepository.findAll();
-        } else if (countryName != null && maxPrice == null) {
-            filteredTours = tourRepository.findByCountryName(countryName);
-        } else if (countryName == null) {
-            filteredTours = tourRepository.findByPriceLessThanEqual(maxPrice);
-        } else {
-            filteredTours = tourRepository.findByCountryNameAndPriceLessThanEqual(countryName, maxPrice);
-        }
-
-        if (filteredTours.isEmpty()) {
-            model.addAttribute("noResults", true);
-        }
-        model.addAttribute("tour", filteredTours);
-        return "tour/tour-filters";
-    }
-
-    @GetMapping("/filters/{sort}")
-    public String getFilteredAndSortedTours(@PathVariable(value = "sort") String sort, Model model) {
-        model.addAttribute("userId", UserID == null ? 0 : 1);
-        model.addAttribute("isAdmin", isAdmin);
-        List<Tour> tours = filteredTours;
-        switch (sort) {
-            case "asc" -> tours.sort(Comparator.comparing(Tour::getTitle));
-            case "desc" -> tours.sort(Comparator.comparing(Tour::getTitle).reversed());
-            case "ascPrice" -> tours.sort(Comparator.comparing(Tour::getPrice));
-            case "descPrice" -> tours.sort(Comparator.comparing(Tour::getPrice).reversed());
-        }
-        model.addAttribute("tour", tours);
-        return "tour/tour-filters";
+        return "tour/tour";
     }
 
     @GetMapping("/{id}")
@@ -214,18 +175,5 @@ public class TourController {
     public String deleteTour(@PathVariable("id") Long id) {
         tourRepository.deleteById(id);
         return "redirect:/tours";
-    }
-
-    @GetMapping("/search")
-    public String searchTour(@RequestParam("query") String query, Model model) {
-        model.addAttribute("userId", UserID == null ? 0 : 1);
-        model.addAttribute("isAdmin", isAdmin);
-        filteredTours = tourRepository.findByTitleContainingOrDescriptionContaining(query, query);
-        if (filteredTours.isEmpty()) {
-            model.addAttribute("message", "Результатов по данному запросу не найдено.");
-        } else {
-            model.addAttribute("tour", filteredTours);
-        }
-        return "tour/tour-filters";
     }
 }

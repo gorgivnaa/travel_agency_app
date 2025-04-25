@@ -231,7 +231,7 @@ public class MainController {
     @PostMapping("/edit-password")
     public String setCode(
             @RequestParam("password") String password,
-            @RequestParam("password2") String copyPassword,
+            @RequestParam("copyPassword") String copyPassword,
             Model model
     ) {
         if (password.equals(copyPassword)) {

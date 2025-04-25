@@ -4,32 +4,13 @@ import com.popytka.popytka.common.CommonConstants;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.util.CollectionUtils;
 
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.Map;
 import java.util.regex.MatchResult;
 import java.util.regex.Pattern;
 
 public interface NumberSpecification<T> extends NestedPath, NullSpecification<T> {
-
-    default <N extends Number> Specification<T> buildSpecFromNumber(
-            final List<String> pathToParam,
-            final N value
-    ) {
-        if (value == null) {
-            return null;
-        }
-
-        return (root, query, cb) -> cb.equal(getNestedPath(root, pathToParam), value);
-    }
-
-    default <N extends Number> Specification<T> buildSpecFromNumberNotNull(
-            final List<String> pathToParam,
-            final N value,
-            final Boolean notNull
-    ) {
-        Specification<T> spec = buildSpecFromNumber(pathToParam, value);
-        return buildSpecFromNull(pathToParam, notNull, spec);
-    }
 
     default Specification<T> buildSpecFromNumbers(
             final List<String> pathToParam,
@@ -46,7 +27,7 @@ public interface NumberSpecification<T> extends NestedPath, NullSpecification<T>
                 .orElse(null);
     }
 
-    private Map.Entry<Long, ParameterEnum> getNumberAndParameter(final String numberWithParameter) {
+    private Map.Entry<BigDecimal, ParameterEnum> getNumberAndParameter(final String numberWithParameter) {
         final String pattern = getPattern(numberWithParameter);
         final MatchResult matchResult = Pattern.compile(pattern)
                 .matcher(numberWithParameter)
@@ -57,8 +38,8 @@ public interface NumberSpecification<T> extends NestedPath, NullSpecification<T>
         final ParameterEnum parameter = ParameterEnum.fromString(
                 matchResult.group(CommonConstants.PREFIX_DATA_GROUP_NUMBER)
         );
-        final Number number = parseNumber(matchResult, pattern);
-        return Map.entry(number.longValue(), parameter);
+        final BigDecimal number = parseNumber(matchResult, pattern);
+        return Map.entry(number, parameter);
     }
 
     private String getPattern(final String numberWithParameter) {
@@ -69,20 +50,21 @@ public interface NumberSpecification<T> extends NestedPath, NullSpecification<T>
         }
     }
 
-    private Number parseNumber(final MatchResult matchResult, final String pattern) {
+    private BigDecimal parseNumber(final MatchResult matchResult, final String pattern) {
         String numberText = matchResult.group(CommonConstants.DATA_GROUP_NUMBER);
         if (!CommonConstants.NUMBER_WITH_PARAMETER_REGEX.equals(pattern)) {
-            throw new RuntimeException();
+            throw createWrongSearchException(matchResult.group(0));
         }
-        return Long.valueOf(numberText);
+
+        return new BigDecimal(numberText);
     }
 
     private RuntimeException createWrongSearchException(final String numberWithParameter) {
-        return new RuntimeException("Неверно указанный формат! " + numberWithParameter);
+        return new RuntimeException("Повреждённое число поиска с параметром - " + numberWithParameter);
     }
 
     private Specification<T> getNumberSpecification(
-            final Map.Entry<Long, ParameterEnum> numberParameter,
+            final Map.Entry<BigDecimal, ParameterEnum> numberParameter,
             final List<String> pathToParam
     ) {
         if (numberParameter == null || numberParameter.getKey() == null) {
@@ -90,27 +72,27 @@ public interface NumberSpecification<T> extends NestedPath, NullSpecification<T>
         }
         return switch (numberParameter.getValue()) {
             case GT -> (root, query, criteriaBuilder) -> criteriaBuilder.greaterThan(
-                    getNestedPath(root, pathToParam).as(Long.class),
+                    getNestedPath(root, pathToParam).as(BigDecimal.class),
                     numberParameter.getKey()
             );
             case GE -> (root, query, criteriaBuilder) -> criteriaBuilder.greaterThanOrEqualTo(
-                    getNestedPath(root, pathToParam).as(Long.class),
+                    getNestedPath(root, pathToParam).as(BigDecimal.class),
                     numberParameter.getKey()
             );
             case LT -> (root, query, criteriaBuilder) -> criteriaBuilder.lessThan(
-                    getNestedPath(root, pathToParam).as(Long.class),
+                    getNestedPath(root, pathToParam).as(BigDecimal.class),
                     numberParameter.getKey()
             );
             case LE -> (root, query, criteriaBuilder) -> criteriaBuilder.lessThanOrEqualTo(
-                    getNestedPath(root, pathToParam).as(Long.class),
+                    getNestedPath(root, pathToParam).as(BigDecimal.class),
                     numberParameter.getKey()
             );
             case EQ -> (root, query, criteriaBuilder) -> criteriaBuilder.equal(
-                    getNestedPath(root, pathToParam).as(Long.class),
+                    getNestedPath(root, pathToParam).as(BigDecimal.class),
                     numberParameter.getKey()
             );
             case NE -> (root, query, criteriaBuilder) -> criteriaBuilder.notEqual(
-                    getNestedPath(root, pathToParam).as(Long.class),
+                    getNestedPath(root, pathToParam).as(BigDecimal.class),
                     numberParameter.getKey()
             );
         };

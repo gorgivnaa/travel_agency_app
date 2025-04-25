@@ -10,61 +10,38 @@
     <meta name="theme-color" content="#712cf9">
 
     <style>
-        .link-body-emphasis,
-       .header-link {
-           color: #00abc2;
-       }
+        .error-message {
+            color: red;
+            font-size: 14px;
+            margin-top: 10px;
+            text-align: center;
+        }
 
-       .btn-outline-primary {
-       color:#00abc2;
-           border-color: #00abc2;
-           background-color: transparent;
-       }
+        .form-container {
+            position: relative;
+        }
 
-       .btn-outline-primary:hover {
-           border-color: #007ba7;
-           background-color: #007ba7;
-           color: white;
-       }
+        .form-container::after {
+            content: "";
+            display: table;
+            clear: both;
+        }
 
-       .link-body-emphasis:hover,
-       .header-link:hover {
-           color: #007ba7;
-           background-color: transparent;
-       }
+        .download-button {
+            display: inline-block;
+            padding: 10px 20px;
+            background-color: #00abc2;
+            color: white;
+            border-radius: 10px;
+            text-decoration: none;
+            outline: none;
+            border: none;
+        }
 
-       .error-message {
-           color: red;
-           font-size: 14px;
-           margin-top: 10px;
-           text-align: center;
-       }
-
-       .form-container {
-           position: relative;
-       }
-
-       .form-container::after {
-           content: "";
-           display: table;
-           clear: both;
-       }
-
-       .download-button {
-         display: inline-block;
-         padding: 10px 20px;
-         background-color: #00abc2;
-         color: white;
-         border-radius: 10px;
-         text-decoration: none;
-         outline: none;
-         border: none;
-       }
-
-       .download-button:hover {
-         color: white;
-         background-color: #007ba7;
-       }
+        .download-button:hover {
+            color: white;
+            background-color: #007ba7;
+        }
 
     </style>
 </head>
@@ -76,15 +53,15 @@
         <h3 class="display-4 fw-normal text-body-emphasis">Введите email</h3>
     </div>
     <main class="form-sign in w-50 m-auto">
-        <form action="/verification" th:method="POST">
+        <form th:action="@{/verification}" th:method="POST">
             <h1 class="h3 mb-3 fw-normal">Вам придёт письмо с четырёхзначным кодом</h1>
             <div class="form-floating mb-2">
                 <input type="email" class="form-control" id="floatingInput" name="email" placeholder="name@example.com">
                 <label for="floatingInput">Email</label>
             </div>
-            <div th:if="${error_message}" class="form-container">
+            <div th:if="${errorMessage}" class="form-container">
                 <div class="error-message">
-                    <p th:text="${error_message}"></p>
+                    <p th:text="${errorMessage}"></p>
                 </div>
             </div>
             <button class="download-button w-100 py-2" type="submit">Получить код</button>
