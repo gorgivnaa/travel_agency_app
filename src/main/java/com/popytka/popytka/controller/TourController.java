@@ -9,7 +9,7 @@ import com.popytka.popytka.entity.Tour;
 import com.popytka.popytka.entity.User;
 import com.popytka.popytka.repository.CountryRepository;
 import com.popytka.popytka.repository.HotelRepository;
-import com.popytka.popytka.repository.ServiceRepository;
+import com.popytka.popytka.repository.AdditionalServiceRepository;
 import com.popytka.popytka.repository.TourRepository;
 import com.popytka.popytka.repository.UserRepository;
 import com.popytka.popytka.service.TourService;
@@ -46,7 +46,7 @@ public class TourController {
     private final TourRepository tourRepository;
     private final HotelRepository hotelRepository;
     private final CountryRepository countryRepository;
-    private final ServiceRepository serviceRepository;
+    private final AdditionalServiceRepository additionalServiceRepository;
 
     @GetMapping
     public String getAllTours(
@@ -56,8 +56,8 @@ public class TourController {
     ) {
         filterUtil.addPriceFilter(filter);
         Page<Tour> pageTours = tourService.getAllServices(filter, pageable);
-        List<Country> countries = countryRepository.findAll();
         CustomPage<Tour> tourCustomPage = new CustomPage<>(pageTours);
+        List<Country> countries = countryRepository.findAll();
 
         model.addAttribute("userId", UserID == null ? 0 : 1);
         model.addAttribute("tours", tourCustomPage);
@@ -71,7 +71,7 @@ public class TourController {
         User user = userRepository.findById(UserID).orElse(null);
         Tour tour = tourService.getById(id).get();
         Hotel hotel = tour.getHotel();
-        List<AdditionalService> additionalServices = serviceRepository.findAll();
+        List<AdditionalService> additionalServices = additionalServiceRepository.findAll();
 
         model.addAttribute("userId", UserID == null ? 0 : 1);
         model.addAttribute("isAdmin", isAdmin);

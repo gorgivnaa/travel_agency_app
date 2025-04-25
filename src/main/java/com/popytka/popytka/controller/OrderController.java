@@ -8,7 +8,7 @@ import com.popytka.popytka.entity.Tour;
 import com.popytka.popytka.entity.User;
 import com.popytka.popytka.repository.BookingRepository;
 import com.popytka.popytka.repository.OrderRepository;
-import com.popytka.popytka.repository.ServiceRepository;
+import com.popytka.popytka.repository.AdditionalServiceRepository;
 import com.popytka.popytka.repository.TourRepository;
 import com.popytka.popytka.repository.UserRepository;
 import jakarta.transaction.Transactional;
@@ -39,7 +39,7 @@ public class OrderController {
     private final UserRepository userRepository;
     private final TourRepository tourRepository;
     private final OrderRepository orderRepository;
-    private final ServiceRepository serviceRepository;
+    private final AdditionalServiceRepository additionalServiceRepository;
     private final BookingRepository bookingRepository;
 
     @GetMapping
@@ -67,7 +67,7 @@ public class OrderController {
         if (tour != null) {
             Hotel hotel = tour.getHotel();
             User user = userRepository.findByPhone(phone).get();
-            AdditionalService additionalService = serviceRepository.findByName(serviceName).get();
+            AdditionalService additionalService = additionalServiceRepository.findByName(serviceName).get();
             Order order = Order.builder()
                     .orderDateTime(orderDate)
                     .placeQuantity(numberOfPeople)
