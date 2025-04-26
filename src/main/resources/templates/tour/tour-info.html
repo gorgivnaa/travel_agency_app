@@ -108,7 +108,7 @@
             </div>
         </div>
         <div class="card-footer d-flex justify-content-between align-items-center">
-            <h5><span th:text="*{price} + ' руб'"></span></h5>
+            <h5><span th:text="*{price} + ' руб'"/></h5>
             <a th:if="${userId == 0}" type="button" class="btn btn-sm btn-outline-primary" data-bs-toggle="modal"
                data-bs-target="#loginModal">
                 Оставить заявку
@@ -130,7 +130,7 @@
                 <h5 class="modal-title">Оставить заявку</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
-            <form th:action="@{/orders/add}" th:method="POST">
+            <form th:action="@{/orders}" th:method="POST">
                 <div class="modal-body">
                     <div class="mb-3">
                         <label for="tourTitle" class="form-label">Название тура</label>

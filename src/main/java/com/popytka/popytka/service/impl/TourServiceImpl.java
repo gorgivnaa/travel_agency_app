@@ -1,7 +1,6 @@
 package com.popytka.popytka.service.impl;
 
 import com.popytka.popytka.controller.filter.TourFilter;
-import com.popytka.popytka.dto.TourDTO;
 import com.popytka.popytka.entity.Country;
 import com.popytka.popytka.entity.Hotel;
 import com.popytka.popytka.entity.Tour;
@@ -14,6 +13,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -29,37 +29,32 @@ class TourServiceImpl implements TourService {
     }
 
     @Override
+    public List<Tour> getAllServices() {
+        return tourRepository.findAll();
+    }
+
+    @Override
     public Optional<Tour> getById(Long id) {
         return tourRepository.findById(id);
     }
 
     @Override
-    public TourDTO createTour(TourDTO tourDTO, Country country, Hotel hotel){
+    public Tour createTour(Tour tour, Country country, Hotel hotel) {
         Tour createdTour = Tour.builder()
-                .title(tourDTO.getTitle())
-                .description(tourDTO.getDescription())
-                .price(tourDTO.getPrice())
-                .placeQuantity(tourDTO.getPlaceQuantity())
-                .checkInDate(tourDTO.getStartDate())
-                .checkOutDate(tourDTO.getEndDate())
+                .title(tour.getTitle())
+                .description(tour.getDescription())
+                .price(tour.getPrice())
+                .placeQuantity(tour.getPlaceQuantity())
+                .checkInDate(tour.getCheckInDate())
+                .checkOutDate(tour.getCheckOutDate())
                 .country(country)
                 .hotel(hotel)
                 .build();
-        Tour savedTour = tourRepository.save(createdTour);
-        return TourDTO.builder()
-                .title(savedTour.getTitle())
-                .description(savedTour.getDescription())
-                .price(savedTour.getPrice())
-                .countryName(savedTour.getCountry().getName())
-                .hotelName(savedTour.getHotel().getName())
-                .placeQuantity(savedTour.getPlaceQuantity())
-                .startDate(savedTour.getCheckInDate())
-                .endDate(savedTour.getCheckOutDate())
-                .build();
+        return tourRepository.save(createdTour);
     }
 
     @Override
-    public TourDTO updateTour(Long id, TourDTO updatedTourDTO, Country country, Hotel hotel){
+    public Tour updateTour(Long id, Tour updatedTourDTO, Country country, Hotel hotel) {
         Tour foundTour = tourRepository.findById(id).get();
         foundTour.setHotel(hotel);
         foundTour.setTitle(updatedTourDTO.getTitle());
@@ -67,18 +62,8 @@ class TourServiceImpl implements TourService {
         foundTour.setPrice(updatedTourDTO.getPrice());
         foundTour.setCountry(country);
         foundTour.setPlaceQuantity(updatedTourDTO.getPlaceQuantity());
-        foundTour.setCheckInDate(updatedTourDTO.getStartDate());
-        foundTour.setCheckOutDate(updatedTourDTO.getEndDate());
-        Tour savedTour = tourRepository.save(foundTour);
-        return TourDTO.builder()
-                .title(savedTour.getTitle())
-                .description(savedTour.getDescription())
-                .price(savedTour.getPrice())
-                .countryName(savedTour.getCountry().getName())
-                .hotelName(savedTour.getHotel().getName())
-                .placeQuantity(savedTour.getPlaceQuantity())
-                .startDate(savedTour.getCheckInDate())
-                .endDate(savedTour.getCheckOutDate())
-                .build();
+        foundTour.setCheckInDate(updatedTourDTO.getCheckInDate());
+        foundTour.setCheckOutDate(updatedTourDTO.getCheckOutDate());
+        return tourRepository.save(foundTour);
     }
 }

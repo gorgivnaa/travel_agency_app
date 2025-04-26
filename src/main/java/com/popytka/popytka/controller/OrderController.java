@@ -8,9 +8,11 @@ import com.popytka.popytka.entity.Tour;
 import com.popytka.popytka.entity.User;
 import com.popytka.popytka.repository.BookingRepository;
 import com.popytka.popytka.repository.OrderRepository;
-import com.popytka.popytka.repository.AdditionalServiceRepository;
 import com.popytka.popytka.repository.TourRepository;
 import com.popytka.popytka.repository.UserRepository;
+import com.popytka.popytka.service.ASService;
+import com.popytka.popytka.service.TourService;
+import com.popytka.popytka.service.impl.OrderService;
 import jakarta.transaction.Transactional;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
@@ -40,21 +42,24 @@ public class OrderController {
     private final TourRepository tourRepository;
     private final OrderRepository orderRepository;
     private final BookingRepository bookingRepository;
-    private final AdditionalServiceRepository additionalServiceRepository;
+    private final ASService asService;
+    private final OrderService orderService;
+    private final TourService tourService;
 
     @GetMapping
     public String getAllOrders(Model model) {
-        List<Order> orders = orderRepository.findAll();
-        List<Tour> tours = tourRepository.findAll();
+        List<Order> orders = orderService.getAllOrders();
+        List<Tour> tours = tourService.getAllServices();
+
         model.addAttribute("userId", UserID == null ? 0 : 1);
+        model.addAttribute("isAdmin", isAdmin);
         model.addAttribute("orders", orders);
         model.addAttribute("tours", tours);
-        model.addAttribute("isAdmin", isAdmin);
         return "order/orders";
     }
 
     @Transactional
-    @PostMapping("/add")
+    @PostMapping
     public String addOrder(
             Model model,
             @RequestParam("tourTitle") String tourTitle,
@@ -64,10 +69,12 @@ public class OrderController {
             @RequestParam("orderDate") LocalDateTime orderDate
     ) {
         Tour tour = tourRepository.findByTitle(tourTitle).orElse(null);
-        if (tour != null) {
+        if (tour == null) {
+            model.addAttribute("successMessage", "Ошибка при отправке заявки.");
+        } else {
             Hotel hotel = tour.getHotel();
             User user = userRepository.findByPhone(phone).get();
-            AdditionalService additionalService = additionalServiceRepository.findByName(serviceName).get();
+            AdditionalService additionalService = asService.getByName(serviceName);
             Order order = Order.builder()
                     .orderDateTime(orderDate)
                     .placeQuantity(numberOfPeople)
@@ -80,8 +87,6 @@ public class OrderController {
             model.addAttribute("hotel", hotel);
             model.addAttribute("user", user);
             model.addAttribute("successMessage", "Заявка успешно отправлена.");
-        } else {
-            model.addAttribute("successMessage", "Ошибка при отправке заявки.");
         }
         return "tour/tour-info";
     }
@@ -94,7 +99,7 @@ public class OrderController {
     }
 
     @Transactional
-    @PostMapping("/accept/{id}")
+    @PostMapping("/{id}/accept")
     public String acceptOrder(@PathVariable("id") Long id) {
         BigDecimal totalPrice;
         Order order = orderRepository.findById(id).get();

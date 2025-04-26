@@ -1,7 +1,6 @@
 package com.popytka.popytka.service.impl;
 
 import com.popytka.popytka.controller.filter.AdditionalServiceFilter;
-import com.popytka.popytka.dto.AdditionalServiceDTO;
 import com.popytka.popytka.entity.AdditionalService;
 import com.popytka.popytka.repository.AdditionalServiceRepository;
 import com.popytka.popytka.service.ASService;
@@ -25,17 +24,17 @@ class ASServiceImpl implements ASService {
     }
 
     @Override
-    public AdditionalServiceDTO createAS(AdditionalServiceDTO additionalServiceDTO) {
+    public AdditionalService createAS(AdditionalService additionalService) {
         AdditionalService createdAdditionalService = AdditionalService.builder()
-                .name(additionalServiceDTO.getName())
-                .description(additionalServiceDTO.getDescription())
-                .price(additionalServiceDTO.getPrice())
+                .name(additionalService.getName())
+                .description(additionalService.getDescription())
+                .price(additionalService.getPrice())
                 .build();
-        AdditionalService savedAS = additionalServiceRepository.save(createdAdditionalService);
-        return AdditionalServiceDTO.builder()
-                .name(savedAS.getName())
-                .description(savedAS.getDescription())
-                .price(savedAS.getPrice())
-                .build();
+        return additionalServiceRepository.save(createdAdditionalService);
+    }
+
+    @Override
+    public AdditionalService getByName(String serviceName) {
+        return additionalServiceRepository.findByName(serviceName).orElse(null);
     }
 }

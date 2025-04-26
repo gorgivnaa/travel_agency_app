@@ -1,21 +1,21 @@
 package com.popytka.popytka.controller;
 
 import com.popytka.popytka.controller.filter.TourFilter;
-import com.popytka.popytka.dto.TourDTO;
 import com.popytka.popytka.entity.AdditionalService;
 import com.popytka.popytka.entity.Country;
 import com.popytka.popytka.entity.Hotel;
 import com.popytka.popytka.entity.Tour;
 import com.popytka.popytka.entity.User;
+import com.popytka.popytka.repository.AdditionalServiceRepository;
 import com.popytka.popytka.repository.CountryRepository;
 import com.popytka.popytka.repository.HotelRepository;
-import com.popytka.popytka.repository.AdditionalServiceRepository;
 import com.popytka.popytka.repository.TourRepository;
 import com.popytka.popytka.repository.UserRepository;
 import com.popytka.popytka.service.TourService;
 import com.popytka.popytka.util.CustomPage;
 import com.popytka.popytka.util.FilterUtil;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Controller;
@@ -28,12 +28,14 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.List;
 
 import static com.popytka.popytka.controller.MainController.UserID;
 import static com.popytka.popytka.controller.MainController.isAdmin;
 
+@Slf4j
 @Controller
 @RequiredArgsConstructor
 @RequestMapping("/tours")
@@ -60,9 +62,9 @@ public class TourController {
         List<Country> countries = countryRepository.findAll();
 
         model.addAttribute("userId", UserID == null ? 0 : 1);
+        model.addAttribute("isAdmin", isAdmin);
         model.addAttribute("tours", tourCustomPage);
         model.addAttribute("countries", countries);
-        model.addAttribute("isAdmin", isAdmin);
         return "tour/tour";
     }
 
@@ -70,7 +72,6 @@ public class TourController {
     public String getById(@PathVariable("id") Long id, Model model) {
         User user = userRepository.findById(UserID).orElse(null);
         Tour tour = tourService.getById(id).get();
-        Hotel hotel = tour.getHotel();
         List<AdditionalService> additionalServices = additionalServiceRepository.findAll();
 
         model.addAttribute("userId", UserID == null ? 0 : 1);
@@ -109,11 +110,16 @@ public class TourController {
 
     @PostMapping
     @Transactional
-    public String createTour(@ModelAttribute TourDTO tourDTO, Model model) {
-        Country country = countryRepository.findByName(tourDTO.getCountryName()).get();
-        Hotel hotel = hotelRepository.findByName(tourDTO.getHotelName()).get();
-        tourService.createTour(tourDTO, country, hotel);
+    public String createTour(
+            @ModelAttribute Tour tour,
+            @RequestParam("countryName") String countryName,
+            @RequestParam("hotelName") String hotelName,
+            Model model) {
+        Country country = countryRepository.findByName(countryName).get();
+        Hotel hotel = hotelRepository.findByName(hotelName).get();
+        Tour createdTour = tourService.createTour(tour, country, hotel);
 
+        log.info("Tour created : {}", createdTour.toString());
         model.addAttribute("userId", UserID == null ? 0 : 1);
         model.addAttribute("isAdmin", isAdmin);
         return "redirect:/tours";
@@ -123,12 +129,11 @@ public class TourController {
     @PutMapping("/{id}")
     public String tourUpdate(
             @PathVariable("id") Long id,
-            @ModelAttribute TourDTO tourDTO,
-            Model model
+            @ModelAttribute Tour tour
     ) {
-        Hotel hotel = hotelRepository.findByName(tourDTO.getHotelName()).get();
-        Country country = countryRepository.findByName(tourDTO.getCountryName()).get();
-        tourService.updateTour(id, tourDTO, country, hotel);
+        Hotel hotel = hotelRepository.findByName(tour.getHotel().getName()).get();
+        Country country = countryRepository.findByName(tour.getCountry().getName()).get();
+        tourService.updateTour(id, tour, country, hotel);
         return "redirect:/tours";
     }
 

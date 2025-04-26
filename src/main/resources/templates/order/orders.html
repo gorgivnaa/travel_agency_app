@@ -125,7 +125,7 @@
                 <div class="options-dropdown">
                     <div class="options-button">&#8942;</div>
                     <div class="dropdown-content">
-                        <form th:action="@{/orders/accept/{id}(id=${el.id})}" th:method="POST">
+                        <form th:action="@{/orders/{id}/accept(id=${el.id})}" th:method="POST">
                             <button class="accept-button">Принять</button>
                         </form>
                         <form th:action="@{/orders/{id}(id=${el.id})}" th:method="DELETE">

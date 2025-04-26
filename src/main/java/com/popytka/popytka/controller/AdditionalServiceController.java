@@ -1,7 +1,6 @@
 package com.popytka.popytka.controller;
 
 import com.popytka.popytka.controller.filter.AdditionalServiceFilter;
-import com.popytka.popytka.dto.AdditionalServiceDTO;
 import com.popytka.popytka.entity.AdditionalService;
 import com.popytka.popytka.service.ASService;
 import com.popytka.popytka.util.CustomPage;
@@ -45,8 +44,8 @@ public class AdditionalServiceController {
 
     @PostMapping
     @Transactional
-    public String addNewService(@ModelAttribute AdditionalServiceDTO additionalServiceDTO) {
-        additionalServiceService.createAS(additionalServiceDTO);
+    public String addNewService(@ModelAttribute AdditionalService additionalService) {
+        additionalServiceService.createAS(additionalService);
         return "redirect:/additionalServices";
     }
 }

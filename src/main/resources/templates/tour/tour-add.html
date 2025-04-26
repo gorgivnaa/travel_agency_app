@@ -56,7 +56,7 @@
 <div class="container py-3">
     <header th:insert="~{blocks/header :: header}">
     </header>
-    <form action="/tours" th:method="POST">
+    <form th:action="@{/tours}" th:method="POST">
         <div class="row g-3">
             <div class="col-md-6">
                 <label for="hotelName" class="form-label">Название отеля</label>
@@ -141,7 +141,7 @@
     <div class="modal-dialog">
         <div class="modal-content">
             <h5>Добавить новый отель</h5>
-            <form action="/hotels/add" th:method="POST">
+            <form th:action="@{/hotels/add}" th:method="POST">
                 <div class="mb-3">
                     <label for="hotelCountryName" class="form-label">Страна</label>
                     <select name="hotelCountryName" class="form-select" id="hotelCountryName" required>
