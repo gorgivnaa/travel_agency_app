@@ -70,7 +70,9 @@ public class TourController {
 
     @GetMapping("/{id}")
     public String getById(@PathVariable("id") Long id, Model model) {
-        User user = userRepository.findById(UserID).orElse(null);
+        User user = UserID != null
+                ? userRepository.findById(UserID).get()
+                : null;
         Tour tour = tourService.getById(id).get();
         List<AdditionalService> additionalServices = additionalServiceRepository.findAll();
 

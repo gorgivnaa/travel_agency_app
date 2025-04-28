@@ -14,6 +14,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.util.Base64;
+import java.util.Objects;
 
 @Getter
 @Setter
@@ -38,5 +39,19 @@ public class Country {
 
     public String getImageBase64() {
         return image != null ? Base64.getEncoder().encodeToString(image) : null;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        Country country = (Country) o;
+        return Objects.equals(id, country.id) && Objects.equals(name, country.name);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, name);
     }
 }
