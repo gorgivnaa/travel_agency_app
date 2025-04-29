@@ -4,5 +4,5 @@ import com.popytka.popytka.external.dto.ActivityDTO;
 
 public interface TranslatorService {
 
-    ActivityDTO translateActivityDTO(ActivityDTO activityDTO, String languageFromCode);
+    ActivityDTO translateActivityDTO(ActivityDTO activityDTO) throws InterruptedException;
 }

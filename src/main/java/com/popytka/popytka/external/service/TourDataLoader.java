@@ -8,9 +8,11 @@ import java.util.List;
 
 public interface TourDataLoader {
 
-    void loadAllData(
+    void loadDataFromCountry(
             List<Tour> tours,
             List<Country> countries,
             List<Hotel> hotels
     );
+
+    String getCountryName();
 }

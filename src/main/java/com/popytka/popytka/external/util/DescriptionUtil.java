@@ -10,9 +10,10 @@ public class DescriptionUtil {
             return "";
         }
 
-        String cleaned = description.replaceAll("<br>", "")
+        String cleaned = description
                 .replaceAll("\n", "")
                 .replaceAll("———", "")
+                .replaceAll("<[^>]+>", "")
                 .trim();
 
         if (cleaned.length() <= 500) {

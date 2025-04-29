@@ -12,6 +12,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import lombok.ToString;
 
 import java.util.Base64;
 import java.util.Objects;
@@ -20,6 +21,7 @@ import java.util.Objects;
 @Setter
 @Entity
 @Builder
+@ToString
 @NoArgsConstructor
 @AllArgsConstructor
 @Table(name = "countries")
@@ -34,6 +36,7 @@ public class Country {
     private String name;
 
     @Lob
+    @ToString.Exclude
     @Column(name = "image", columnDefinition = "LONGBLOB")
     private byte[] image;
 

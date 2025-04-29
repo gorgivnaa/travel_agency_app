@@ -11,7 +11,6 @@ import org.springframework.stereotype.Service;
 @Service
 class RussiaTourDataLoad extends TourDataLoaderBase {
 
-    private static final String LANGUAGE_CODE = "ru";
     private static final String COUNTRY_NAME = "Россия";
     private static final double LATITUDE = 55.798933;
     private static final double LONGITUDE = 49.103168;
@@ -36,7 +35,7 @@ class RussiaTourDataLoad extends TourDataLoaderBase {
     }
 
     @Override
-    protected String getCountryName() {
+    public String getCountryName() {
         return COUNTRY_NAME;
     }
 
@@ -55,10 +54,5 @@ class RussiaTourDataLoad extends TourDataLoaderBase {
     @Override
     protected int getRadius() {
         return RADIUS;
-    }
-
-    @Override
-    protected String getLanguageCode() {
-        return LANGUAGE_CODE;
     }
 }

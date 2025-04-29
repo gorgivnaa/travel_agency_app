@@ -11,11 +11,10 @@ import org.springframework.stereotype.Service;
 @Service
 class FranceTourDataLoad extends TourDataLoaderBase {
 
-    private static final String LANGUAGE_CODE = "fr";
     private static final String COUNTRY_NAME = "Франция";
-    private static final double LATITUDE = 48.856663;
-    private static final double LONGITUDE = 2.351556;
-    private static final int RADIUS = 1;
+    private static final double LATITUDE = 45.764957;
+    private static final double LONGITUDE = 4.826932;
+    private static final int RADIUS = 10;
 
     public FranceTourDataLoad(
             DateGenerator dateGenerator,
@@ -36,7 +35,7 @@ class FranceTourDataLoad extends TourDataLoaderBase {
     }
 
     @Override
-    protected String getCountryName() {
+    public String getCountryName() {
         return COUNTRY_NAME;
     }
 
@@ -55,10 +54,5 @@ class FranceTourDataLoad extends TourDataLoaderBase {
     @Override
     protected int getRadius() {
         return RADIUS;
-    }
-
-    @Override
-    protected String getLanguageCode() {
-        return LANGUAGE_CODE;
     }
 }

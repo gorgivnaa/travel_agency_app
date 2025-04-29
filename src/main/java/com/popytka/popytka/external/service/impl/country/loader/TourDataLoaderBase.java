@@ -29,10 +29,7 @@ public abstract class TourDataLoaderBase implements TourDataLoader {
     private final AmadeusFeignClient amadeusFeignClient;
     private final PlaceQuantityGenerator placeQuantityGenerator;
 
-
-    protected abstract String getCountryName();
-
-    protected abstract String getLanguageCode();
+    public abstract String getCountryName();
 
     protected abstract double getLatitude();
 
@@ -41,18 +38,29 @@ public abstract class TourDataLoaderBase implements TourDataLoader {
     protected abstract int getRadius();
 
     @Override
-    public void loadAllData(List<Tour> tours, List<Country> countries, List<Hotel> hotels) {
+    public void loadDataFromCountry(
+            List<Tour> tours,
+            List<Country> countries,
+            List<Hotel> hotels
+    ) {
         Country country = getCountry(countries, getCountryName());
         List<Hotel> countryHotels = getHotelsByCountry(hotels, country);
 
-        log.info("Загрузка из страны {} началась!", getCountryName());
         var response = amadeusFeignClient.getActivities(
                 getLatitude(),
                 getLongitude(),
                 getRadius()
         );
-        saveTours(response.getData(), tours, country, countryHotels);
-        log.info("Загрузка из страны {} завершилась!", getCountryName());
+        List<ActivityDTO> activityDTOs = response.getData();
+        log.info("Загрузка из страны '{}' началась!", getCountryName());
+
+        saveTours(
+                activityDTOs,
+                tours,
+                country,
+                countryHotels
+        );
+        log.info("Загрузка из страны '{}' завершилась!", getCountryName());
     }
 
     private void saveTours(
@@ -63,28 +71,31 @@ public abstract class TourDataLoaderBase implements TourDataLoader {
     ) {
         List<Tour> createdTours = activityDTOs.stream()
                 .filter(this::isCorrectActivityDTO)
-                .map(activity -> mapToTour(activity, country, hotels))
+                .map(activity -> {
+                    try {
+                        return mapToTour(activity, country, hotels);
+                    } catch (InterruptedException e) {
+                        throw new RuntimeException(e);
+                    }
+                })
+                .filter(tour -> isNewTour(tour, tours))
                 .toList();
 
-        List<Tour> filteredTours = createdTours.stream()
-                .filter(createdTour -> isNewTour(createdTour, tours))
-                .toList();
-
-        System.out.println(filteredTours);
-        tourRepository.saveAll(filteredTours);
+        log.info(createdTours.toString());
+        tourRepository.saveAll(createdTours);
     }
 
-    private Tour mapToTour(ActivityDTO activityDTO, Country country, List<Hotel> hotels) {
-        //ActivityDTO translatedActivity = translatorService.translateActivityDTO(activityDTO, getLanguageCode());
+    private Tour mapToTour(ActivityDTO activityDTO, Country country, List<Hotel> hotels) throws InterruptedException {
+        ActivityDTO translatedActivity = translatorService.translateActivityDTO(activityDTO);
         int placeQuantity = placeQuantityGenerator.generatePlaceQuantity();
         Hotel hotel = hotelGenerator.getRandomHotel(hotels);
-        BigDecimal price = activityDTO.getPrice().getPriceInBYN();
+        BigDecimal price = translatedActivity.getPrice().getPriceInBYN();
         LocalDate checkInDate = dateGenerator.generateStartDate();
         LocalDate checkOutDate = dateGenerator.generateEndDate(checkInDate);
 
         return Tour.builder()
-                .title(activityDTO.getName())
-                .description(activityDTO.getDescription())
+                .title(translatedActivity.getName())
+                .description(translatedActivity.getDescription())
                 .placeQuantity(placeQuantity)
                 .price(price)
                 .checkInDate(checkInDate)
@@ -105,7 +116,8 @@ public abstract class TourDataLoaderBase implements TourDataLoader {
         return (activityDTO != null
                 && activityDTO.getName() != null
                 && activityDTO.getDescription() != null
-                && activityDTO.getPrice() != null);
+                && activityDTO.getPrice() != null
+        );
     }
 
     protected Country getCountry(List<Country> countries, String countryName) {
