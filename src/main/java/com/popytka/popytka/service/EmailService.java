@@ -6,9 +6,9 @@ import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.SimpleMailMessage;
 @Service
 public class EmailService {
+
     @Autowired
     private JavaMailSender emailSender;
-
 
     public void sendEmail(String to, String subject, String text) {
         SimpleMailMessage message = new SimpleMailMessage();
