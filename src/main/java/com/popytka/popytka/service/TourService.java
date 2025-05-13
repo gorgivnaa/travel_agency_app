@@ -12,9 +12,13 @@ import java.util.Optional;
 
 public interface TourService {
 
-    Page<Tour> getAllServices(TourFilter filter, Pageable pageable);
+    Page<Tour> getFilteredTours(TourFilter filter, Pageable pageable);
 
-    List<Tour> getAllServices();
+    List<Tour> getAllToursForOrders();
+
+    List<Tour> getAllTours(Long userId);
+
+    List<Tour> getSearchedTours(String titleOrDescription);
 
     Optional<Tour> getById(Long id);
 

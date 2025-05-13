@@ -181,7 +181,7 @@
             <div class="row">
                 <div class="col-8 d-flex align-items-center">
                     <h1>Наши туры</h1>
-                    <form th:action="@{/tours}" th:method="GET">
+                    <form th:action="@{/tours/filter}" th:method="GET">
                         <button type="submit" name="sort" value="title,asc" class="icon-button"
                                 style="padding-left: 10px;">
                             <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" fill="currentColor"
@@ -220,49 +220,53 @@
                                 <path d="M4.5 2.5a.5.5 0 0 0-1 0v9.793l-1.146-1.147a.5.5 0 0 0-.708.708l2 1.999.007.007a.497.497 0 0 0 .7-.006l2-2a.5.5 0 0 0-.707-.708L4.5 12.293z"/>
                             </svg>
                         </button>
+                    </form>
                 </div>
                 <div class="col-4 text-right">
-                    <div class="filter-wrapper">
-                        <label for="filterToggle" class="btn btn-primary">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor"
-                                 class="bi bi-funnel-fill" viewBox="0 0 16 16">
-                                <path d="M1.5 1.5A.5.5 0 0 1 2 1h12a.5.5 0 0 1 .5.5v2a.5.5 0 0 1-.128.334L10 8.692V13.5a.5.5 0 0 1-.342.474l-3 1A.5.5 0 0 1 6 14.5V8.692L1.628 3.834A.5.5 0 0 1 1.5 3.5z"/>
-                            </svg>
-                        </label>
-                        <input type="checkbox" id="filterToggle" class="filter-toggle">
-                        <div class="filter-dropdown">
-                            <div class="filter-form">
-                                <div>
-                                    <label for="countryName">Выберите страну:</label>
-                                    <select id="countryName" name="countryName">
-                                        <option value="" selected>Любая</option>
-                                        <option th:each="country : ${countries}"
-                                                th:value="${country.name}"
-                                                th:text="${country.name}">
-                                        </option>
-                                    </select>
-                                    <label for="maxPrice">Максимальная стоимость:</label>
-                                    <input type="number" id="maxPrice" class="form-control" min="0" name="price">
-                                </div>
-                                <div>
+                    <form th:action="@{/tours/filter}" th:method="GET">
+                        <div class="filter-wrapper">
+                            <label for="filterToggle" class="btn btn-primary">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor"
+                                     class="bi bi-funnel-fill" viewBox="0 0 16 16">
+                                    <path d="M1.5 1.5A.5.5 0 0 1 2 1h12a.5.5 0 0 1 .5.5v2a.5.5 0 0 1-.128.334L10 8.692V13.5a.5.5 0 0 1-.342.474l-3 1A.5.5 0 0 1 6 14.5V8.692L1.628 3.834A.5.5 0 0 1 1.5 3.5z"/>
+                                </svg>
+                            </label>
+                            <input type="checkbox" id="filterToggle" class="filter-toggle">
+                            <div class="filter-dropdown">
+                                <div class="filter-form">
                                     <div>
-                                        <button type="submit" class="btn mt-2 opaque-button">Применить</button>
+                                        <label for="countryName">Выберите страну:</label>
+                                        <select id="countryName" name="countryName">
+                                            <option value="" selected>Любая</option>
+                                            <option th:each="country : ${countries}"
+                                                    th:value="${country.name}"
+                                                    th:text="${country.name}">
+                                            </option>
+                                        </select>
+                                        <label for="maxPrice">Максимальная стоимость:</label>
+                                        <input type="number" id="maxPrice" class="form-control" min="0" name="price">
+                                    </div>
+                                    <div>
+                                        <div>
+                                            <button type="submit" class="btn mt-2 opaque-button">Применить</button>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
                         </div>
-                    </div>
-                    <input class="form-control" type="search" name="title" pattern="^[\p{L}\d\s.,*]+$"
-                           placeholder="Поиск" aria-label="Search">
+                    </form>
+                    <form th:action="@{/tours/search}" th:method="GET">
+                        <input class="form-control" type="search" name="titleOrDescription" pattern="^[\p{L}\d\s.,*]+$"
+                               placeholder="Поиск" aria-label="Search"/>
                     </form>
                 </div>
             </div>
         </div>
     </div>
 
-    <a th:if="${isAdmin}" href="/tours/add" class="download-button">Добавить новый тур</a>
+    <a th:if="${isAdmin}" th:href="@{/tours/add}" class="download-button">Добавить новый тур</a>
 
-    <div th:each="el : ${tours.content()}" class="alert alert-info mt-2">
+    <div th:each="el : ${tours}" class="alert alert-info mt-2">
         <div class="tour-card">
             <div class="tour-title">
                 <h3 th:text="${el.title}"></h3>

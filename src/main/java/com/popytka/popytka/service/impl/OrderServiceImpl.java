@@ -1,6 +1,7 @@
 package com.popytka.popytka.service.impl;
 
 import com.popytka.popytka.repository.OrderRepository;
+import com.popytka.popytka.service.OrderService;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import com.popytka.popytka.entity.Order;

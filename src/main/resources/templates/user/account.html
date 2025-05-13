@@ -90,7 +90,8 @@
                         информацию</a>
                     <a th:unless="${isAdmin}" th:href="@{/bookings/{userId}(userId=${el.id})}"
                        class="download-button">История путешествий</a>
-                    <a th:if="${isAdmin}" href="/orders" class="download-button mt-2">Просмотр заявок</a>
+                    <a th:if="${isAdmin}" th:href="@{/orders}" class="download-button mt-2">Просмотр заявок</a>
+                    <a th:if="${isAdmin}" th:href="@{/statistics}" class="download-button mt-2">Просмотр аналитики</a>
                     <a href="/logout" class="download-button mt-2">Выход</a>
                 </div>
             </div>

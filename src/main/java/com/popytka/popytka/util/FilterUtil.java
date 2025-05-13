@@ -10,6 +10,6 @@ public class FilterUtil {
         if (filter.getPrice() == null || filter.getPrice().isEmpty()) {
             return;
         }
-        filter.getPrice().set(0, "le" + filter.getPrice());
+        filter.getPrice().set(0, "le" + filter.getPrice().get(0));
     }
 }

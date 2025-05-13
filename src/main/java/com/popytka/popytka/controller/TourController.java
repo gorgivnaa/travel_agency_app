@@ -51,19 +51,43 @@ public class TourController {
     private final AdditionalServiceRepository additionalServiceRepository;
 
     @GetMapping
-    public String getAllTours(
+    public String getAllTours(Model model) {
+        List<Tour> tours = tourService.getAllTours(UserID);
+        List<Country> countries = countryRepository.findAll();
+
+        model.addAttribute("userId", UserID == null ? 0 : 1);
+        model.addAttribute("isAdmin", isAdmin);
+        model.addAttribute("tours", tours);
+        model.addAttribute("countries", countries);
+        return "tour/tour";
+    }
+
+    @GetMapping("/search")
+    public String getSearchedTours(Model model, @RequestParam("titleOrDescription") String titleOrDescription) {
+        List<Tour> tours = tourService.getSearchedTours(titleOrDescription);
+        List<Country> countries = countryRepository.findAll();
+
+        model.addAttribute("userId", UserID == null ? 0 : 1);
+        model.addAttribute("isAdmin", isAdmin);
+        model.addAttribute("tours", tours);
+        model.addAttribute("countries", countries);
+        return "tour/tour";
+    }
+
+    @GetMapping("/filter")
+    public String getFilteredTours(
             Model model,
             @ModelAttribute TourFilter filter,
             Pageable pageable
     ) {
         filterUtil.addPriceFilter(filter);
-        Page<Tour> pageTours = tourService.getAllServices(filter, pageable);
+        Page<Tour> pageTours = tourService.getFilteredTours(filter, pageable);
         CustomPage<Tour> tourCustomPage = new CustomPage<>(pageTours);
         List<Country> countries = countryRepository.findAll();
 
         model.addAttribute("userId", UserID == null ? 0 : 1);
         model.addAttribute("isAdmin", isAdmin);
-        model.addAttribute("tours", tourCustomPage);
+        model.addAttribute("tours", tourCustomPage.content());
         model.addAttribute("countries", countries);
         return "tour/tour";
     }

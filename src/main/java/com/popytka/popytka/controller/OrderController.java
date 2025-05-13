@@ -12,7 +12,7 @@ import com.popytka.popytka.repository.TourRepository;
 import com.popytka.popytka.repository.UserRepository;
 import com.popytka.popytka.service.ASService;
 import com.popytka.popytka.service.TourService;
-import com.popytka.popytka.service.impl.OrderService;
+import com.popytka.popytka.service.OrderService;
 import jakarta.transaction.Transactional;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
@@ -49,7 +49,7 @@ public class OrderController {
     @GetMapping
     public String getAllOrders(Model model) {
         List<Order> orders = orderService.getAllOrders();
-        List<Tour> tours = tourService.getAllServices();
+        List<Tour> tours = tourService.getAllToursForOrders();
 
         model.addAttribute("userId", UserID == null ? 0 : 1);
         model.addAttribute("isAdmin", isAdmin);
@@ -64,7 +64,6 @@ public class OrderController {
             Model model,
             @RequestParam("tourTitle") String tourTitle,
             @RequestParam("numberOfPeople") int numberOfPeople,
-            @RequestParam("phoneNumber") String phone,
             @RequestParam("serviceName") String serviceName,
             @RequestParam("orderDate") LocalDateTime orderDate
     ) {
@@ -73,7 +72,7 @@ public class OrderController {
             model.addAttribute("successMessage", "Ошибка при отправке заявки.");
         } else {
             Hotel hotel = tour.getHotel();
-            User user = userRepository.findByPhone(phone).get();
+            User user = userRepository.findById(UserID).get();
             AdditionalService additionalService = asService.getByName(serviceName);
             Order order = Order.builder()
                     .orderDateTime(orderDate)

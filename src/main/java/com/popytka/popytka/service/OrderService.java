@@ -1,4 +1,4 @@
-package com.popytka.popytka.service.impl;
+package com.popytka.popytka.service;
 
 import com.popytka.popytka.entity.Order;
 
