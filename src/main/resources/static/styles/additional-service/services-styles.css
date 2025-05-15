@@ -1,0 +1,66 @@
+.icon-button {
+    background: none;
+    border: none;
+    padding: 0;
+    cursor: pointer;
+}
+
+.text-right {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+}
+
+.btn-primary svg {
+    fill: #000000;
+}
+
+.tour-title {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.options-dropdown {
+    position: relative;
+}
+
+.options-dropdown:hover {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+}
+
+.options-button {
+    background: none;
+    border: none;
+    font-size: 1.5em;
+    cursor: pointer;
+}
+
+.dropdown-content a,
+.dropdown-content button {
+    display: block;
+    width: 100%;
+    text-align: left;
+    padding: 4px 8px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.download-button {
+    display: inline-block;
+    padding: 10px 20px;
+    background-color: #00abc2;
+    color: white;
+    border-radius: 10px;
+    text-decoration: none;
+    outline: none;
+    border: none;
+}
+
+.download-button:hover {
+    color: white;
+    background-color: #007ba7;
+}

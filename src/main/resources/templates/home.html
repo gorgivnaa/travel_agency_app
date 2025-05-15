@@ -4,61 +4,9 @@
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
     <title>Главная страница</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.2.3/css/bootstrap.min.css">
+    <link rel="stylesheet" th:href="@{styles/home-styles.css}">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.2.3/js/bootstrap.bundle.min.js"
             crossorigin="anonymous"></script>
-    <style>
-        .card {
-            position: relative;
-        }
-
-        .card-img-overlay {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(255, 255, 255, 0.55);
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            text-align: center;
-            padding: 24px;
-            color: #495057;
-            transition: font-size 0.3s ease;
-            font-family: Verdana;
-            font-size: 20px;
-        }
-
-        .card-img-overlay a {
-            color: #495057;
-            text-decoration: none;
-        }
-
-        .card-img-overlay:hover {
-            font-size: 29px;
-        }
-
-        .download-button {
-            display: inline-block;
-            padding: 10px 20px;
-            background-color: #00abc2;
-            color: white;
-            border-radius: 10px;
-            text-decoration: none;
-            outline: none;
-            border: none;
-        }
-
-        .download-button:hover {
-            color: white;
-            background-color: #007ba7;
-        }
-
-        .full-dvh {
-            height: 100dvh;
-        }
-    </style>
 </head>
 <body class="full-dvh">
 <svg xmlns="http://www.w3.org/2000/svg" class="d-none">

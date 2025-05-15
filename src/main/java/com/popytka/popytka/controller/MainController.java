@@ -17,7 +17,6 @@ import lombok.RequiredArgsConstructor;
 import org.mindrot.jbcrypt.BCrypt;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.slf4j.MDC;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -28,7 +27,6 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.util.List;
-import java.util.Optional;
 import java.util.Random;
 
 @Controller
@@ -45,7 +43,7 @@ public class MainController {
     public static boolean isAdmin = false;
     private static int CODE;
 
-    @GetMapping("/")
+    @GetMapping("/home")
     public String home(Model model) {
         List<Country> countries = countryRepository.findAll();
         model.addAttribute("userId", UserID == null ? 0 : 1);
@@ -54,14 +52,21 @@ public class MainController {
         return "home";
     }
 
+    @GetMapping("/login")
+    public String showAuthorizationPage(Model model) {
+        model.addAttribute("userId", UserID == null ? 0 : 1);
+        model.addAttribute("isAdmin", isAdmin);
+        return "user/login";
+    }
+
     @GetMapping("/registration")
-    public String registration() {
+    public String showRegistrationPage() {
         return "user/registration";
     }
 
     @Transactional
     @PostMapping("/registration")
-    public String addUser(
+    public String registrateUser(
             @RequestParam("firstName") String firstName,
             @RequestParam("lastName") String lastName,
             @RequestParam("phone") String phone,
@@ -72,7 +77,7 @@ public class MainController {
         String hashedPassword = BCrypt.hashpw(password, BCrypt.gensalt());
         if (userRepository.findByEmail(email).isPresent()) {
             model.addAttribute(
-                    "errorMessage", "Пользователь с данной почтой уже заргеистрирован"
+                    "errorMessage", "Пользователь с данной почтой уже зарегистрирован"
             );
             return "user/registration";
         }
@@ -86,53 +91,14 @@ public class MainController {
                 .isAdmin(false)
                 .build();
         userRepository.save(createdUser);
-        return "redirect:/";
-    }
-
-    @GetMapping("/authorization")
-    public String authorization(Model model) {
-        model.addAttribute("userId", UserID == null ? 0 : 1);
-        model.addAttribute("isAdmin", isAdmin);
-        return "user/authorization";
-    }
-
-    @Transactional
-    @PostMapping("/authorization")
-    public String login(
-            @RequestParam String email,
-            @RequestParam String password,
-            HttpServletRequest request,
-            Model model
-    ) {
-        model.addAttribute("userId", UserID == null ? 0 : 1);
-        model.addAttribute("isAdmin", isAdmin);
-        Optional<User> userOptional = userRepository.findByEmail(email);
-        if (userOptional.isPresent()) {
-            User loggedUser = userOptional.get();
-            if (BCrypt.checkpw(password, loggedUser.getPassword())) {
-                String userId = String.valueOf(loggedUser.getId());
-                HttpSession session = request.getSession();
-                session.setAttribute(SESSION_ID_KEY, userId);
-                isAdmin = loggedUser.getIsAdmin();
-                MDC.put(SESSION_ID_KEY, userId);
-                UserID = Long.valueOf(userId);
-                log.info("Пользователь {} вошел в систему ", userId);
-                return "redirect:/account";
-            } else {
-                model.addAttribute("errorMessage", "Неверный пароль!");
-                return "user/authorization";
-            }
-        } else {
-            model.addAttribute("errorMessage", "Пользователя с данной почтой нет!");
-            return "user/authorization";
-        }
+        return "user/login";
     }
 
     @GetMapping("/account")
     public String account(Model model) {
         if (UserID == null) {
             model.addAttribute("userId", 0);
-            return "redirect:/authorization";
+            return "redirect:/login";
         } else {
             model.addAttribute("userId", 1);
             model.addAttribute("isAdmin", isAdmin);
@@ -154,7 +120,7 @@ public class MainController {
             UserID = null;
             log.info("Пользователь {} вышел из системы", userId);
         }
-        return "redirect:/authorization";
+        return "redirect:/login";
     }
 
     @GetMapping("/account/{id}/edit")
@@ -240,7 +206,7 @@ public class MainController {
             user.setPassword(hashPassword);
             userRepository.save(user);
             UserID = null;
-            return "user/authorization";
+            return "user/login";
         } else {
             model.addAttribute("errorMessage", "Пароли не совпадают!");
         }

@@ -1,0 +1,17 @@
+.download-button-enter {
+    background-color: transparent;
+    color: #00abc2;
+    border-color: #00abc2;
+}
+
+.download-button-enter:hover,
+.download-button-enter:active {
+    background-color: #00abc2;
+    color: white;
+}
+
+.link-body-emphasis,
+.fs-4,
+.nav-link {
+    color: #00abc2 !important;
+}

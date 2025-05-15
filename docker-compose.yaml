@@ -7,7 +7,7 @@ services:
     ports:
       - "3306:3306"
     environment:
-      MYSQL_DATABASE: travel_agency_db
+      MYSQL_DATABASE: travel_agency_features_db
       MYSQL_ROOT_PASSWORD: R=d36nM}
     command: --secure-file-priv=/images
     volumes:

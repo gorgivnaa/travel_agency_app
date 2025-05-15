@@ -1,0 +1,27 @@
+.btn-outline-primary {
+    color: #00abc2;
+    border-color: #00abc2;
+    background-color: transparent;
+}
+
+.btn-outline-primary:hover {
+    border-color: #007ba7;
+    background-color: #007ba7;
+    color: white;
+}
+
+.download-button {
+    display: inline-block;
+    padding: 10px 20px;
+    background-color: #00abc2;
+    color: white;
+    border-radius: 10px;
+    text-decoration: none;
+    outline: none;
+    border: none;
+}
+
+.download-button:hover {
+    color: white;
+    background-color: #007ba7;
+}

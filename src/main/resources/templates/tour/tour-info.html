@@ -5,85 +5,10 @@
     <title>Туры</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.2.3/css/bootstrap.min.css">
     <link th:href="@{/styles/common.css}" rel="stylesheet"/>
+    <link th:href="@{/styles/tour/tour-info-styles.css}" rel="stylesheet"/>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.2.3/js/bootstrap.bundle.min.js"
             crossorigin="anonymous"></script>
-    <style>
-        .btn-outline-primary {
-            color: #00abc2;
-            border-color: #00abc2;
-            background-color: transparent;
-        }
-
-        .btn-outline-primary:hover {
-            border-color: #007ba7;
-            background-color: #007ba7;
-            color: white;
-        }
-
-        .card {
-            border: 1px solid #00abc2;
-        }
-
-        .toggle-checkbox {
-            display: none;
-        }
-
-        .toggle-label {
-            cursor: pointer;
-        }
-
-        .hotel-info {
-            display: none;
-        }
-
-        .toggle-checkbox:checked ~ .hotel-info {
-            display: block;
-        }
-
-        .modal-content {
-            border-radius: 10px;
-        }
-
-        .modal-header {
-            background-color: #f8f9fa;
-            border-bottom: none;
-        }
-
-        .modal-title {
-            color: #333;
-        }
-
-        .modal-body {
-            padding: 20px;
-        }
-
-        .modal-footer {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-        }
-
-        .btn-secondary {
-            background-color: #6c757d;
-            color: #fff;
-        }
-
-        .form-label {
-            font-weight: bold;
-        }
-
-        .invalid-feedback {
-            color: red;
-        }
-
-        #successModal {
-            background-color: #fff;
-            padding: 20px;
-            border-radius: 5px;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
-        }
-    </style>
 </head>
 <body class="full-dvh container p-3 vertical-flex">
 

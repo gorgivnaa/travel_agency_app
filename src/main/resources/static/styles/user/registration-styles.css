@@ -1,0 +1,15 @@
+.download-button {
+    display: inline-block;
+    padding: 10px 20px;
+    background-color: #00abc2;
+    color: white;
+    border-radius: 10px;
+    text-decoration: none;
+    outline: none;
+    border: none;
+}
+
+.download-button:hover {
+    color: white;
+    background-color: #007ba7;
+}
