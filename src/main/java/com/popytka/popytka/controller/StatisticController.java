@@ -12,7 +12,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 
 import java.util.List;
 
-import static com.popytka.popytka.controller.MainController.UserID;
 import static com.popytka.popytka.controller.MainController.isAdmin;
 
 @Controller
@@ -28,7 +27,6 @@ public class StatisticController {
         List<Tour> tours = tourService.getAllToursForOrders();
         List<Order> orders = orderService.getAllOrders();
 
-        model.addAttribute("userId", UserID == null ? 0 : 1);
         model.addAttribute("isAdmin", isAdmin);
         model.addAttribute("tours", tours);
         model .addAttribute("orders", orders);

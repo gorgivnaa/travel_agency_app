@@ -1,6 +1,5 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org"
-      xmlns:sec="http://www.thymeleaf.org/extras/spring-security" >
+<html xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
     <title>Вход</title>
@@ -33,8 +32,12 @@
             </div>
 
             <button class="download-button w-100 py-2 mt-2" type="submit">Вход</button>
-            <a class="btn btn-outline-primary w-100 py-2 mt-2" th:href="@{/registration}" type="button">Регистрация</a>
-            <a th:href="@{/verification}" class="text-dark">Забыли пароль?</a>
+            <div class="text-center mt-2">
+                <a class="download-button w-100" th:href="@{/registration}" type="button">Регистрация</a>
+            </div>
+            <div class="text-center mt-2">
+                <a th:href="@{/verification}" class="text-dark">Забыли пароль?</a>
+            </div>
         </form>
     </main>
 </div>

@@ -1,5 +1,6 @@
 package com.popytka.popytka.controller;
 
+import com.popytka.popytka.config.security.CustomUserDetails;
 import com.popytka.popytka.controller.filter.TourFilter;
 import com.popytka.popytka.entity.AdditionalService;
 import com.popytka.popytka.entity.Country;
@@ -18,6 +19,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.Model;
@@ -32,7 +34,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.List;
 
-import static com.popytka.popytka.controller.MainController.UserID;
 import static com.popytka.popytka.controller.MainController.isAdmin;
 
 @Slf4j
@@ -51,11 +52,16 @@ public class TourController {
     private final AdditionalServiceRepository additionalServiceRepository;
 
     @GetMapping
-    public String getAllTours(Model model) {
-        List<Tour> tours = tourService.getAllTours(UserID);
+    public String getAllTours(Authentication authentication, Model model) {
+        List<Tour> tours;
+        if (authentication == null) {
+            tours = tourService.getAllTours(null);
+        } else {
+            Long userId = ((CustomUserDetails) authentication.getPrincipal()).getId();
+            tours = tourService.getAllTours(userId);
+        }
         List<Country> countries = countryRepository.findAll();
 
-        model.addAttribute("userId", UserID == null ? 0 : 1);
         model.addAttribute("isAdmin", isAdmin);
         model.addAttribute("tours", tours);
         model.addAttribute("countries", countries);
@@ -67,7 +73,6 @@ public class TourController {
         List<Tour> tours = tourService.getSearchedTours(titleOrDescription);
         List<Country> countries = countryRepository.findAll();
 
-        model.addAttribute("userId", UserID == null ? 0 : 1);
         model.addAttribute("isAdmin", isAdmin);
         model.addAttribute("tours", tours);
         model.addAttribute("countries", countries);
@@ -85,7 +90,6 @@ public class TourController {
         CustomPage<Tour> tourCustomPage = new CustomPage<>(pageTours);
         List<Country> countries = countryRepository.findAll();
 
-        model.addAttribute("userId", UserID == null ? 0 : 1);
         model.addAttribute("isAdmin", isAdmin);
         model.addAttribute("tours", tourCustomPage.content());
         model.addAttribute("countries", countries);
@@ -93,14 +97,15 @@ public class TourController {
     }
 
     @GetMapping("/{id}")
-    public String getById(@PathVariable("id") Long id, Model model) {
-        User user = UserID != null
-                ? userRepository.findById(UserID).get()
-                : null;
+    public String getById(@PathVariable("id") Long id, Authentication authentication, Model model) {
+        User user = null;
+        if (authentication != null) {
+            Long userId = ((CustomUserDetails) authentication.getPrincipal()).getId();
+            user = userRepository.findById(userId).get();
+        }
         Tour tour = tourService.getById(id).get();
         List<AdditionalService> additionalServices = additionalServiceRepository.findAll();
 
-        model.addAttribute("userId", UserID == null ? 0 : 1);
         model.addAttribute("isAdmin", isAdmin);
         model.addAttribute("additionalServices", additionalServices);
         model.addAttribute("tour", tour);
@@ -114,7 +119,6 @@ public class TourController {
         List<Country> countries = countryRepository.findAll();
         List<Hotel> hotels = hotelRepository.findAll();
 
-        model.addAttribute("userId", UserID == null ? 0 : 1);
         model.addAttribute("isAdmin", isAdmin);
         model.addAttribute("tour", tour);
         model.addAttribute("countries", countries);
@@ -127,7 +131,6 @@ public class TourController {
         List<Country> countries = countryRepository.findAll();
         List<Hotel> hotels = hotelRepository.findAll();
 
-        model.addAttribute("userId", UserID == null ? 0 : 1);
         model.addAttribute("isAdmin", isAdmin);
         model.addAttribute("hotels", hotels);
         model.addAttribute("countries", countries);
@@ -146,7 +149,6 @@ public class TourController {
         Tour createdTour = tourService.createTour(tour, country, hotel);
 
         log.info("Tour created : {}", createdTour.toString());
-        model.addAttribute("userId", UserID == null ? 0 : 1);
         model.addAttribute("isAdmin", isAdmin);
         return "redirect:/tours";
     }

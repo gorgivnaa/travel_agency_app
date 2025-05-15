@@ -1,0 +1,23 @@
+.dropdown-content button {
+    display: block;
+    width: 100%;
+    text-align: left;
+    padding: 4px 8px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.download-button {
+    display: inline-block;
+    padding: 10px 20px;
+    background-color: #00abc2;
+    color: white;
+    border-radius: 10px;
+    text-decoration: none;
+}
+
+.download-button:hover {
+    color: white;
+    background-color: #007ba7;
+}

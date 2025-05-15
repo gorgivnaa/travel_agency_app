@@ -6,51 +6,8 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.2.3/css/bootstrap.min.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.2.3/js/bootstrap.bundle.min.js"
             crossorigin="anonymous"></script>
+    <link rel="stylesheet" th:href="@{/styles/tour/tour-add-styles.css}">
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css">
-    <style>
-        .modal {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(0, 0, 0, 0.5);
-        }
-
-        .modal:target {
-            display: block;
-        }
-
-        .modal-dialog {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100%;
-        }
-
-        .modal-content {
-            background-color: #fff;
-            padding: 20px;
-            max-width: 400px;
-        }
-
-        .download-button {
-            display: inline-block;
-            padding: 10px 20px;
-            background-color: #00abc2;
-            color: white;
-            border-radius: 10px;
-            text-decoration: none;
-            outline: none;
-            border: none;
-        }
-
-        .download-button:hover {
-            color: white;
-            background-color: #007ba7;
-        }
-    </style>
 </head>
 <body>
 <div class="container py-3">

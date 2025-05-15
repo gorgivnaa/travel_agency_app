@@ -15,7 +15,6 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
-import static com.popytka.popytka.controller.MainController.UserID;
 import static com.popytka.popytka.controller.MainController.isAdmin;
 
 @Controller
@@ -36,7 +35,6 @@ public class AdditionalServiceController {
         );
         CustomPage<AdditionalService> additionalServiceCustomPage = new CustomPage<>(additionalServicesPage);
 
-        model.addAttribute("userId", UserID == null ? 0 : 1);
         model.addAttribute("isAdmin", isAdmin);
         model.addAttribute("additionalServices", additionalServiceCustomPage);
         return "additional-service/services";
@@ -46,6 +44,6 @@ public class AdditionalServiceController {
     @Transactional
     public String addNewService(@ModelAttribute AdditionalService additionalService) {
         additionalServiceService.createAS(additionalService);
-        return "redirect:/additionalServices";
+        return "additional-service/services";
     }
 }

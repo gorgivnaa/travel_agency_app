@@ -34,11 +34,11 @@
         </div>
         <div class="card-footer d-flex justify-content-between align-items-center">
             <h5><span th:text="*{price} + ' руб'"/></h5>
-            <a th:if="${userId == 0}" type="button" class="btn btn-sm btn-outline-primary" data-bs-toggle="modal"
+            <a th:if="${authentication == null}" type="button" class="btn btn-sm btn-outline-primary" data-bs-toggle="modal"
                data-bs-target="#loginModal">
                 Оставить заявку
             </a>
-            <a th:unless="${isAdmin}" th:if="${userId == 1}" type="button" class="btn btn-sm btn-outline-primary"
+            <a th:unless="${isAdmin}" th:if="${authentication != null}" type="button" class="btn btn-sm btn-outline-primary"
                data-bs-toggle="modal" data-bs-target="#orderModal">
                 Оставить заявку
             </a>

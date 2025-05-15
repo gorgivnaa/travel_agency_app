@@ -1,13 +1,18 @@
-.btn-outline-primary {
-    color: #00abc2;
-    border-color: #00abc2;
-    background-color: transparent;
+.error-message {
+    color: red;
+    font-size: 14px;
+    margin-top: 10px;
+    text-align: center;
 }
 
-.btn-outline-primary:hover {
-    border-color: #00abc2;
-    background-color: #00abc2;
-    color: white;
+.form-container {
+    position: relative;
+}
+
+.form-container::after {
+    content: "";
+    display: table;
+    clear: both;
 }
 
 .download-button {

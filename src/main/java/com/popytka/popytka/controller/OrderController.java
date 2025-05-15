@@ -1,5 +1,6 @@
 package com.popytka.popytka.controller;
 
+import com.popytka.popytka.config.security.CustomUserDetails;
 import com.popytka.popytka.entity.AdditionalService;
 import com.popytka.popytka.entity.Booking;
 import com.popytka.popytka.entity.Hotel;
@@ -16,6 +17,7 @@ import com.popytka.popytka.service.OrderService;
 import jakarta.transaction.Transactional;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -30,7 +32,6 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 
-import static com.popytka.popytka.controller.MainController.UserID;
 import static com.popytka.popytka.controller.MainController.isAdmin;
 
 @Controller
@@ -51,7 +52,6 @@ public class OrderController {
         List<Order> orders = orderService.getAllOrders();
         List<Tour> tours = tourService.getAllToursForOrders();
 
-        model.addAttribute("userId", UserID == null ? 0 : 1);
         model.addAttribute("isAdmin", isAdmin);
         model.addAttribute("orders", orders);
         model.addAttribute("tours", tours);
@@ -65,14 +65,16 @@ public class OrderController {
             @RequestParam("tourTitle") String tourTitle,
             @RequestParam("numberOfPeople") int numberOfPeople,
             @RequestParam("serviceName") String serviceName,
-            @RequestParam("orderDate") LocalDateTime orderDate
+            @RequestParam("orderDate") LocalDateTime orderDate,
+            Authentication authentication
     ) {
         Tour tour = tourRepository.findByTitle(tourTitle).orElse(null);
         if (tour == null) {
             model.addAttribute("successMessage", "Ошибка при отправке заявки.");
         } else {
+            Long userId = ((CustomUserDetails) authentication.getPrincipal()).getId();
             Hotel hotel = tour.getHotel();
-            User user = userRepository.findById(UserID).get();
+            User user = userRepository.findById(userId).get();
             AdditionalService additionalService = asService.getByName(serviceName);
             Order order = Order.builder()
                     .orderDateTime(orderDate)

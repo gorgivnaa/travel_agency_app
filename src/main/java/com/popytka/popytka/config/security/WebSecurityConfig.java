@@ -2,6 +2,7 @@ package com.popytka.popytka.config.security;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -10,6 +11,9 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.thymeleaf.extras.springsecurity6.dialect.SpringSecurityDialect;
+
+import static org.springframework.security.web.util.matcher.RegexRequestMatcher.regexMatcher;
 
 @Configuration
 @EnableWebSecurity
@@ -24,8 +28,12 @@ public class WebSecurityConfig {
                                 "/login",
                                 "/logout",
                                 "/docs/**",
-                                "/styles/**"
+                                "/styles/**",
+                                "/tours",
+                                "/additionalServices"
                         ).permitAll()
+                        .requestMatchers(HttpMethod.GET, String.valueOf(regexMatcher("/tour/[0-9]+"))).permitAll()
+                        .requestMatchers("/registration").not().fullyAuthenticated()
                         .anyRequest().authenticated()
                 )
                 .formLogin(form -> form
@@ -55,5 +63,10 @@ public class WebSecurityConfig {
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
+    }
+
+    @Bean
+    public SpringSecurityDialect springSecurityDialect() {
+        return new SpringSecurityDialect();
     }
 }

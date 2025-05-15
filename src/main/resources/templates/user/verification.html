@@ -1,49 +1,13 @@
 <!DOCTYPE HTML>
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
-    <title>Password recovery</title>
+    <title>Восстановление пароля</title>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+    <link rel="stylesheet" th:href="@{/styles/user/verification-styles.css}">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.2.3/js/bootstrap.bundle.min.js"
             crossorigin="anonymous"></script>
     <meta charset="utf-8">
-    <title>Buttons · Bootstrap v5.3</title>
     <meta name="theme-color" content="#712cf9">
-
-    <style>
-        .error-message {
-            color: red;
-            font-size: 14px;
-            margin-top: 10px;
-            text-align: center;
-        }
-
-        .form-container {
-            position: relative;
-        }
-
-        .form-container::after {
-            content: "";
-            display: table;
-            clear: both;
-        }
-
-        .download-button {
-            display: inline-block;
-            padding: 10px 20px;
-            background-color: #00abc2;
-            color: white;
-            border-radius: 10px;
-            text-decoration: none;
-            outline: none;
-            border: none;
-        }
-
-        .download-button:hover {
-            color: white;
-            background-color: #007ba7;
-        }
-
-    </style>
 </head>
 
 <body class="d-flex align-items-center py-4 bg-body-tertiary">

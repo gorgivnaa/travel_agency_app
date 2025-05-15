@@ -1,4 +1,5 @@
 <div th:fragment="header"
+     xmlns:th="http://www.thymeleaf.org"
      xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
      lang="en">
     <link rel="stylesheet" th:href="@{/styles/blocks/header-styles.css}">
@@ -13,22 +14,21 @@
 
         <nav class="d-inline-flex mt-2 mt-md-0 ms-md-auto">
             <a class="me-3 py-2 nav-link text-decoration-none" th:href="@{/tours}">Туры</a>
-            <a class="me-3 py-2 nav-link text-decoration-none" th:href="@{/additionalServices}">Дополнительные
-                услуги</a>
+            <a class="me-3 py-2 nav-link text-decoration-none" th:href="@{/additionalServices}">Дополнительные услуги</a>
 
-            <a th:if="${userId == 0}" type="button"
-               class="w-60 btn btn-sm download-button-enter d-flex justify-content-center" th:href="@{/login}">
-                <div class="align-self-center">Войти</div>
-            </a>
-            <a th:if="${userId == 1}" type="button"
-               class="w-60 btn btn-sm download-button-enter d-flex justify-content-center" href="/logout">
-                <div class="align-self-center">Выйти</div>
-            </a>
-            <div style="margin-left: 10px;"></div>
-            <a type="button" class="w-60 btn btn-sm download-button-enter d-flex justify-content-center"
+            <a class="w-60 btn btn-sm download-button-enter d-flex justify-content-center"
                th:href="@{/account}">
                 <div class="align-self-center">Личный кабинет</div>
             </a>
+            <div style="margin-left: 10px;"></div>
+            <a sec:authorize="!isAuthenticated()" type="button"
+               class="w-60 btn btn-sm download-button-enter d-flex justify-content-center" th:href="@{/login}">
+                <div class="align-self-center">Войти</div>
+            </a>
+            <form th:action="@{/logout}" th:method="POST">
+                <button sec:authorize="isAuthenticated()" type="submit"
+                        class="btn btn-sm download-button d-flex justify-content-center">Выйти</button>
+            </form>
         </nav>
     </div>
 </div>
