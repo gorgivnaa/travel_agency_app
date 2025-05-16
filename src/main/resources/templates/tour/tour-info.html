@@ -40,7 +40,7 @@
                data-bs-target="#loginModal">
                 Оставить заявку
             </a>
-            <a th:unless="${isAdmin}" sec:authorize="isAuthenticated()" type="button" class="btn btn-sm btn-outline-primary"
+            <a sec:authorize="hasAuthority('CLIENT')" type="button" class="btn btn-sm btn-outline-primary"
                data-bs-toggle="modal" data-bs-target="#orderModal">
                 Оставить заявку
             </a>

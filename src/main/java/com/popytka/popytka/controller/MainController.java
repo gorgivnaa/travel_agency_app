@@ -6,15 +6,19 @@ import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.popytka.popytka.config.security.CustomUserDetails;
 import com.popytka.popytka.entity.Country;
+import com.popytka.popytka.entity.Role;
 import com.popytka.popytka.entity.User;
 import com.popytka.popytka.repository.CountryRepository;
+import com.popytka.popytka.repository.RoleRepository;
 import com.popytka.popytka.repository.UserRepository;
 import com.popytka.popytka.service.EmailService;
+import com.popytka.popytka.service.RoleService;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
-import org.mindrot.jbcrypt.BCrypt;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -33,24 +37,24 @@ import java.util.Random;
 @RequiredArgsConstructor
 public class MainController {
 
+    private final RoleService roleService;
     private final EmailService emailService;
     private final UserRepository userRepository;
     private final CountryRepository countryRepository;
+    private final PasswordEncoder passwordEncoder;
 
-    public static boolean isAdmin = false;
     private static int CODE;
 
+    @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/home")
     public String home(Model model) {
         List<Country> countries = countryRepository.findAll();
-        model.addAttribute("isAdmin", isAdmin);
         model.addAttribute("countries", countries);
         return "home";
     }
 
     @GetMapping("/login")
     public String showAuthorizationPage(Model model) {
-        model.addAttribute("isAdmin", isAdmin);
         return "user/login";
     }
 
@@ -63,7 +67,7 @@ public class MainController {
     @Transactional
     @PostMapping("/registration")
     public String registrateUser(@ModelAttribute User user, Model model) {
-        String hashedPassword = BCrypt.hashpw(user.getPassword(), BCrypt.gensalt());
+        String hashedPassword = passwordEncoder.encode(user.getPassword());
         if (userRepository.findByEmail(user.getEmail()).isPresent()) {
             model.addAttribute(
                     "errorMessage",
@@ -72,6 +76,7 @@ public class MainController {
             return "user/registration";
         }
         user.setPassword(hashedPassword);
+        user.setRole(roleService.getDefaultRoles());
         userRepository.save(user);
         return "user/login";
     }
@@ -83,7 +88,6 @@ public class MainController {
             return "redirect:/login";
         } else {
             Long userId = ((CustomUserDetails) authentication.getPrincipal()).getId();
-            model.addAttribute("isAdmin", isAdmin);
             User user = userRepository.findById(userId).get();
             model.addAttribute("user", user);
             return "user/account";
@@ -93,7 +97,6 @@ public class MainController {
     @GetMapping("/account/{id}/edit")
     public String userEdit(@PathVariable(value = "id") Long id, Model model) {
         User user = userRepository.findById(id).orElse(null);
-        model.addAttribute("isAdmin", isAdmin);
         model.addAttribute("user", user);
         return "user/user-edit";
     }
@@ -111,7 +114,6 @@ public class MainController {
         originUser.setEmail(user.getEmail());
         originUser.setPhone(user.getPhone());
         User updatedUser = userRepository.save(originUser);
-        model.addAttribute("isAdmin", isAdmin);
         model.addAttribute("user", updatedUser);
         return "redirect:/account";
     }
@@ -166,7 +168,7 @@ public class MainController {
             Model model
     ) {
         if (password.equals(copyPassword)) {
-            String hashPassword = BCrypt.hashpw(password, BCrypt.gensalt());
+            String hashPassword = passwordEncoder.encode(password);
             User user = userRepository.findByEmail(email).get();
             user.setPassword(hashPassword);
             userRepository.save(user);
@@ -196,9 +198,8 @@ public class MainController {
             }
         }
         List<Country> countries = countryRepository.findAll();
-        model.addAttribute("isAdmin", isAdmin);
         model.addAttribute("country", countries);
-        return "home";
+        return "redirect:/home";
     }
 
     @GetMapping("/export")

@@ -1,5 +1,6 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org" lang="eng">
+<html xmlns:th="http://www.thymeleaf.org" lang="eng"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
     <title>Главная страница</title>
@@ -47,9 +48,9 @@
                 </div>
             </div>
         </div>
-        <div th:if="${isAdmin}" class="mt-5">
+        <div sec:authorize="hasAuthority('ADMIN')" class="mt-5">
             <h2 class="mb-4">Загрузить пользователей</h2>
-            <form action="/import" method="post" enctype="multipart/form-data">
+            <form th:action="@{/import}" th:method="POST" enctype="multipart/form-data">
                 <input type="file" name="file" multiple>
                 <br>
                 <input type="submit" class="download-button mt-3" value="Загрузить JSON файл">

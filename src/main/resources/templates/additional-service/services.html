@@ -1,5 +1,6 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
     <title>Туры</title>
@@ -77,7 +78,7 @@
         <span th:text="${message}"></span>
     </div>
 
-    <a th:if="${isAdmin}" class="download-button" data-toggle="modal" data-target="#addServiceModal">
+    <a sec:authorize="hasAuthority('ADMIN')" class="download-button" data-toggle="modal" data-target="#addServiceModal">
         Добавить новый сервис
     </a>
 
@@ -85,7 +86,7 @@
         <div class="tour-card">
             <div class="tour-title">
                 <h3 th:text="${el.name}"></h3>
-                <div th:if="${isAdmin}" class="options-dropdown">
+                <div sec:authorize="hasAuthority('ADMIN')" class="options-dropdown">
                     <button class="options-button">&#8942;</button>
                 </div>
             </div>

@@ -1,0 +1,17 @@
+CREATE TABLE IF NOT EXISTS roles (
+    id BIGINT AUTO_INCREMENT,
+    name VARCHAR(20) NOT NULL,
+    PRIMARY KEY(id)
+);
+
+INSERT INTO roles (name)
+VALUES ('ADMIN'),
+        ('CLIENT'),
+        ('MANAGER');
+
+ALTER TABLE users
+ADD COLUMN role_id BIGINT NOT NULL DEFAULT 2;
+
+ALTER TABLE users
+ADD CONSTRAINT fk_role_id FOREIGN KEY(role_id) REFERENCES roles(id);
+

@@ -20,7 +20,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import java.io.IOException;
 import java.util.List;
 
-import static com.popytka.popytka.controller.MainController.isAdmin;
 
 @Controller
 @RequestMapping("/bookings")
@@ -50,7 +49,6 @@ public class BookingController {
     public String getBookingsByUser(@PathVariable(value = "userId") Long userId, Model model) {
         User user = userRepository.findById(userId).get();
         List<Booking> bookings = bookingRepository.findByUser(user);
-        model.addAttribute("isAdmin", isAdmin);
         model.addAttribute("user", user);
         model.addAttribute("bookings", bookings);
         return "bookings/bookings";

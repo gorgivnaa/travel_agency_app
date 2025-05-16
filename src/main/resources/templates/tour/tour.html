@@ -1,5 +1,6 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
     <title>Туры</title>
@@ -109,13 +110,13 @@
         </div>
     </div>
 
-    <a th:if="${isAdmin}" th:href="@{/tours/add}" class="download-button">Добавить новый тур</a>
+    <a sec:authorize="hasAuthority('ADMIN')" th:href="@{/tours/add}" class="download-button">Добавить новый тур</a>
 
     <div th:each="el : ${tours}" class="alert alert-info mt-2">
         <div class="tour-card">
             <div class="tour-title">
                 <h3 th:text="${el.title}"></h3>
-                <div th:if="${isAdmin}" class="options-dropdown">
+                <div sec:authorize="hasAuthority('ADMIN')" class="options-dropdown">
                     <button class="options-button">&#8942;</button>
                     <div class="dropdown-content">
                         <a th:href="@{/tours/edit/{id}(id=${el.id})}" class="btn-small" style="color: black;">Редактировать</a>

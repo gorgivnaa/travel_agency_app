@@ -34,8 +34,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.List;
 
-import static com.popytka.popytka.controller.MainController.isAdmin;
-
 @Slf4j
 @Controller
 @RequiredArgsConstructor
@@ -62,7 +60,6 @@ public class TourController {
         }
         List<Country> countries = countryRepository.findAll();
 
-        model.addAttribute("isAdmin", isAdmin);
         model.addAttribute("tours", tours);
         model.addAttribute("countries", countries);
         return "tour/tour";
@@ -73,7 +70,6 @@ public class TourController {
         List<Tour> tours = tourService.getSearchedTours(titleOrDescription);
         List<Country> countries = countryRepository.findAll();
 
-        model.addAttribute("isAdmin", isAdmin);
         model.addAttribute("tours", tours);
         model.addAttribute("countries", countries);
         return "tour/tour";
@@ -90,7 +86,6 @@ public class TourController {
         CustomPage<Tour> tourCustomPage = new CustomPage<>(pageTours);
         List<Country> countries = countryRepository.findAll();
 
-        model.addAttribute("isAdmin", isAdmin);
         model.addAttribute("tours", tourCustomPage.content());
         model.addAttribute("countries", countries);
         return "tour/tour";
@@ -106,7 +101,6 @@ public class TourController {
         Tour tour = tourService.getById(id).get();
         List<AdditionalService> additionalServices = additionalServiceRepository.findAll();
 
-        model.addAttribute("isAdmin", isAdmin);
         model.addAttribute("additionalServices", additionalServices);
         model.addAttribute("tour", tour);
         model.addAttribute("user", user);
@@ -119,7 +113,6 @@ public class TourController {
         List<Country> countries = countryRepository.findAll();
         List<Hotel> hotels = hotelRepository.findAll();
 
-        model.addAttribute("isAdmin", isAdmin);
         model.addAttribute("tour", tour);
         model.addAttribute("countries", countries);
         model.addAttribute("hotels", hotels);
@@ -131,7 +124,6 @@ public class TourController {
         List<Country> countries = countryRepository.findAll();
         List<Hotel> hotels = hotelRepository.findAll();
 
-        model.addAttribute("isAdmin", isAdmin);
         model.addAttribute("hotels", hotels);
         model.addAttribute("countries", countries);
         return "tour/tour-add";
@@ -149,7 +141,6 @@ public class TourController {
         Tour createdTour = tourService.createTour(tour, country, hotel);
 
         log.info("Tour created : {}", createdTour.toString());
-        model.addAttribute("isAdmin", isAdmin);
         return "redirect:/tours";
     }
 

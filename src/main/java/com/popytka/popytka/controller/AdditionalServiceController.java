@@ -15,7 +15,6 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
-import static com.popytka.popytka.controller.MainController.isAdmin;
 
 @Controller
 @RequiredArgsConstructor
@@ -34,8 +33,6 @@ public class AdditionalServiceController {
                 additionalServiceFilter, pageable
         );
         CustomPage<AdditionalService> additionalServiceCustomPage = new CustomPage<>(additionalServicesPage);
-
-        model.addAttribute("isAdmin", isAdmin);
         model.addAttribute("additionalServices", additionalServiceCustomPage);
         return "additional-service/services";
     }

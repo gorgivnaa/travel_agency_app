@@ -40,10 +40,10 @@
                 <div class="col">
                     <a th:href="@{/account/{userId}/edit(userId=*{id})}" class="download-button">Редактировать
                         информацию</a>
-                    <a th:unless="${isAdmin}" th:href="@{/bookings/{userId}(userId=*{id})}"
+                    <a sec:authorize="hasAuthority('CLIENT')" th:href="@{/bookings/{userId}(userId=*{id})}"
                        class="download-button">История путешествий</a>
-                    <a th:if="${isAdmin}" th:href="@{/orders}" class="download-button mt-2">Просмотр заявок</a>
-                    <a th:if="${isAdmin}" th:href="@{/statistics}" class="download-button mt-2">Просмотр аналитики</a>
+                    <a sec:authorize="hasAuthority('ADMIN')" th:href="@{/orders}" class="download-button mt-2">Просмотр заявок</a>
+                    <a sec:authorize="hasAuthority('ADMIN')" th:href="@{/statistics}" class="download-button mt-2">Просмотр аналитики</a>
                     <form th:action="@{/logout}" th:method="POST">
                         <button sec:authorize="isAuthenticated()" type="submit"
                                 class="btn btn-sm download-button">Выход
