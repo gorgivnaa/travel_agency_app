@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org" lang="eng">
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
     <title>Главная страница</title>
@@ -39,7 +39,7 @@
                                      style="width: 100%; height: auto;">
                                 <div class="card-img-overlay">
                                     <a th:text="${el.name}"
-                                       th:href="@{/tours(countryName=${el.name})}"></a>
+                                       th:href="@{/tours/filter(countryName=${el.name})}"></a>
                                 </div>
                             </div>
                         </div>
@@ -62,7 +62,7 @@
                 <b>[[${messageError}]]</b>
             </div>
 
-            <form action="/export" method="get">
+            <form th:action="@{/export}" th:method="GET">
                 <button type="submit" class="download-button mt-3">Скачать данные пользователей</button>
             </form>
         </div>

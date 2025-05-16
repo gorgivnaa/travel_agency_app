@@ -1,5 +1,7 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+>
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
     <title>Туры</title>
@@ -34,11 +36,11 @@
         </div>
         <div class="card-footer d-flex justify-content-between align-items-center">
             <h5><span th:text="*{price} + ' руб'"/></h5>
-            <a th:if="${authentication == null}" type="button" class="btn btn-sm btn-outline-primary" data-bs-toggle="modal"
+            <a sec:authorize="!isAuthenticated()" type="button" class="btn btn-sm btn-outline-primary" data-bs-toggle="modal"
                data-bs-target="#loginModal">
                 Оставить заявку
             </a>
-            <a th:unless="${isAdmin}" th:if="${authentication != null}" type="button" class="btn btn-sm btn-outline-primary"
+            <a th:unless="${isAdmin}" sec:authorize="isAuthenticated()" type="button" class="btn btn-sm btn-outline-primary"
                data-bs-toggle="modal" data-bs-target="#orderModal">
                 Оставить заявку
             </a>
@@ -59,12 +61,7 @@
                 <div class="modal-body">
                     <div class="mb-3">
                         <label for="tourTitle" class="form-label">Название тура</label>
-                        <select id="tourTitle" name="tourTitle" class="form-select" required>
-                            <option th:each="el : ${tour}" th:value="${el.title}" th:text="${el.title}"></option>
-                        </select>
-                        <div class="invalid-feedback">
-                            Пожалуйста, выберите название тура.
-                        </div>
+                        <input id="tourTitle" name="tourTitle" class="form-control" required th:value="${tour.title}"/>
                     </div>
                     <div class="mb-3">
                         <label for="numberOfPeople" class="form-label">Количество человек</label>
@@ -113,7 +110,7 @@
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Отмена</button>
-                <a href="/authorization" th:methods="GET">
+                <a th:href="@{/login}" th:methods="GET">
                     <button type="button" class="btn btn-outline-primary">Авторизация</button>
                 </a>
             </div>

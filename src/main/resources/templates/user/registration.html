@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org" lang="eng">
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
     <title>Вход</title>
@@ -12,7 +12,7 @@
 <div class="container">
     <header th:insert="~{blocks/header :: header}"></header>
     <main class="form-signin w-50 m-auto">
-        <form th:action="@{/registration}" th:method="POST" th:object="@{user}">
+        <form th:action="@{/registration}" th:method="POST" th:object="${user}">
             <h1 class="h3 mb-3 fw-normal">Регистрация</h1>
             <div class="form-floating mb-2">
                 <input type="text" class="form-control" th:field="*{firstName}" id="firstName" placeholder="">
@@ -23,7 +23,8 @@
                 <label for="lastName">Фамилия</label>
             </div>
             <div class="form-floating mb-2">
-                <input type="text" class="form-control" th:field="*{phone}" id="phoneNumber" placeholder="+XXXXXXXXXXXX">
+                <input type="text" class="form-control" th:field="*{phone}" id="phoneNumber"
+                       placeholder="+XXXXXXXXXXXX">
                 <label for="phoneNumber">Номер телефона</label>
             </div>
             <div class="form-floating mb-2">

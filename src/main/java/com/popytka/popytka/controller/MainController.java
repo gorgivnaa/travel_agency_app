@@ -55,7 +55,8 @@ public class MainController {
     }
 
     @GetMapping("/registration")
-    public String showRegistrationPage() {
+    public String showRegistrationPage(Model model) {
+        model.addAttribute("user", new User());
         return "user/registration";
     }
 
