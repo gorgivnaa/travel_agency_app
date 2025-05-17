@@ -14,7 +14,7 @@
 <div class="container">
     <header th:insert="~{blocks/header :: header}"></header>
     <main class="form-signin w-50 m-auto">
-        <form th:action="@{/account/{id}/edit(id=${user.id})}" th:method="PUT" th:object="${user}">
+        <form th:action="@{/users/account/{id}/edit(id=${user.id})}" th:method="PUT" th:object="${user}">
             <h1 class="h3 mb-3 fw-normal">Введите данные пользователя</h1>
             <div class="form-floating mb-2">
                 <input type="text" class="form-control" id="firstName" th:field="*{firstName}" placeholder="">

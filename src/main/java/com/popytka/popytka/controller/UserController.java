@@ -81,7 +81,7 @@ public class UserController {
     @GetMapping("/account")
     public String account(Model model, Authentication authentication) {
         if (authentication == null) {
-            return "redirect:/login";
+            return "redirect:/users/login";
         }
         Long userId = ((CustomUserDetails) authentication.getPrincipal()).getId();
         User user = userService.findById(userId).get();
@@ -105,7 +105,7 @@ public class UserController {
     ) {
         User updatedUser = userService.updateUser(id, user);
         model.addAttribute("user", updatedUser);
-        return "redirect:/account";
+        return "redirect:/users/account";
     }
 
     @GetMapping("/check-email")
@@ -142,7 +142,7 @@ public class UserController {
             return "user/edit-password";
         }
         model.addAttribute("errorMessage", "Invalid code");
-        return "redirect:/check-email";
+        return "redirect:/users/check-email";
     }
 
     @GetMapping("/edit-password")

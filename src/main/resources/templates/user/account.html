@@ -38,7 +38,7 @@
 
             <div class="row mt-3">
                 <div class="col">
-                    <a th:href="@{/account/{userId}/edit(userId=*{id})}" class="download-button">Редактировать
+                    <a th:href="@{/users/account/{userId}/edit(userId=*{id})}" class="download-button">Редактировать
                         информацию</a>
                     <a sec:authorize="hasAuthority('CLIENT')" th:href="@{/bookings/{userId}(userId=*{id})}"
                        class="download-button">История путешествий</a>

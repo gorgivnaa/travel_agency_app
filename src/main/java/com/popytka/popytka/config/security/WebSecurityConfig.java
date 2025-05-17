@@ -24,7 +24,7 @@ public class WebSecurityConfig {
                 .authorizeHttpRequests(authRequests -> authRequests
                         .requestMatchers(
                                 "/home",
-                                "/login",
+                                "/users/login",
                                 "/logout",
                                 "/docs/**",
                                 "/styles/**",
@@ -34,17 +34,17 @@ public class WebSecurityConfig {
                                 "/additionalServices"
                         ).permitAll()
                         .requestMatchers(regexMatcher("/tours/[0-9]+")).permitAll()
-                        .requestMatchers("/registration").not().fullyAuthenticated()
+                        .requestMatchers("/users/registration").not().fullyAuthenticated()
                         .requestMatchers("/hotels/**").hasAuthority("ADMIN")
                         .anyRequest().authenticated()
                 )
                 .formLogin(form -> form
-                        .loginPage("/login")
+                        .loginPage("/users/login")
                         .defaultSuccessUrl("/home", true)
                 )
                 .logout(logout -> logout
                         .logoutUrl("/logout")
-                        .logoutSuccessUrl("/login")
+                        .logoutSuccessUrl("/users/login")
                 );
         return http.build();
     }

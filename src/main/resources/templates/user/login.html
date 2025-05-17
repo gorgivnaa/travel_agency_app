@@ -12,7 +12,7 @@
 <div class="container">
     <header th:insert="~{blocks/header :: header}"></header>
     <main class="form-signin w-50 m-auto">
-        <form th:action="@{/login}" th:method="POST">
+        <form th:action="@{/users/login}" th:method="POST">
             <h1 class="h3 mb-3 fw-normal">Вход</h1>
             <div class="form-floating mb-2">
                 <input type="email" class="form-control" name="username" maxlength="100" id="floatingInput"
@@ -33,10 +33,10 @@
 
             <button class="download-button w-100 py-2 mt-2" type="submit">Вход</button>
             <div class="text-center mt-2">
-                <a class="download-button w-100" th:href="@{/registration}" type="button">Регистрация</a>
+                <a class="download-button w-100" th:href="@{/users/registration}" type="button">Регистрация</a>
             </div>
             <div class="text-center mt-2">
-                <a th:href="@{/verification}" class="text-dark">Забыли пароль?</a>
+                <a th:href="@{/users/verification}" class="text-dark">Забыли пароль?</a>
             </div>
         </form>
     </main>

@@ -13,5 +13,5 @@ ALTER TABLE users
 ADD COLUMN role_id BIGINT NOT NULL DEFAULT 2;
 
 ALTER TABLE users
-ADD CONSTRAINT fk_role_id FOREIGN KEY(role_id) REFERENCES roles(id);
+ADD CONSTRAINT fk_role_id FOREIGN KEY (role_id) REFERENCES roles(id);
 

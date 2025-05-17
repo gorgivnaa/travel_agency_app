@@ -17,12 +17,12 @@
             <a class="me-3 py-2 nav-link text-decoration-none" th:href="@{/additionalServices}">Дополнительные услуги</a>
 
             <a class="w-60 btn btn-sm download-button-enter d-flex justify-content-center"
-               th:href="@{/account}">
+               th:href="@{/users/account}">
                 <div class="align-self-center">Личный кабинет</div>
             </a>
             <div style="margin-left: 10px;"></div>
             <a sec:authorize="!isAuthenticated()" type="button"
-               class="w-60 btn btn-sm download-button-enter d-flex justify-content-center" th:href="@{/login}">
+               class="w-60 btn btn-sm download-button-enter d-flex justify-content-center" th:href="@{/users/login}">
                 <div class="align-self-center">Войти</div>
             </a>
             <form th:action="@{/logout}" th:method="POST">
