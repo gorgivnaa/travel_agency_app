@@ -20,4 +20,6 @@ public interface UserService {
     User updateUser(Long id, User user);
 
     Optional<User> updatePassword(String email, String password, String copyPassword);
+
+    List<User> getByRoleName(String role);
 }

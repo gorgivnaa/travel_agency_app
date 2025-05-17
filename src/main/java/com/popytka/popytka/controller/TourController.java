@@ -2,6 +2,7 @@ package com.popytka.popytka.controller;
 
 import com.popytka.popytka.config.security.CustomUserDetails;
 import com.popytka.popytka.controller.filter.TourFilter;
+import com.popytka.popytka.dto.ManagerAssignmentDto;
 import com.popytka.popytka.entity.AdditionalService;
 import com.popytka.popytka.entity.Country;
 import com.popytka.popytka.entity.Hotel;
@@ -12,6 +13,7 @@ import com.popytka.popytka.repository.CountryRepository;
 import com.popytka.popytka.repository.HotelRepository;
 import com.popytka.popytka.repository.TourRepository;
 import com.popytka.popytka.repository.UserRepository;
+import com.popytka.popytka.service.ManagerTourService;
 import com.popytka.popytka.service.TourService;
 import com.popytka.popytka.util.CustomPage;
 import com.popytka.popytka.util.FilterUtil;
@@ -19,6 +21,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Transactional;
@@ -32,9 +35,9 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import java.util.Collections;
 import java.util.List;
 
-@Slf4j
 @Controller
 @RequiredArgsConstructor
 @RequestMapping("/tours")
@@ -47,6 +50,7 @@ public class TourController {
     private final TourRepository tourRepository;
     private final HotelRepository hotelRepository;
     private final CountryRepository countryRepository;
+    private final ManagerTourService managerTourService;
     private final AdditionalServiceRepository additionalServiceRepository;
 
     @GetMapping
@@ -112,10 +116,12 @@ public class TourController {
         Tour tour = tourRepository.findById(id).get();
         List<Country> countries = countryRepository.findAll();
         List<Hotel> hotels = hotelRepository.findAll();
+        List<ManagerAssignmentDto> managersWithStatus = managerTourService.getManagersWithAssignmentStatus(id);
 
         model.addAttribute("tour", tour);
         model.addAttribute("countries", countries);
         model.addAttribute("hotels", hotels);
+        model.addAttribute("managers", managersWithStatus);
         return "tour/tour-edit";
     }
 
@@ -139,20 +145,28 @@ public class TourController {
         Country country = countryRepository.findByName(countryName).get();
         Hotel hotel = hotelRepository.findByName(hotelName).get();
         Tour createdTour = tourService.createTour(tour, country, hotel);
-
-        log.info("Tour created : {}", createdTour.toString());
         return "redirect:/tours";
     }
 
     @Transactional
     @PutMapping("/{id}")
+    @PreAuthorize("hasAuthority('ADMIN')")
     public String tourUpdate(
             @PathVariable("id") Long id,
-            @ModelAttribute Tour tour
+            @ModelAttribute Tour tour,
+            @RequestParam("hotelName") String hotelName,
+            @RequestParam("countryName") String countryName,
+            @RequestParam(required = false) List<Long> managerIds,
+            Authentication authentication
     ) {
-        Hotel hotel = hotelRepository.findByName(tour.getHotel().getName()).get();
-        Country country = countryRepository.findByName(tour.getCountry().getName()).get();
-        tourService.updateTour(id, tour, country, hotel);
+        Hotel hotel = hotelRepository.findByName(hotelName).get();
+        Country country = countryRepository.findByName(countryName).get();
+        Tour savedTour = tourService.updateTour(id, tour, country, hotel);
+        if (authentication.getAuthorities().stream()
+                .anyMatch(a -> a.getAuthority().equals("ADMIN"))
+        ) {
+            managerTourService.saveManagersForTour(savedTour, managerIds != null ? managerIds : Collections.emptyList());
+        }
         return "redirect:/tours";
     }
 

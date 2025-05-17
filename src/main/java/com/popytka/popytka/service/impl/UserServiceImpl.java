@@ -69,6 +69,11 @@ class UserServiceImpl implements UserService {
     }
 
     @Override
+    public List<User> getByRoleName(String role) {
+        return userRepository.findByRoleName(role);
+    }
+
+    @Override
     public Optional<User> registryUser(User user) {
         Optional<User> existedUser = findByEmail(user.getEmail());
         return existedUser.isPresent()
