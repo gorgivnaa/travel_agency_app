@@ -32,8 +32,6 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 
-import static com.popytka.popytka.controller.MainController.isAdmin;
-
 @Controller
 @RequestMapping("/orders")
 @RequiredArgsConstructor(access = AccessLevel.PACKAGE)
@@ -52,7 +50,6 @@ public class OrderController {
         List<Order> orders = orderService.getAllOrders();
         List<Tour> tours = tourService.getAllToursForOrders();
 
-        model.addAttribute("isAdmin", isAdmin);
         model.addAttribute("orders", orders);
         model.addAttribute("tours", tours);
         return "order/orders";

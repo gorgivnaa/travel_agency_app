@@ -6,10 +6,8 @@ import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.popytka.popytka.config.security.CustomUserDetails;
 import com.popytka.popytka.entity.Country;
-import com.popytka.popytka.entity.Role;
 import com.popytka.popytka.entity.User;
 import com.popytka.popytka.repository.CountryRepository;
-import com.popytka.popytka.repository.RoleRepository;
 import com.popytka.popytka.repository.UserRepository;
 import com.popytka.popytka.service.EmailService;
 import com.popytka.popytka.service.RoleService;
@@ -40,12 +38,12 @@ public class MainController {
     private final RoleService roleService;
     private final EmailService emailService;
     private final UserRepository userRepository;
-    private final CountryRepository countryRepository;
     private final PasswordEncoder passwordEncoder;
+    private final CountryRepository countryRepository;
 
     private static int CODE;
 
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasAuthority('ADMIN')")
     @GetMapping("/home")
     public String home(Model model) {
         List<Country> countries = countryRepository.findAll();
@@ -54,7 +52,7 @@ public class MainController {
     }
 
     @GetMapping("/login")
-    public String showAuthorizationPage(Model model) {
+    public String showAuthorizationPage() {
         return "user/login";
     }
 
@@ -71,7 +69,7 @@ public class MainController {
         if (userRepository.findByEmail(user.getEmail()).isPresent()) {
             model.addAttribute(
                     "errorMessage",
-                    "Пользователь с данной почтой уже зарегистрирован"
+                    "Пользователь с данной почтой уже зарегистрирован!"
             );
             return "user/registration";
         }
