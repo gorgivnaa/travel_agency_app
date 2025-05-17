@@ -17,6 +17,7 @@ import com.popytka.popytka.service.OrderService;
 import jakarta.transaction.Transactional;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -46,6 +47,7 @@ public class OrderController {
     private final TourService tourService;
 
     @GetMapping
+    @PreAuthorize("hasAuthority('ADMIN')")
     public String getAllOrders(Model model) {
         List<Order> orders = orderService.getAllOrders();
         List<Tour> tours = tourService.getAllToursForOrders();

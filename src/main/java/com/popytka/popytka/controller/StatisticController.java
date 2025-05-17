@@ -5,6 +5,7 @@ import com.popytka.popytka.entity.Tour;
 import com.popytka.popytka.service.OrderService;
 import com.popytka.popytka.service.TourService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -21,6 +22,7 @@ public class StatisticController {
     private final OrderService orderService;
 
     @GetMapping
+    @PreAuthorize("hasAuthority('ADMIN')")
     public String showStatistics(Model model) {
         List<Tour> tours = tourService.getAllToursForOrders();
         List<Order> orders = orderService.getAllOrders();

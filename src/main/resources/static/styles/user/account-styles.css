@@ -44,6 +44,11 @@ h1 {
     color: white;
     border-radius: 10px;
     text-decoration: none;
+    margin-right: 10px; /* Добавьте отступы справа */
+}
+
+.download-button:last-child {
+    margin-right: 0; /* Уберите отступ у последней кнопки */
 }
 
 .download-button:hover {

@@ -44,6 +44,7 @@
                        class="download-button">История путешествий</a>
                     <a sec:authorize="hasAuthority('ADMIN')" th:href="@{/orders}" class="download-button mt-2">Просмотр заявок</a>
                     <a sec:authorize="hasAuthority('ADMIN')" th:href="@{/statistics}" class="download-button mt-2">Просмотр аналитики</a>
+                    <a sec:authorize="hasAuthority('ADMIN')" th:href="@{/users}" class="download-button mt-2">Просмотр пользователей</a>
                     <form th:action="@{/logout}" th:method="POST">
                         <button sec:authorize="isAuthenticated()" type="submit"
                                 class="btn btn-sm download-button">Выход
@@ -53,6 +54,7 @@
             </div>
         </div>
     </div>
+    <footer th:insert="~{blocks/footer :: footer}"></footer>
 </div>
 </body>
 </html>

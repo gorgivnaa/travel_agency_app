@@ -116,12 +116,12 @@
         <div class="tour-card">
             <div class="tour-title">
                 <h3 th:text="${el.title}"></h3>
-                <div sec:authorize="hasAuthority('ADMIN')" class="options-dropdown">
+                <div sec:authorize="hasAnyAuthority('ADMIN', 'MANAGER')" class="options-dropdown">
                     <button class="options-button">&#8942;</button>
                     <div class="dropdown-content">
                         <a th:href="@{/tours/edit/{id}(id=${el.id})}" class="btn-small" style="color: black;">Редактировать</a>
                         <form th:action="@{/tours/{id}(id=${el.id})}" th:method="DELETE">
-                            <button type="submit" class="btn-small delete-button">Удалить</button>
+                            <button sec:authorize="hasAuthority('ADMIN')" type="submit" class="btn-small delete-button">Удалить</button>
                         </form>
                     </div>
                 </div>
