@@ -10,15 +10,14 @@ import com.popytka.popytka.entity.User;
 import com.popytka.popytka.repository.BookingRepository;
 import com.popytka.popytka.repository.OrderRepository;
 import com.popytka.popytka.repository.TourRepository;
-import com.popytka.popytka.repository.UserRepository;
-import com.popytka.popytka.service.ASService;
-import com.popytka.popytka.service.TourService;
 import com.popytka.popytka.service.OrderService;
+import com.popytka.popytka.service.TourService;
 import jakarta.transaction.Transactional;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -31,27 +30,36 @@ import org.springframework.web.bind.annotation.RequestParam;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.Collection;
 import java.util.List;
+import java.util.Optional;
 
 @Controller
 @RequestMapping("/orders")
 @RequiredArgsConstructor(access = AccessLevel.PACKAGE)
 public class OrderController {
 
-    private final UserRepository userRepository;
+    private final TourService tourService;
+    private final OrderService orderService;
     private final TourRepository tourRepository;
     private final OrderRepository orderRepository;
     private final BookingRepository bookingRepository;
-    private final ASService asService;
-    private final OrderService orderService;
-    private final TourService tourService;
 
     @GetMapping
-    @PreAuthorize("hasAuthority('ADMIN')")
-    public String getAllOrders(Model model) {
-        List<Order> orders = orderService.getAllOrders();
+    @PreAuthorize("hasAnyAuthority('ADMIN', 'MANAGER')")
+    public String getAllOrders(Model model, Authentication authentication) {
+        List<Order> orders;
         List<Tour> tours = tourService.getAllToursForOrders();
-
+        Collection<? extends GrantedAuthority> authorities = authentication.getAuthorities();
+        if (authorities.stream().anyMatch(a -> a.getAuthority().equals("MANAGER"))) {
+            Long managerId = ((CustomUserDetails) authentication.getPrincipal()).getId();
+            orders = orderService.getOrdersByManager(managerId);
+        } else {
+            orders = orderService.getAllOrders();
+        }
+        if (orders.isEmpty()) {
+            model.addAttribute("message", "У вас на данный момент нет заявок на туры.");
+        }
         model.addAttribute("orders", orders);
         model.addAttribute("tours", tours);
         return "order/orders";
@@ -67,27 +75,24 @@ public class OrderController {
             @RequestParam("orderDate") LocalDateTime orderDate,
             Authentication authentication
     ) {
-        Tour tour = tourRepository.findByTitle(tourTitle).orElse(null);
-        if (tour == null) {
+        Long userId = ((CustomUserDetails) authentication.getPrincipal()).getId();
+        Optional<Order> orderOptional = orderService.createOrder(
+                tourTitle,
+                numberOfPeople,
+                serviceName,
+                orderDate,
+                userId
+        );
+        if (orderOptional.isEmpty()) {
             model.addAttribute("successMessage", "Ошибка при отправке заявки.");
-        } else {
-            Long userId = ((CustomUserDetails) authentication.getPrincipal()).getId();
-            Hotel hotel = tour.getHotel();
-            User user = userRepository.findById(userId).get();
-            AdditionalService additionalService = asService.getByName(serviceName);
-            Order order = Order.builder()
-                    .orderDateTime(orderDate)
-                    .placeQuantity(numberOfPeople)
-                    .user(user)
-                    .additionalService(additionalService)
-                    .tour(tour)
-                    .build();
-            orderRepository.save(order);
-            model.addAttribute("tour", tour);
-            model.addAttribute("hotel", hotel);
-            model.addAttribute("user", user);
-            model.addAttribute("successMessage", "Заявка успешно отправлена.");
+            return "tour/tour-info";
         }
+
+        Order order = orderOptional.get();
+        model.addAttribute("tour", order.getTour());
+        model.addAttribute("hotel", order.getTour().getHotel());
+        model.addAttribute("user", order.getUser());
+        model.addAttribute("successMessage", "Заявка успешно отправлена.");
         return "tour/tour-info";
     }
 

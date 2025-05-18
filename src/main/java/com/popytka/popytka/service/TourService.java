@@ -25,4 +25,6 @@ public interface TourService {
     Tour createTour(Tour tour, Country country, Hotel hotel);
 
     Tour updateTour(Long id, Tour tour, Country country, Hotel hotel);
+
+    Optional<Tour> getByTitle(String title);
 }

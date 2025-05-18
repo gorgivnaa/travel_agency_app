@@ -94,4 +94,9 @@ class TourServiceImpl implements TourService {
         foundTour.setCheckOutDate(updatedTourDTO.getCheckOutDate());
         return tourRepository.save(foundTour);
     }
+
+    @Override
+    public Optional<Tour> getByTitle(String title) {
+        return tourRepository.findByTitle(title);
+    }
 }

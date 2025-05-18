@@ -91,3 +91,43 @@
 .reject-button:hover {
     background-color: #d32f2f;
 }
+
+.download-button {
+    display: inline-block;
+    padding: 10px 20px;
+    background-color: #00abc2;
+    color: white;
+    border-radius: 10px;
+    text-decoration: none;
+    outline: none;
+    border: none;
+}
+
+.download-button:hover {
+    color: white;
+    background-color: #007ba7;
+}
+
+/* Стиль для сообщения о пустом списке */
+.empty-orders-message {
+    padding: 2rem;
+    margin: 2rem 0;
+    border-radius: 10px;
+    background-color: #f8f9fa;
+    text-align: center;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.empty-orders-message h4 {
+    color: #0d6efd;
+    margin-bottom: 1.5rem;
+}
+
+.fade-in-message {
+    animation: fadeIn 0.5s ease-in-out;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(-20px); }
+    to { opacity: 1; transform: translateY(0); }
+}

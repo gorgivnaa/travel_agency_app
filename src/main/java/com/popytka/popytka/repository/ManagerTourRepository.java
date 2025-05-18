@@ -13,4 +13,6 @@ public interface ManagerTourRepository extends JpaRepository<ManagerTour, Long> 
     List<ManagerTour> findByTour(Tour tour);
 
     void deleteByManagerIdAndTourId(Long managerId, Long tourId);
+
+    List<ManagerTour> findByManagerId(Long managerId);
 }

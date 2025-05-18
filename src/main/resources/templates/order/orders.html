@@ -1,5 +1,6 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org"
+      lang="eng">
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
     <title>Заявки</title>
@@ -18,7 +19,15 @@
 
 <div class="container py-3">
     <header th:insert="~{blocks/header :: header}"></header>
-    <div>
+
+    <div th:if="${message != null}" class="alert alert-info text-center mt-4">
+        <h4 th:text="${message}"></h4>
+        <p class="mt-2">
+            <a th:href="@{/tours}" class="download-button py-2">Посмотреть доступные туры</a>
+        </p>
+    </div>
+
+    <div th:unless="${orders.isEmpty()}">
         <canvas id="chart"></canvas>
     </div>
 
@@ -64,7 +73,6 @@
     </div>
 </div>
 <footer th:insert="~{blocks/footer :: footer}"></footer>
-</div>
 <script th:inline="javascript">
     var allOrders = /*[[${orders}]]*/;
     var allTours = /*[[${tours}]]*/;

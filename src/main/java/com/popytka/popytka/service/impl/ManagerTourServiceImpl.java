@@ -70,4 +70,11 @@ class ManagerTourServiceImpl implements ManagerTourService {
                 managerId, tour.getId()
         ));
     }
+
+    @Override
+    public List<Tour> getToursByManagerId(Long managerId) {
+        return managerTourRepository.findByManagerId(managerId).stream()
+                .map(ManagerTour::getTour)
+                .toList();
+    }
 }

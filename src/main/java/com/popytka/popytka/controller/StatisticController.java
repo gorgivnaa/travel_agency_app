@@ -22,7 +22,7 @@ public class StatisticController {
     private final OrderService orderService;
 
     @GetMapping
-    @PreAuthorize("hasAuthority('ADMIN')")
+    @PreAuthorize("hasAnyAuthority('ADMIN', 'MANAGER')")
     public String showStatistics(Model model) {
         List<Tour> tours = tourService.getAllToursForOrders();
         List<Order> orders = orderService.getAllOrders();

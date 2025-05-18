@@ -10,4 +10,6 @@ public interface ManagerTourService {
     List<ManagerAssignmentDto> getManagersWithAssignmentStatus(Long tourId);
 
     void saveManagersForTour(Tour tour, List<Long> managerIds);
+
+    List<Tour> getToursByManagerId(Long managerId);
 }

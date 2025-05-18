@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org"
       xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
-lang="eng">
+      lang="eng">
 <head>
     <title>Личный кабинет</title>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
@@ -43,9 +43,12 @@ lang="eng">
                         информацию</a>
                     <a sec:authorize="hasAuthority('CLIENT')" th:href="@{/bookings/{userId}(userId=*{id})}"
                        class="download-button">История путешествий</a>
-                    <a sec:authorize="hasAuthority('ADMIN')" th:href="@{/orders}" class="download-button mt-2">Просмотр заявок</a>
-                    <a sec:authorize="hasAuthority('ADMIN')" th:href="@{/statistics}" class="download-button mt-2">Просмотр аналитики</a>
-                    <a sec:authorize="hasAuthority('ADMIN')" th:href="@{/users}" class="download-button mt-2">Просмотр пользователей</a>
+                    <a sec:authorize="hasAnyAuthority('ADMIN', 'MANAGER')" th:href="@{/orders}"
+                       class="download-button mt-2">Просмотр заявок</a>
+                    <a sec:authorize="hasAnyAuthority('ADMIN', 'MANAGER')" th:href="@{/statistics}"
+                       class="download-button mt-2">Просмотр аналитики</a>
+                    <a sec:authorize="hasAuthority('ADMIN')" th:href="@{/users}" class="download-button mt-2">Просмотр
+                        пользователей</a>
                     <form th:action="@{/logout}" th:method="POST">
                         <button sec:authorize="isAuthenticated()" type="submit"
                                 class="btn btn-sm download-button">Выход
