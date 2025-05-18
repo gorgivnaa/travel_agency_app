@@ -13,13 +13,13 @@ public class AmadeusAuthService {
 
     private final AmadeusAuthFeignClient amadeusAuthFeignClient;
 
-    @Value("${amadeus.client-id}")
+    @Value("${amadeus.client.id}")
     private String clientId;
 
-    @Value("${amadeus.client-secret}")
+    @Value("${amadeus.client.secret}")
     private String clientSecret;
 
-    @Value("${amadeus.grant-type}")
+    @Value("${amadeus.grant.type}")
     private String grantType;
 
     private String accessToken;
