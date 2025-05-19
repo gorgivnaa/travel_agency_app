@@ -37,22 +37,31 @@
                 </tbody>
             </table>
 
-            <div class="row mt-3">
-                <div class="col">
-                    <a th:href="@{/users/account/{userId}/edit(userId=*{id})}" class="download-button">Редактировать
-                        информацию</a>
-                    <a sec:authorize="hasAuthority('CLIENT')" th:href="@{/bookings/{userId}(userId=*{id})}"
-                       class="download-button">История путешествий</a>
-                    <a sec:authorize="hasAnyAuthority('ADMIN', 'MANAGER')" th:href="@{/orders}"
-                       class="download-button mt-2">Просмотр заявок</a>
-                    <a sec:authorize="hasAnyAuthority('ADMIN', 'MANAGER')" th:href="@{/statistics}"
-                       class="download-button mt-2">Просмотр аналитики</a>
-                    <a sec:authorize="hasAuthority('ADMIN')" th:href="@{/users}" class="download-button mt-2">Просмотр
-                        пользователей</a>
-                    <form th:action="@{/logout}" th:method="POST">
-                        <button sec:authorize="isAuthenticated()" type="submit"
-                                class="btn btn-sm download-button">Выход
-                        </button>
+            <div class="row mt-3 g-2">
+                <!-- Все кнопки в одном общем контейнере -->
+                <div class="col-sm-6" th:if="*{id}">
+                    <a th:href="@{/users/account/{userId}/edit(userId=*{id})}" class="download-button w-100 d-flex align-items-center justify-content-center">Редактировать информацию</a>
+                </div>
+
+                <div class="col-sm-6" sec:authorize="hasAuthority('CLIENT')">
+                    <a th:href="@{/bookings/{userId}(userId=*{id})}" class="download-button w-100 d-flex align-items-center justify-content-center">История путешествий</a>
+                </div>
+
+                <div class="col-sm-6" sec:authorize="hasAnyAuthority('ADMIN', 'MANAGER')">
+                    <a th:href="@{/orders}" class="download-button w-100 d-flex align-items-center justify-content-center">Просмотр заявок</a>
+                </div>
+
+                <div class="col-sm-6" sec:authorize="hasAnyAuthority('ADMIN', 'MANAGER')">
+                    <a th:href="@{/statistics}" class="download-button w-100 d-flex align-items-center justify-content-center">Просмотр аналитики</a>
+                </div>
+
+                <div class="col-sm-6" sec:authorize="hasAuthority('ADMIN')">
+                    <a th:href="@{/users}" class="download-button w-100 d-flex align-items-center justify-content-center">Просмотр пользователей</a>
+                </div>
+
+                <div class="col-sm-6" sec:authorize="isAuthenticated()">
+                    <form th:action="@{/logout}" th:method="POST" class="h-100">
+                        <button type="submit" class="download-button w-100 d-flex align-items-center justify-content-center">Выход</button>
                     </form>
                 </div>
             </div>

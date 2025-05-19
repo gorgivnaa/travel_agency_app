@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org"
-lang="eng">
+      lang="eng">
 <head>
     <meta charset="UTF-8">
     <title>Аналитика заявок</title>
@@ -12,10 +12,17 @@ lang="eng">
 <div class="container">
     <header th:insert="~{blocks/header :: header}"></header>
 
-    <h2 class="mt-4">Аналитика заявок по турам</h2>
+    <h2 class="mt-4">Аналитика заявок</h2>
 
-    <div id="chart-container">
-        <canvas id="chart"></canvas>
+    <div class="row">
+        <div class="chart-container">
+            <canvas id="toursChart"></canvas>
+        </div>
+    </div>
+    <div class="row">
+        <div class="chart-container">
+            <canvas id="userActivityChart"></canvas>
+        </div>
     </div>
 
     <footer th:insert="~{blocks/footer :: footer}"></footer>
@@ -23,11 +30,10 @@ lang="eng">
 
 <script th:inline="javascript">
     let orders = /*[[${orders}]]*/ [];
+    let managerOrders = /*[[${managerOrders}]]*/ [];
     let tours = /*[[${tours}]]*/ [];
 
-    console.log('orders = ', orders);
-    console.log('tours = ', tours);
-
+    // Первая диаграмма - заявки по турам (оставляем без изменений)
     let stats = {};
     orders.forEach(order => {
         let tourId = order.tour.id;
@@ -41,8 +47,9 @@ lang="eng">
         return tour ? tour.title : "Неизвестный тур";
     });
 
-    let ctx = document.getElementById('chart').getContext('2d');
-    new Chart(ctx, {
+    // Создаем первую диаграмму (без изменений)
+    let toursCtx = document.getElementById('toursChart').getContext('2d');
+    new Chart(toursCtx, {
         type: 'bar',
         data: {
             labels: tourNames,
@@ -50,14 +57,9 @@ lang="eng">
                 label: 'Количество заявок',
                 data: data,
                 backgroundColor: data.map(value => {
-                    // Определяем цвет в зависимости от количества заявок
-                    if (value < 3) {
-                        return 'rgba(255, 99, 132, 0.7)'; // Красный для менее 3 заявок
-                    } else if (value >= 3 && value <= 6) {
-                        return 'rgba(255, 206, 86, 0.7)'; // Желтый для 3-6 заявок
-                    } else {
-                        return 'rgba(75, 192, 192, 0.7)'; // Зеленый для более 6 заявок
-                    }
+                    if (value < 3) return 'rgba(255, 99, 132, 0.7)';
+                    else if (value >= 3 && value <= 6) return 'rgba(255, 206, 86, 0.7)';
+                    else return 'rgba(75, 192, 192, 0.7)';
                 })
             }]
         },
@@ -67,16 +69,10 @@ lang="eng">
             scales: {
                 y: {
                     beginAtZero: true,
-                    title: {
-                        display: true,
-                        text: 'Количество заявок'
-                    }
+                    title: { display: true, text: 'Количество заявок' }
                 },
                 x: {
-                    title: {
-                        display: true,
-                        text: 'Туры'
-                    }
+                    title: { display: true, text: 'Туры' }
                 }
             },
             plugins: {
@@ -84,9 +80,7 @@ lang="eng">
                 title: {
                     display: true,
                     text: 'Заявки по турам',
-                    font: {
-                        size: 16
-                    }
+                    font: { size: 16 }
                 },
                 tooltip: {
                     callbacks: {
@@ -98,6 +92,89 @@ lang="eng">
             }
         }
     });
+
+    // Вторая диаграмма - активность менеджера по месяцам
+    if (managerOrders && managerOrders.length > 0) {
+        // Подготовка данных по месяцам из managerOrders
+        let monthlyStats = {};
+
+        managerOrders.forEach(order => {
+            // Используем orderDateTime из Java класса
+            let date = new Date(order.orderDateTime);
+            let monthYear = `${date.getMonth()+1}/${date.getFullYear()}`;
+            monthlyStats[monthYear] = (monthlyStats[monthYear] || 0) + 1;
+        });
+
+        // Сортируем месяцы по дате
+        let months = Object.keys(monthlyStats).sort((a, b) => {
+            let [aMonth, aYear] = a.split('/').map(Number);
+            let [bMonth, bYear] = b.split('/').map(Number);
+            return aYear - bYear || aMonth - bMonth;
+        });
+
+        let monthNames = months.map(m => {
+            let [month, year] = m.split('/');
+            return `${getMonthName(month)} ${year}`;
+        });
+
+        let monthlyData = months.map(m => monthlyStats[m]);
+
+        // Создаем вторую диаграмму
+        let userCtx = document.getElementById('userActivityChart').getContext('2d');
+        new Chart(userCtx, {
+            type: 'line',
+            data: {
+                labels: monthNames,
+                datasets: [{
+                    label: 'Обработанные заявки',
+                    data: monthlyData,
+                    backgroundColor: 'rgba(54, 162, 235, 0.2)',
+                    borderColor: 'rgba(54, 162, 235, 1)',
+                    borderWidth: 2,
+                    tension: 0.1,
+                    fill: true
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        title: { display: true, text: 'Количество заявок' }
+                    },
+                    x: {
+                        title: { display: true, text: 'Месяц' }
+                    }
+                },
+                plugins: {
+                    legend: { display: false },
+                    title: {
+                        display: true,
+                        text: 'Активность менеджера по месяцам',
+                        font: { size: 16 }
+                    },
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                return `Заявок: ${context.raw}`;
+                            }
+                        }
+                    }
+                }
+            }
+        });
+    }
+
+    // Вспомогательная функция для получения названия месяца
+    function getMonthName(monthNum) {
+        const months = [
+            'Январь', 'Февраль', 'Март', 'Апрель',
+            'Май', 'Июнь', 'Июль', 'Август',
+            'Сентябрь', 'Октябрь', 'Ноябрь', 'Декабрь'
+        ];
+        return months[parseInt(monthNum)-1];
+    }
 </script>
 </body>
 </html>

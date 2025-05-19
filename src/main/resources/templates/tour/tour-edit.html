@@ -22,7 +22,7 @@
                         <select name="hotelName" class="form-select" id="hotelName" required>
                             <option th:each="el : ${hotels}" th:value="${el.name}" th:text="${el.name}"></option>
                         </select>
-                        <a class="btn btn-secondary text-white" data-toggle="modal" data-target="#addHotelModal">Добавить
+                        <a sec:authorize="hasAuthority('ADMIN')" class="btn btn-secondary text-white" data-toggle="modal" data-target="#addHotelModal">Добавить
                             новый</a>
                     </div>
                     <div class="invalid-feedback">Пожалуйста, выберите отель.</div>

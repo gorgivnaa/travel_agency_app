@@ -31,7 +31,10 @@ public class WebSecurityConfig {
                                 "/tours",
                                 "/tours/filter",
                                 "/tours/search",
-                                "/additionalServices"
+                                "/additionalServices",
+                                "/users/check-email",
+                                "/users/verification",
+                                "/users/edit-password"
                         ).permitAll()
                         .requestMatchers(regexMatcher("/tours/[0-9]+")).permitAll()
                         .requestMatchers("/users/registration").not().fullyAuthenticated()
