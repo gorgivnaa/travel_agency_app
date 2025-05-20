@@ -1,8 +1,10 @@
 package com.popytka.popytka.controller;
 
 import com.popytka.popytka.config.security.CustomUserDetails;
+import com.popytka.popytka.entity.Country;
 import com.popytka.popytka.entity.Order;
 import com.popytka.popytka.entity.Tour;
+import com.popytka.popytka.repository.CountryRepository;
 import com.popytka.popytka.service.OrderService;
 import com.popytka.popytka.service.TourService;
 import lombok.RequiredArgsConstructor;
@@ -22,6 +24,7 @@ public class StatisticController {
 
     private final TourService tourService;
     private final OrderService orderService;
+    private final CountryRepository countryRepository;
 
     @GetMapping
     @PreAuthorize("hasAnyAuthority('ADMIN', 'MANAGER')")
@@ -30,10 +33,13 @@ public class StatisticController {
         List<Tour> tours = tourService.getAllToursForOrders();
         List<Order> orders = orderService.getAllOrders();
         List<Order> employeeOrders = orderService.getOrdersByManager(userId);
+        List<Country> countries = countryRepository.findAll();
+
 
         model.addAttribute("tours", tours);
         model.addAttribute("orders", orders);
         model.addAttribute("managerOrders", employeeOrders);
+        model.addAttribute("countries", countries);
 
         return "statistics/all-statistic";
     }

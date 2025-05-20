@@ -1,12 +1,27 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org"
-      lang="eng">
+<html xmlns:th="http://www.thymeleaf.org" lang="ru">
 <head>
     <meta charset="UTF-8">
     <title>Аналитика заявок</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <link rel="stylesheet" th:href="@{/styles/statistics/all-statistic-styles.css}">
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels"></script>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css">
+    <style>
+        .chart-container {
+            position: relative;
+            height: 400px;
+            margin-bottom: 30px;
+            display: none;
+        }
+        .active-chart {
+            display: block;
+        }
+        @media (max-width: 768px) {
+            .chart-container {
+                height: 300px;
+            }
+        }
+    </style>
 </head>
 <body>
 <div class="container">
@@ -14,15 +29,26 @@
 
     <h2 class="mt-4">Аналитика заявок</h2>
 
-    <div class="row">
-        <div class="chart-container">
-            <canvas id="toursChart"></canvas>
+    <div class="row mb-4">
+        <div class="col-md-4">
+            <select id="chartSelector" class="form-select">
+                <option value="toursChart">Заявки по турам</option>
+                <option value="userActivityChart">Активность менеджера</option>
+                <option value="countriesChart">Популярность по странам</option>
+            </select>
         </div>
     </div>
-    <div class="row">
-        <div class="chart-container">
-            <canvas id="userActivityChart"></canvas>
-        </div>
+
+    <div id="toursChartContainer" class="chart-container">
+        <canvas id="toursChart"></canvas>
+    </div>
+
+    <div id="userActivityChartContainer" class="chart-container">
+        <canvas id="userActivityChart"></canvas>
+    </div>
+
+    <div id="countriesChartContainer" class="chart-container">
+        <canvas id="countriesChart"></canvas>
     </div>
 
     <footer th:insert="~{blocks/footer :: footer}"></footer>
@@ -32,107 +58,41 @@
     let orders = /*[[${orders}]]*/ [];
     let managerOrders = /*[[${managerOrders}]]*/ [];
     let tours = /*[[${tours}]]*/ [];
+    let countries = /*[[${countries}]]*/ []; // Получаем список стран из Thymeleaf
 
-    // Первая диаграмма - заявки по турам (оставляем без изменений)
-    let stats = {};
-    orders.forEach(order => {
-        let tourId = order.tour.id;
-        stats[tourId] = (stats[tourId] || 0) + 1;
-    });
+    // Инициализация переменных для хранения экземпляров графиков
+    let toursChartInstance = null;
+    let userActivityChartInstance = null;
+    let countriesChartInstance = null;
 
-    let labels = Object.keys(stats);
-    let data = Object.values(stats);
-    let tourNames = labels.map(tourId => {
-        let tour = tours.find(t => t.id === parseInt(tourId));
-        return tour ? tour.title : "Неизвестный тур";
-    });
-
-    // Создаем первую диаграмму (без изменений)
-    let toursCtx = document.getElementById('toursChart').getContext('2d');
-    new Chart(toursCtx, {
-        type: 'bar',
-        data: {
-            labels: tourNames,
-            datasets: [{
-                label: 'Количество заявок',
-                data: data,
-                backgroundColor: data.map(value => {
-                    if (value < 3) return 'rgba(255, 99, 132, 0.7)';
-                    else if (value >= 3 && value <= 6) return 'rgba(255, 206, 86, 0.7)';
-                    else return 'rgba(75, 192, 192, 0.7)';
-                })
-            }]
-        },
-        options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            scales: {
-                y: {
-                    beginAtZero: true,
-                    title: { display: true, text: 'Количество заявок' }
-                },
-                x: {
-                    title: { display: true, text: 'Туры' }
-                }
-            },
-            plugins: {
-                legend: { display: false },
-                title: {
-                    display: true,
-                    text: 'Заявки по турам',
-                    font: { size: 16 }
-                },
-                tooltip: {
-                    callbacks: {
-                        label: function(context) {
-                            return `Заявок: ${context.raw}`;
-                        }
-                    }
-                }
-            }
-        }
-    });
-
-    // Вторая диаграмма - активность менеджера по месяцам
-    if (managerOrders && managerOrders.length > 0) {
-        // Подготовка данных по месяцам из managerOrders
-        let monthlyStats = {};
-
-        managerOrders.forEach(order => {
-            // Используем orderDateTime из Java класса
-            let date = new Date(order.orderDateTime);
-            let monthYear = `${date.getMonth()+1}/${date.getFullYear()}`;
-            monthlyStats[monthYear] = (monthlyStats[monthYear] || 0) + 1;
+    // Первая диаграмма - заявки по турам (остается без изменений)
+    function initToursChart() {
+        let stats = {};
+        orders.forEach(order => {
+            let tourId = order.tour.id;
+            stats[tourId] = (stats[tourId] || 0) + 1;
         });
 
-        // Сортируем месяцы по дате
-        let months = Object.keys(monthlyStats).sort((a, b) => {
-            let [aMonth, aYear] = a.split('/').map(Number);
-            let [bMonth, bYear] = b.split('/').map(Number);
-            return aYear - bYear || aMonth - bMonth;
+        let labels = Object.keys(stats);
+        let data = Object.values(stats);
+        let tourNames = labels.map(tourId => {
+            let tour = tours.find(t => t.id === parseInt(tourId));
+            return tour ? tour.title : "Неизвестный тур";
         });
 
-        let monthNames = months.map(m => {
-            let [month, year] = m.split('/');
-            return `${getMonthName(month)} ${year}`;
-        });
-
-        let monthlyData = months.map(m => monthlyStats[m]);
-
-        // Создаем вторую диаграмму
-        let userCtx = document.getElementById('userActivityChart').getContext('2d');
-        new Chart(userCtx, {
-            type: 'line',
+        let toursCtx = document.getElementById('toursChart').getContext('2d');
+        toursChartInstance = new Chart(toursCtx, {
+            type: 'bar',
             data: {
-                labels: monthNames,
+                labels: tourNames,
                 datasets: [{
-                    label: 'Обработанные заявки',
-                    data: monthlyData,
-                    backgroundColor: 'rgba(54, 162, 235, 0.2)',
-                    borderColor: 'rgba(54, 162, 235, 1)',
-                    borderWidth: 2,
-                    tension: 0.1,
-                    fill: true
+                    label: 'Количество заявок',
+                    data: data,
+                    backgroundColor: data.map(value => {
+                        if (value < 3) return 'rgba(255, 99, 132, 0.7)';
+                        else if (value >= 3 && value <= 6) return 'rgba(255, 206, 86, 0.7)';
+                        else return 'rgba(75, 192, 192, 0.7)';
+                    })
                 }]
             },
             options: {
@@ -144,14 +104,14 @@
                         title: { display: true, text: 'Количество заявок' }
                     },
                     x: {
-                        title: { display: true, text: 'Месяц' }
+                        title: { display: true, text: 'Туры' }
                     }
                 },
                 plugins: {
                     legend: { display: false },
                     title: {
                         display: true,
-                        text: 'Активность менеджера по месяцам',
+                        text: 'Заявки по турам',
                         font: { size: 16 }
                     },
                     tooltip: {
@@ -166,6 +126,154 @@
         });
     }
 
+    // Вторая диаграмма - активность менеджера по месяцам (остается без изменений)
+    function initUserActivityChart() {
+        if (managerOrders && managerOrders.length > 0) {
+            let monthlyStats = {};
+
+            managerOrders.forEach(order => {
+                let date = new Date(order.orderDateTime);
+                let monthYear = `${date.getMonth()+1}/${date.getFullYear()}`;
+                monthlyStats[monthYear] = (monthlyStats[monthYear] || 0) + 1;
+            });
+
+            let months = Object.keys(monthlyStats).sort((a, b) => {
+                let [aMonth, aYear] = a.split('/').map(Number);
+                let [bMonth, bYear] = b.split('/').map(Number);
+                return aYear - bYear || aMonth - bMonth;
+            });
+
+            let monthNames = months.map(m => {
+                let [month, year] = m.split('/');
+                return `${getMonthName(month)} ${year}`;
+            });
+
+            let monthlyData = months.map(m => monthlyStats[m]);
+
+            let userCtx = document.getElementById('userActivityChart').getContext('2d');
+            userActivityChartInstance = new Chart(userCtx, {
+                type: 'line',
+                data: {
+                    labels: monthNames,
+                    datasets: [{
+                        label: 'Обработанные заявки',
+                        data: monthlyData,
+                        backgroundColor: 'rgba(54, 162, 235, 0.2)',
+                        borderColor: 'rgba(54, 162, 235, 1)',
+                        borderWidth: 2,
+                        tension: 0.1,
+                        fill: true
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            title: { display: true, text: 'Количество заявок' }
+                        },
+                        x: {
+                            title: { display: true, text: 'Месяц' }
+                        }
+                    },
+                    plugins: {
+                        legend: { display: false },
+                        title: {
+                            display: true,
+                            text: 'Активность менеджера по месяцам',
+                            font: { size: 16 }
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    return `Заявок: ${context.raw}`;
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+        } else {
+            document.getElementById('userActivityChartContainer').innerHTML =
+                '<div class="alert alert-info">Нет данных об активности менеджера</div>';
+        }
+    }
+
+// Функция для инициализации круговой диаграммы - популярность по странам
+function initCountriesChart() {
+    let countryStats = {};
+
+    // Подсчитываем количество заявок по странам
+    orders.forEach(order => {
+        let countryId = order.tour.country.id;
+        countryStats[countryId] = (countryStats[countryId] || 0) + 1;
+    });
+
+    // Получаем названия стран и данные для диаграммы
+    let labels = [];
+    let data = [];
+
+    countries.forEach(country => {
+        if (countryStats[country.id]) {
+            labels.push(country.name); // предполагается, что у country есть поле name
+            data.push(countryStats[country.id]);
+        }
+    });
+
+    let countriesCtx = document.getElementById('countriesChart').getContext('2d');
+    countriesChartInstance = new Chart(countriesCtx, {
+        type: 'pie', // Круговая диаграмма
+        data: {
+            labels: labels,
+            datasets: [{
+                label: 'Количество заявок',
+                data: data,
+                backgroundColor: data.map((value, index) => {
+                    const colors = [
+                        'rgba(255, 99, 132, 0.7)',
+                        'rgba(54, 162, 235, 0.7)',
+                        'rgba(255, 206, 86, 0.7)',
+                        'rgba(75, 192, 192, 0.7)',
+                        'rgba(153, 102, 255, 0.7)',
+                        'rgba(255, 159, 64, 0.7)'
+                    ];
+                    return colors[index % colors.length];
+                })
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: { display: true },
+                title: {
+                    display: true,
+                    text: 'Популярность по странам',
+                    font: { size: 16 }
+                },
+                tooltip: {
+                    callbacks: {
+                        label: function(context) {
+                            let percentage = ((context.raw / data.reduce((a, b) => a + b, 0)) * 100).toFixed(2);
+                            return `${context.label}: ${context.raw} заявок (${percentage}%)`;
+                        }
+                    }
+                },
+                datalabels: {
+                    display: true,
+                    formatter: (value, ctx) => {
+                        let percentage = ((value / data.reduce((a, b) => a + b, 0)) * 100).toFixed(2);
+                        return `${percentage}%`;
+                    },
+                    color: '#fff',
+                }
+            }
+        },
+        plugins: [ChartDataLabels] // Не забудьте подключить плагин ChartDataLabels
+    });
+}
+
     // Вспомогательная функция для получения названия месяца
     function getMonthName(monthNum) {
         const months = [
@@ -175,6 +283,27 @@
         ];
         return months[parseInt(monthNum)-1];
     }
+
+    // Функция для переключения между графиками
+    function switchChart(selectedChart) {
+        document.querySelectorAll('.chart-container').forEach(container => {
+            container.classList.remove('active-chart');
+        });
+        document.getElementById(selectedChart + 'Container').classList.add('active-chart');
+    }
+
+    // Инициализация при загрузке страницы
+    document.addEventListener('DOMContentLoaded', function() {
+        initToursChart();
+        initUserActivityChart();
+        initCountriesChart();
+
+        switchChart('toursChart');
+
+        document.getElementById('chartSelector').addEventListener('change', function() {
+            switchChart(this.value);
+        });
+    });
 </script>
 </body>
 </html>
