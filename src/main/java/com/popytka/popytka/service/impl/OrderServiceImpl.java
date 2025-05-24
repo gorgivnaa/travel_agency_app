@@ -4,6 +4,7 @@ import com.popytka.popytka.entity.AdditionalService;
 import com.popytka.popytka.entity.Order;
 import com.popytka.popytka.entity.Tour;
 import com.popytka.popytka.entity.User;
+import com.popytka.popytka.entity.enums.OrderStatus;
 import com.popytka.popytka.repository.OrderRepository;
 import com.popytka.popytka.service.ASService;
 import com.popytka.popytka.service.ManagerTourService;
@@ -60,6 +61,7 @@ class OrderServiceImpl implements OrderService {
                 .user(user)
                 .additionalService(additionalService)
                 .tour(tour)
+                .status(OrderStatus.PROCESSING)
                 .build();
         Order savedOrder = orderRepository.save(order);
         return Optional.of(savedOrder);

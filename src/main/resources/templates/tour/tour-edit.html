@@ -1,201 +1,181 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org"
       xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
-      lang="eng">
+      lang="ru">
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-    <title>Туры</title>
+    <title>Редактирование тура | Антур</title>
     <link rel="stylesheet" th:href="@{/styles/tour/tour-edit-styles.css}">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.2.3/css/bootstrap.min.css">
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.2.3/js/bootstrap.bundle.min.js"
-            crossorigin="anonymous"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
 </head>
 <body>
-<div class="container py-3">
+<div class="container py-4">
     <header th:insert="~{blocks/header :: header}"></header>
-    <div th:object="${tour}">
-        <form th:action="@{/tours/{id}(id=${tour.id})}" th:method="PUT">
+
+    <div class="edit-tour-container">
+        <h3 class="form-title"><i class="fas fa-edit me-2"></i>Редактирование тура</h3>
+
+        <form th:action="@{/tours/{id}(id=${tour.id})}" th:method="PUT" th:object="${tour}">
             <div class="row g-3">
                 <div class="col-md-6">
-                    <label for="hotelName" class="form-label">Название отеля</label>
+                    <label for="hotelName" class="form-label">Отель</label>
                     <div class="input-group">
                         <select name="hotelName" class="form-select" id="hotelName" required>
-                            <option th:each="el : ${hotels}" th:value="${el.name}" th:text="${el.name}"></option>
+                            <option th:each="el : ${hotels}"
+                                    th:value="${el.name}"
+                                    th:text="${el.name}"
+                                    th:selected="${el.name == tour.hotel.name}"></option>
                         </select>
-                        <a sec:authorize="hasAuthority('ADMIN')" class="btn btn-secondary text-white" data-toggle="modal" data-target="#addHotelModal">Добавить
-                            новый</a>
+                        <button sec:authorize="hasAuthority('ADMIN')" type="button" class="btn btn-outline-secondary btn-add-hotel"
+                                data-bs-toggle="modal" data-bs-target="#addHotelModal">
+                            <i class="fas fa-plus"></i>
+                        </button>
                     </div>
-                    <div class="invalid-feedback">Пожалуйста, выберите отель.</div>
+                    <div class="invalid-feedback">Пожалуйста, выберите отель</div>
                 </div>
 
                 <div class="col-md-6">
                     <label for="title" class="form-label">Название тура</label>
-                    <input type="text" name="title" class="form-control" id="title" th:value="*{title}"
-                           placeholder="Введите название тура" required>
-                    <div class="invalid-feedback">Valid title is required.</div>
+                    <input type="text" name="title" class="form-control" id="title"
+                           th:value="*{title}" placeholder="Введите название тура" required>
+                    <div class="invalid-feedback">Введите название тура</div>
                 </div>
 
-                <div class="col-md-12">
+                <div class="col-12">
                     <label for="description" class="form-label">Описание</label>
-                    <input type="text" name="description" class="form-control" id="description"
-                           th:value="*{description}"
-                           required>
-                    <div class="invalid-feedback">Пожалуйста, введите описание.</div>
+                    <textarea name="description" class="form-control" id="description" rows="3" required
+                              th:text="*{description}"></textarea>
+                    <div class="invalid-feedback">Введите описание тура</div>
                 </div>
 
                 <div class="col-md-6">
                     <label for="countryName" class="form-label">Страна</label>
                     <select name="countryName" class="form-select" id="countryName" required>
-                        <option th:each="el : ${countries}" th:value="${el.name}"
-                                th:text="${el.name}"></option>
+                        <option th:each="el : ${countries}"
+                                th:value="${el.name}"
+                                th:text="${el.name}"
+                                th:selected="${el.name == tour.country.name}"></option>
                     </select>
-                    <div class="invalid-feedback">Пожалуйста, выберите страну.</div>
+                    <div class="invalid-feedback">Выберите страну</div>
                 </div>
 
                 <div class="col-md-6">
-                    <label for="price" class="form-label">Стоимость</label>
-                    <input type="number" step="0.01" name="price"
-                           placeholder="Введите стоимость путёвки" class="form-control" th:value="*{price}"
-                           id="price"
-                           required max="100000">
-                    <div class="invalid-feedback">Укажите стоимость.</div>
+                    <label for="price" class="form-label">Стоимость (руб)</label>
+                    <div class="input-group">
+                        <input type="number" step="0.01" name="price" class="form-control" id="price"
+                               th:value="*{price}" required min="0" max="1000000">
+                        <span class="input-group-text">Br</span>
+                    </div>
+                    <div class="invalid-feedback">Укажите стоимость</div>
                 </div>
 
                 <div class="col-md-6">
                     <label for="placeQuantity" class="form-label">Количество мест</label>
                     <input type="number" name="placeQuantity" class="form-control" id="placeQuantity"
                            th:value="*{placeQuantity}" required min="1" max="15">
-                    <div class="invalid-feedback">Пожалуйста, укажите количество мест.</div>
+                    <div class="invalid-feedback">Укажите количество мест (1-15)</div>
                 </div>
 
                 <div class="col-md-6">
-                    <label for="startDate" class="form-label">Дата начала тура</label>
+                    <label for="startDate" class="form-label">Дата начала</label>
                     <input type="date" name="checkInDate" class="form-control" id="startDate"
-                           th:value="*{checkInDate}"
-                           required>
-                    <div class="invalid-feedback">Пожалуйста, выберите дату начала тура.</div>
+                           th:value="*{#temporals.format(checkInDate, 'yyyy-MM-dd')}" required>
+                    <div class="invalid-feedback">Выберите дату начала</div>
                 </div>
 
                 <div class="col-md-6">
-                    <label for="endDate" class="form-label">Дата окончания тура</label>
-                    <input type="date" name="checkOutDate" class="form-control" id="endDate" th:value="*{checkOutDate}"
-                           required>
-                    <div class="invalid-feedback">Пожалуйста, выберите дату окончания тура.</div>
+                    <label for="endDate" class="form-label">Дата окончания</label>
+                    <input type="date" name="checkOutDate" class="form-control" id="endDate"
+                           th:value="*{#temporals.format(checkOutDate, 'yyyy-MM-dd')}" required>
+                    <div class="invalid-feedback">Выберите дату окончания</div>
                 </div>
 
-                <div sec:authorize="hasAuthority('ADMIN')" class="dropdown">
-                    <button class="btn btn-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown">
-                        Выберите менеджеров
-                    </button>
-                    <ul class="dropdown-menu p-2" style="min-width: 250px;">
-                        <li th:each="manager : ${managers}">
-                            <div class="form-check d-flex align-items-center">
-                                <input class="form-check-input"
-                                       type="checkbox"
-                                       th:id="'manager-' + ${manager.id}"
-                                       th:name="managerIds"
-                                       th:value="${manager.id}"
-                                       th:checked="${manager.isAssigned()}">
-                                <label class="form-check-label ms-2"
-                                       th:for="'manager-' + ${manager.id}"
-                                       th:text="${manager.fullName}">
-                                </label>
-                            </div>
-                        </li>
-                    </ul>
-                </div>
-                <div class="row mt-3 justify-content-center align-items-end">
-                    <div class="col-md-4 text-center">
-                        <button class="download-button w-100 py-2" type="submit">Применить</button>
+                <div sec:authorize="hasAuthority('ADMIN')" class="col-12 mt-3">
+                    <div class="dropdown">
+                        <button class="btn btn-outline-secondary dropdown-toggle" type="button"
+                                data-bs-toggle="dropdown" aria-expanded="false">
+                            <i class="fas fa-users me-2"></i>Назначить менеджеров
+                        </button>
+                        <ul class="dropdown-menu p-3" style="width: 100%; max-height: 300px; overflow-y: auto;">
+                            <li th:each="manager : ${managers}">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox"
+                                           th:id="'manager-' + ${manager.id}"
+                                           th:name="managerIds"
+                                           th:value="${manager.id}"
+                                           th:checked="${manager.isAssigned()}">
+                                    <label class="form-check-label" th:for="'manager-' + ${manager.id}"
+                                           th:text="${manager.fullName}">
+                                    </label>
+                                </div>
+                            </li>
+                        </ul>
                     </div>
+                </div>
+
+                <div class="col-12 mt-4">
+                    <button class="btn btn-submit w-100 py-2" type="submit">
+                        <i class="fas fa-save me-2"></i>Сохранить изменения
+                    </button>
                 </div>
             </div>
         </form>
     </div>
 </div>
 
-<div class="modal" id="addHotelModal">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <h5>Добавить новый отель</h5>
-            <form th:action="@{/hotels/add}" th:method="POST">
-                <div class="mb-3">
-                    <label for="hotelCountryName" class="form-label">Страна</label>
-                    <select name="hotelCountryName" class="form-select" id="hotelCountryName" required>
-                        <option th:each="el : ${countries}" th:value="${el.name}"
-                                th:text="${el.name}"></option>
-                    </select>
-                    <div class="invalid-feedback">
-                        Пожалуйста, выберите страну.
-                    </div>
-                </div>
-                <div class="mb-3">
-                    <label for="newHotelName" class="form-label">Название отеля</label>
-                    <input type="text" name="newHotelName" class="form-control" id="newHotelName"
-                           placeholder="Введите название отеля" required>
-                </div>
-                <div class="mb-3">
-                    <label for="newHotelDescription" class="form-label">Описание отеля</label>
-                    <textarea name="newHotelDescription" class="form-control" id="newHotelDescription" rows="3"
-                              required></textarea>
-                </div>
-                <div class="mb-3">
-                    <label for="rate" class="form-label">Рейтинг</label>
-                    <input type="number" step="0.1" name="rate"
-                           placeholder="Введите рейтинг отеля" class="form-control" id="rate"
-                           required min="1" max="5">
-                    <div class="invalid-feedback">
-                        Укажите рейтинг.
-                    </div>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Отмена</button>
-                    <button type="submit" class="download-button">Добавить</button>
-                </div>
-            </form>
-        </div>
-    </div>
-</div>
+<div class="modal fade" id="addHotelModal" tabindex="-1" aria-hidden="true">
 </div>
 
-<script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"></script>
-<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
-
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.2.3/js/bootstrap.bundle.min.js"></script>
 <script>
-    var countrySelect = document.getElementById("countryName");
-    var hotelSelect = document.getElementById("hotelName");
+    document.addEventListener('DOMContentLoaded', function() {
+        const countrySelect = document.getElementById('countryName');
+        if (countrySelect) {
+            countrySelect.addEventListener('change', function() {
+                const country = this.value;
+                const hotelSelect = document.getElementById('hotelName');
 
-    countrySelect.addEventListener("change", function () {
-        var selectedCountry = countrySelect.value;
+                fetch(`/hotels/${country}`)
+                    .then(response => response.json())
+                    .then(hotels => {
+                        const currentHotel = hotelSelect.value;
+                        hotelSelect.innerHTML = '';
+                        hotels.forEach(hotel => {
+                            const option = document.createElement('option');
+                            option.value = hotel.name;
+                            option.textContent = hotel.name;
+                            hotelSelect.appendChild(option);
+                        });
+                        if (currentHotel) {
+                            hotelSelect.value = currentHotel;
+                        }
+                    });
+            });
 
-        hotelSelect.innerHTML = "";
+            countrySelect.dispatchEvent(new Event('change'));
+        }
 
-        var xhr = new XMLHttpRequest();
-        xhr.open("GET", "/hotels/" + selectedCountry, true);
-        xhr.onreadystatechange = function () {
-            if (xhr.readyState === 4 && xhr.status === 200) {
-                var hotels = JSON.parse(xhr.responseText);
+        const startDate = document.getElementById('startDate');
+        const endDate = document.getElementById('endDate');
 
-                hotels.forEach(function (hotel) {
-                    addOption(hotel.name);
-                });
-            }
-        };
-        xhr.send();
-    });
+        if (startDate && endDate) {
+            startDate.addEventListener('change', function() {
+                if (this.value && endDate.value && this.value > endDate.value) {
+                    endDate.value = '';
+                }
+                endDate.min = this.value;
+            });
 
-    function addOption(text) {
-        var option = document.createElement("option");
-        option.text = text;
-        option.value = text;
-        hotelSelect.appendChild(option);
-    }
-
-    hotelSelect.addEventListener("change", function () {
-        var selectedHotel = hotelSelect.value;
-
+            endDate.addEventListener('change', function() {
+                if (this.value && startDate.value && this.value < startDate.value) {
+                    this.setCustomValidity('Дата окончания должна быть после даты начала');
+                } else {
+                    this.setCustomValidity('');
+                }
+            });
+        }
     });
 </script>
-
 </body>
 </html>

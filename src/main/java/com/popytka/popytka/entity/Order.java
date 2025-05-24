@@ -1,7 +1,10 @@
 package com.popytka.popytka.entity;
 
+import com.popytka.popytka.entity.enums.OrderStatus;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -47,4 +50,8 @@ public class Order {
     @ManyToOne
     @JoinColumn(name = "service_id")
     private AdditionalService additionalService;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "status", nullable = false)
+    private OrderStatus status;
 }

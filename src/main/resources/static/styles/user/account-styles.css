@@ -1,69 +1,175 @@
-h1 {
-    text-align: center;
+.account-container {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    background-color: #f8f9fa;
 }
 
-.user-info span {
-    font-weight: bold;
+.account-main {
+    flex: 1;
+    padding: 2rem 0;
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
 }
 
-
-.form-group label {
-    display: block;
-    font-weight: bold;
-}
-
-.form-group input[type="text"],
-.form-group input[type="email"],
-.form-group input[type="password"] {
+.account-card {
+    background: white;
+    border-radius: 16px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
     width: 100%;
-    padding: 5px;
+    max-width: 800px;
+    overflow: hidden;
+    margin: 0 1rem;
 }
 
-.col {
+.account-header {
+    background: linear-gradient(135deg, #4da8da, #0077b6);
+    color: white;
+    padding: 1.5rem 2rem;
     display: flex;
     justify-content: space-between;
+    align-items: center;
 }
 
-.form-group button {
-    padding: 8px 16px;
-    background-color: #4CAF50;
+.account-header h1 {
+    margin: 0;
+    font-size: 1.5rem;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+}
+
+.btn-edit {
+    background: rgba(255, 255, 255, 0.2);
     color: white;
+    padding: 0.5rem 1rem;
+    border-radius: 50px;
+    text-decoration: none;
+    font-size: 0.9rem;
+    transition: all 0.3s;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    border: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+.btn-edit:hover {
+    background: rgba(255, 255, 255, 0.3);
+    transform: translateY(-1px);
+}
+
+.account-info {
+    padding: 2rem;
+    border-bottom: 1px solid #eee;
+}
+
+.info-item {
+    display: flex;
+    margin-bottom: 1.2rem;
+    align-items: center;
+}
+
+.info-label {
+    width: 150px;
+    color: #6c757d;
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    gap: 0.7rem;
+}
+
+.info-value {
+    color: #333;
+    font-weight: 500;
+    flex: 1;
+}
+
+.account-features {
+    padding: 1.5rem 2rem;
+}
+
+.features-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 1rem;
+}
+
+.feature-card {
+    background: white;
+    border-radius: 10px;
+    transition: all 0.3s;
+    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.05);
+    border: 1px solid #eee;
+}
+
+.feature-card a, .feature-card button {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 1.5rem 1rem;
+    text-decoration: none;
+    color: #333;
+    height: 100%;
+    background: none;
     border: none;
+    width: 100%;
     cursor: pointer;
 }
 
-.table-spacing {
-    border-collapse: separate;
-    border-spacing: 0 10px;
+.feature-card i {
+    font-size: 1.8rem;
+    margin-bottom: 0.8rem;
+    color: #4da8da;
 }
 
-.download-button {
-    display: inline-block;
-    padding: 10px 20px;
-    background-color: #00abc2;
-    color: white;
-    border-radius: 10px;
-    text-decoration: none;
-    margin-right: 10px; /* Добавьте отступы справа */
+.feature-card span {
+    font-size: 0.95rem;
+    font-weight: 500;
+    text-align: center;
 }
 
-.download-button:last-child {
-    margin-right: 0; /* Уберите отступ у последней кнопки */
+.feature-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 20px rgba(77, 168, 218, 0.15);
+    border-color: #4da8da;
 }
 
-.download-button:hover {
-    color: white;
-    background-color: #007ba7;
+.feature-card:hover i {
+    color: #0077b6;
 }
 
-.chart-container {
-    position: relative;
-    height: 400px;
-    margin-bottom: 30px;
+.feature-card.logout i {
+    color: #e74c3c;
+}
+
+.feature-card.logout:hover {
+    border-color: #e74c3c;
+}
+
+.feature-card.logout:hover i {
+    color: #c0392b;
 }
 
 @media (max-width: 768px) {
-    .chart-container {
-        height: 300px;
+    .account-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 1rem;
+    }
+    
+    .info-item {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.3rem;
+    }
+    
+    .info-label {
+        width: 100%;
+    }
+    
+    .features-grid {
+        grid-template-columns: 1fr;
     }
 }

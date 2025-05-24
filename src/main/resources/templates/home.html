@@ -1,74 +1,265 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org" lang="eng"
+<html xmlns:th="http://www.thymeleaf.org" lang="ru"
       xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-    <title>Главная страница</title>
+    <title>Антур - Путешествуйте с комфортом</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.2.3/css/bootstrap.min.css">
-    <link rel="stylesheet" th:href="@{styles/home-styles.css}">
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.2.3/js/bootstrap.bundle.min.js"
-            crossorigin="anonymous"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #4da8da;
+            --secondary-color: #ee6c4d;
+            --dark-color: #293241;
+            --light-color: #f8f9fa;
+        }
+
+        body {
+            font-family: 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif;
+            background-color: #f8f9fa;
+            color: #333;
+        }
+
+        .hero-section {
+            background: linear-gradient(135deg, rgba(77, 168, 218, 0.9), rgba(41, 50, 65, 0.9)),
+                        url('https://images.unsplash.com/photo-1506929562872-bb421503ef21?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80');
+            background-size: cover;
+            background-position: center;
+            color: white;
+            padding: 5rem 0;
+            margin-bottom: 3rem;
+            border-radius: 0 0 20px 20px;
+        }
+
+        .hero-title {
+            font-size: 3rem;
+            font-weight: 700;
+            margin-bottom: 1.5rem;
+        }
+
+        .hero-subtitle {
+            font-size: 1.5rem;
+            font-weight: 300;
+            margin-bottom: 2rem;
+            max-width: 700px;
+        }
+
+        .search-box {
+            background: white;
+            border-radius: 50px;
+            padding: 1rem 2rem;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            margin-top: 2rem;
+        }
+
+        .country-card {
+            border: none;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+            height: 100%;
+            position: relative;
+        }
+
+        .country-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.2);
+        }
+
+        .country-img {
+            height: 250px;
+            object-fit: cover;
+            transition: transform 0.5s ease;
+        }
+
+        .country-card:hover .country-img {
+            transform: scale(1.05);
+        }
+
+        .country-overlay {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: linear-gradient(to top, rgba(0,0,0,0.7), transparent);
+            padding: 1.5rem;
+            color: white;
+        }
+
+        .country-name {
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin: 0;
+            text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.5);
+        }
+
+        .features-section {
+            padding: 4rem 0;
+            background-color: white;
+            margin: 3rem 0;
+            border-radius: 20px;
+        }
+
+        .feature-icon {
+            font-size: 2.5rem;
+            color: var(--primary-color);
+            margin-bottom: 1rem;
+        }
+
+        .feature-title {
+            font-weight: 600;
+            margin-bottom: 1rem;
+        }
+
+        .admin-section {
+            background-color: var(--light-color);
+            padding: 2rem;
+            border-radius: 15px;
+            margin-top: 3rem;
+        }
+
+        .download-button {
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: 50px;
+            padding: 0.8rem 2rem;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .download-button:hover {
+            background-color: #3a92c4;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(77, 168, 218, 0.3);
+            color: white;
+        }
+
+        .file-input {
+            padding: 0.5rem;
+            border: 2px dashed #ddd;
+            border-radius: 10px;
+            width: 100%;
+        }
+
+        .message-success {
+            color: #28a745;
+            font-weight: 500;
+        }
+
+        .message-error {
+            color: #dc3545;
+            font-weight: 500;
+        }
+    </style>
 </head>
 <body class="full-dvh">
-<svg xmlns="http://www.w3.org/2000/svg" class="d-none">
-    <symbol id="check" viewBox="0 0 16 16">
-        <title>Check</title>
-        <path d="M13.854 3.646a.5.5 0 0 1 0 .708l-7 7a.5.5 0 0 1-.708 0l-3.5-3.5a.5.5 0 1 1 .708-.708L6.5 10.293l6.646-6.647a.5.5 0 0 1 .708 0z"></path>
-    </symbol>
-</svg>
+<div class="container-fluid px-0">
+    <header th:insert="~{blocks/header :: header}"></header>
 
-<div class="container py-3">
-    <header th:insert="~{blocks/header :: header}">
+    <section class="hero-section text-center">
+        <div class="container">
+            <h1 class="hero-title">Откройте мир с Антур</h1>
+            <p class="hero-subtitle">Мы создаем незабываемые путешествия по лучшим направлениям мира. Находите идеальные туры по выгодным ценам.</p>
 
-        <div class="pricing-header p-3 pb-md-4 mx-auto text-center">
-            <h1 class="display-4 fw-normal text-body-emphasis">Pricing</h1>
-            <p class="fs-5 text-body-secondary">Quickly build an effective pricing table for your potential customers
-                with this Bootstrap example. It’s built with default Bootstrap components and utilities with little
-                customization.</p>
+            <div class="search-box mx-auto">
+                <div class="input-group">
+                    <input type="text" class="form-control border-0" placeholder="Куда хотите поехать?">
+                    <button class="btn btn-primary" type="button">Найти туры</button>
+                </div>
+            </div>
         </div>
-    </header>
+    </section>
 
-    <main>
-        <div class="row">
-            <div class="col">
-                <div class="row row-cols-1 row-cols-md-3 g-4">
-                    <div th:each="el : ${countries}" class="col">
-                        <div class="card shadow-sm" style="height: 100%;">
-                            <div class="card-body"
-                                 style="height: 100%; display: flex; justify-content: center; align-items: center;">
-                                <img th:src="@{'data:image/png;base64,'+${el.getImageBase64()}}"
-                                     style="width: 100%; height: auto;">
-                                <div class="card-img-overlay">
-                                    <a th:text="${el.name}"
-                                       th:href="@{/tours/filter(countryName=${el.name})}"></a>
-                                </div>
-                            </div>
+    <main class="container my-5">
+        <section class="mb-5">
+            <h2 class="text-center mb-5">Популярные направления</h2>
+            <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
+                <div th:each="el : ${countries}" class="col">
+                    <div class="country-card">
+                        <img th:src="@{'data:image/png;base64,'+${el.getImageBase64()}}"
+                             class="country-img w-100"
+                             th:alt="${el.name}">
+                        <div class="country-overlay">
+                            <a th:href="@{/tours/filter(countryName=${el.name})}"
+                               class="stretched-link text-white text-decoration-none">
+                                <h3 class="country-name" th:text="${el.name}"></h3>
+                            </a>
                         </div>
                     </div>
                 </div>
             </div>
-        </div>
-        <div sec:authorize="hasAuthority('ADMIN')" class="mt-5">
-            <h2 class="mb-4">Загрузить пользователей</h2>
-            <form th:action="@{/import}" th:method="POST" enctype="multipart/form-data">
-                <input type="file" name="file" multiple>
-                <br>
-                <input type="submit" class="download-button mt-3" value="Загрузить JSON файл">
-            </form>
+        </section>
 
-            <div th:if="${messageSuccess}" class="mt-3" style="font-size: 20px; color: green">
-                <b>[[${messageSuccess}]]</b>
+        <section class="features-section">
+            <div class="container">
+                <h2 class="text-center mb-5">Почему выбирают нас</h2>
+                <div class="row text-center">
+                    <div class="col-md-4 mb-4">
+                        <div class="feature-icon">
+                            <i class="fas fa-medal"></i>
+                        </div>
+                        <h3 class="feature-title">Лучшие отели</h3>
+                        <p>Тщательно отобранные отели с высоким рейтингом для вашего комфорта</p>
+                    </div>
+                    <div class="col-md-4 mb-4">
+                        <div class="feature-icon">
+                            <i class="fas fa-headset"></i>
+                        </div>
+                        <h3 class="feature-title">Поддержка 24/7</h3>
+                        <p>Наша служба поддержки всегда готова помочь в любой ситуации</p>
+                    </div>
+                    <div class="col-md-4 mb-4">
+                        <div class="feature-icon">
+                            <i class="fas fa-wallet"></i>
+                        </div>
+                        <h3 class="feature-title">Гарантия цены</h3>
+                        <p>Лучшие цены на рынке или вернем разницу</p>
+                    </div>
+                </div>
             </div>
-            <div th:if="${messageError}" class="mt-3" style="font-size: 20px; color: red">
-                <b>[[${messageError}]]</b>
-            </div>
+        </section>
 
-            <form th:action="@{/export}" th:method="GET">
-                <button type="submit" class="download-button mt-3">Скачать данные пользователей</button>
-            </form>
-        </div>
+        <section sec:authorize="hasAuthority('ADMIN')" class="admin-section">
+            <h2 class="mb-4"><i class="fas fa-cog me-2"></i>Администрирование</h2>
+            <div class="row">
+                <div class="col-md-6">
+                    <h4>Загрузить пользователей</h4>
+                    <form th:action="@{/import}" th:method="POST" enctype="multipart/form-data" class="mb-4">
+                        <input type="file" name="file" class="file-input mb-3" multiple>
+                        <button type="submit" class="download-button">
+                            <i class="fas fa-upload me-1"></i> Загрузить JSON
+                        </button>
+
+                        <div th:if="${messageSuccess}" class="mt-3 message-success">
+                            <i class="fas fa-check-circle me-2"></i>
+                            <span th:text="${messageSuccess}"></span>
+                        </div>
+                        <div th:if="${messageError}" class="mt-3 message-error">
+                            <i class="fas fa-exclamation-circle me-2"></i>
+                            <span th:text="${messageError}"></span>
+                        </div>
+                    </form>
+                </div>
+                <div class="col-md-6">
+                    <h4>Экспорт данных</h4>
+                    <form th:action="@{/export}" th:method="GET">
+                        <button type="submit" class="download-button">
+                            <i class="fas fa-download me-1"></i> Скачать данные
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </section>
     </main>
+
     <footer th:insert="~{blocks/footer :: footer}"></footer>
 </div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.2.3/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

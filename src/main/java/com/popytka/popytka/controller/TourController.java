@@ -15,10 +15,8 @@ import com.popytka.popytka.repository.TourRepository;
 import com.popytka.popytka.repository.UserRepository;
 import com.popytka.popytka.service.ManagerTourService;
 import com.popytka.popytka.service.TourService;
-import com.popytka.popytka.util.CustomPage;
 import com.popytka.popytka.util.FilterUtil;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -87,10 +85,9 @@ public class TourController {
     ) {
         filterUtil.addPriceFilter(filter);
         Page<Tour> pageTours = tourService.getFilteredTours(filter, pageable);
-        CustomPage<Tour> tourCustomPage = new CustomPage<>(pageTours);
         List<Country> countries = countryRepository.findAll();
 
-        model.addAttribute("tours", tourCustomPage.content());
+        model.addAttribute("tours", pageTours);
         model.addAttribute("countries", countries);
         return "tour/tour";
     }

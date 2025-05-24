@@ -1,7 +1,6 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org"
-      xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
->
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
     <title>Туры</title>
@@ -9,8 +8,162 @@
     <link th:href="@{/styles/common.css}" rel="stylesheet"/>
     <link th:href="@{/styles/tour/tour-info-styles.css}" rel="stylesheet"/>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.2.3/js/bootstrap.bundle.min.js"
-            crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.2.3/js/bootstrap.bundle.min.js" crossorigin="anonymous"></script>
+    <style>
+        .tour-card {
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            border: none;
+        }
+
+        .tour-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.12);
+        }
+
+        .tour-header {
+            padding: 1.5rem;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+        }
+
+        .tour-title {
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 0.5rem;
+        }
+
+        .tour-description {
+            color: #555;
+            line-height: 1.6;
+        }
+
+        .hotel-toggle {
+            display: flex;
+            align-items: center;
+            cursor: pointer;
+            margin: 1rem 0;
+            user-select: none;
+        }
+
+        .hotel-toggle input[type="checkbox"] {
+            display: none;
+        }
+
+        .toggle-label {
+            position: relative;
+            padding-left: 30px;
+            cursor: pointer;
+            color: #4da8da;
+            font-weight: 500;
+        }
+
+        .toggle-label:before {
+            content: "";
+            position: absolute;
+            left: 0;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 20px;
+            height: 20px;
+            border: 2px solid #4da8da;
+            border-radius: 4px;
+            transition: all 0.2s;
+        }
+
+        .toggle-label:after {
+            content: "▼";
+            position: absolute;
+            left: 5px;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 10px;
+            color: #4da8da;
+            transition: all 0.2s;
+        }
+
+        #hotel-toggle:checked + .toggle-label:after {
+            transform: translateY(-50%) rotate(180deg);
+        }
+
+        .hotel-info {
+            padding: 1rem;
+            background-color: #f8f9fa;
+            border-radius: 8px;
+            margin-top: 1rem;
+            display: none;
+        }
+
+        #hotel-toggle:checked ~ .hotel-info {
+            display: block;
+            animation: fadeIn 0.3s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .hotel-name {
+            font-size: 1.2rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            color: #333;
+        }
+
+        .hotel-rating {
+            font-weight: 600;
+            color: #4da8da;
+        }
+
+        .tour-footer {
+            background-color: #f8f9fa;
+            padding: 1rem 1.5rem;
+            border-top: 1px solid rgba(0, 0, 0, 0.05);
+        }
+
+        .tour-price {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: #333;
+            margin: 0;
+        }
+
+        .btn-apply {
+            border-radius: 6px;
+            padding: 0.5rem 1.5rem;
+            font-weight: 500;
+            transition: all 0.2s;
+        }
+
+        .modal-content {
+            border-radius: 12px;
+            overflow: hidden;
+            border: none;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.15);
+        }
+
+        .modal-header {
+            border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+            padding: 1.5rem;
+        }
+
+        .modal-title {
+            font-weight: 600;
+        }
+
+        .modal-footer {
+            border-top: 1px solid rgba(0, 0, 0, 0.05);
+        }
+
+        .btn-submit {
+            width: 100%;
+            padding: 0.75rem;
+            font-weight: 500;
+            border-radius: 6px;
+        }
+    </style>
 </head>
 <body class="full-dvh container p-3 vertical-flex">
 
@@ -20,37 +173,45 @@
         <path d="M13.854 3.646a.5.5 0 0 1 0 .708l-7 7a.5.5 0 0 1-.708 0l-3.5-3.5a.5.5 0 1 1 .708-.708L6.5 10.293l6.646-6.647a.5.5 0 0 1 .708 0z"></path>
     </symbol>
 </svg>
+
 <header th:insert="~{blocks/header :: header}"></header>
+
 <main class="py-3 full-flex">
-    <div th:object="${tour}" class="card mt-2">
-        <div class="card-body">
-            <h3 th:text="*{title}"></h3>
-            <p th:text="*{description}"></p>
+    <div th:object="${tour}" class="card tour-card">
+        <div class="card-body tour-header">
+            <h3 class="tour-title" th:text="*{title}"></h3>
+            <p class="tour-description" th:text="*{description}"></p>
+
             <input id="hotel-toggle" type="checkbox" class="toggle-checkbox">
-            <label for="hotel-toggle" class="toggle-label mb-2">Показать информацию об отеле</label>
-            <div class="hotel-info mt-2">
-                <h4 th:text="*{hotel.name}"></h4>
+            <label for="hotel-toggle" class="toggle-label">Показать информацию об отеле</label>
+
+            <div class="hotel-info">
+                <h4 class="hotel-name" th:text="*{hotel.name}"></h4>
                 <p th:text="*{hotel.description}"></p>
-                <h5>Рейтинг отеля: <span th:text="*{hotel.rating}"></span></h5>
+                <h5 class="hotel-rating">Рейтинг отеля: <span th:text="*{hotel.rating}"></span></h5>
             </div>
         </div>
-        <div class="card-footer d-flex justify-content-between align-items-center">
-            <h5><span th:text="*{price} + ' руб'"/></h5>
-            <a sec:authorize="!isAuthenticated()" type="button" class="btn btn-sm btn-outline-primary" data-bs-toggle="modal"
-               data-bs-target="#loginModal">
-                Оставить заявку
-            </a>
-            <a sec:authorize="hasAuthority('CLIENT')" type="button" class="btn btn-sm btn-outline-primary"
-               data-bs-toggle="modal" data-bs-target="#orderModal">
-                Оставить заявку
-            </a>
+
+        <div class="card-footer tour-footer d-flex justify-content-between align-items-center">
+            <h5 class="tour-price"><span th:text="*{price} + ' руб'"/></h5>
+            <div>
+                <a sec:authorize="!isAuthenticated()" type="button" class="btn btn-sm btn-outline-primary btn-apply"
+                   data-bs-toggle="modal" data-bs-target="#loginModal">
+                    Оставить заявку
+                </a>
+                <a sec:authorize="hasAuthority('CLIENT')" type="button" class="btn btn-sm btn-outline-primary btn-apply"
+                   data-bs-toggle="modal" data-bs-target="#orderModal">
+                    Оставить заявку
+                </a>
+            </div>
         </div>
     </div>
 </main>
+
 <footer th:insert="~{blocks/footer :: footer}"></footer>
 
-<div class="modal fade" id="orderModal" tabindex="-1" role="dialog" aria-labelledby="orderModalLabel"
-     aria-hidden="true">
+<!-- Order Modal -->
+<div class="modal fade" id="orderModal" tabindex="-1" aria-labelledby="orderModalLabel" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
@@ -90,15 +251,15 @@
                     <input type="hidden" name="orderDate" th:value="${T(java.time.LocalDateTime).now()}">
                 </div>
                 <div class="modal-footer">
-                    <button type="submit" class="btn btn-outline-primary w-75">Отправить заявку</button>
+                    <button type="submit" class="btn btn-primary btn-submit">Отправить заявку</button>
                 </div>
             </form>
         </div>
     </div>
 </div>
 
-<div id="loginModal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="loginModalLabel"
-     aria-hidden="true">
+<!-- Login Modal -->
+<div id="loginModal" class="modal fade" tabindex="-1" aria-labelledby="loginModalLabel" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
@@ -110,20 +271,20 @@
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Отмена</button>
-                <a th:href="@{/users/login}" th:methods="GET">
-                    <button type="button" class="btn btn-outline-primary">Авторизация</button>
+                <a th:href="@{/users/login}">
+                    <button type="button" class="btn btn-primary">Авторизация</button>
                 </a>
             </div>
         </div>
     </div>
 </div>
 
-<div id="successModal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="successModalLabel"
-     aria-hidden="true">
-    <div class="modal-dialog" role="document">
+<!-- Success Modal -->
+<div id="successModal" class="modal fade" tabindex="-1" aria-labelledby="successModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="successModalLabel">Успешно</h5>
+                <h5 class="modal-title">Успешно</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
