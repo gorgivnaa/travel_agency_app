@@ -1,66 +1,189 @@
-.icon-button {
-    background: none;
-    border: none;
-    padding: 0;
-    cursor: pointer;
+/* Основные стили */
+body {
+    background-color: #f8f9fa;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
 
-.text-right {
-    display: flex;
-    justify-content: flex-end;
-    align-items: center;
+.container {
+    max-width: 1200px;
 }
 
-.btn-primary svg {
-    fill: #000000;
+/* Стили карточек услуг */
+.service-card {
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+    margin-bottom: 30px;
+    overflow: hidden;
+    transition: all 0.3s ease;
+    border-left: 5px solid #4da8da;
 }
 
-.tour-title {
+.service-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 20px rgba(0,0,0,0.12);
+}
+
+.service-header {
+    padding: 25px;
+    background: linear-gradient(135deg, #f8f9fa, #e9ecef);
+    border-bottom: 1px solid #dee2e6;
     display: flex;
     justify-content: space-between;
     align-items: center;
 }
 
-.options-dropdown {
-    position: relative;
+.service-title {
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: #212529;
+    margin: 0;
 }
 
-.options-dropdown:hover {
+.service-price {
+    background: #4da8da;
+    color: white;
+    padding: 8px 16px;
+    border-radius: 20px;
+    font-weight: 600;
+    font-size: 1.1rem;
+}
+
+.service-body {
+    padding: 25px;
+}
+
+.service-description {
+    color: #495057;
+    font-size: 1.05rem;
+    line-height: 1.6;
+    margin-bottom: 20px;
+}
+
+.action-buttons {
     display: flex;
-    flex-direction: column;
-    align-items: flex-start;
+    justify-content: space-between;
+    align-items: center;
 }
 
-.options-button {
+.btn-details {
+    background: #4da8da;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 6px;
+    font-weight: 500;
+    transition: all 0.3s;
+}
+
+.btn-details:hover {
+    background: #3a92c4;
+    color: white;
+}
+
+/* Стили для кнопок сортировки */
+.icon-button {
     background: none;
     border: none;
-    font-size: 1.5em;
+    padding: 0;
     cursor: pointer;
+    transition: transform 0.2s;
+    margin-left: 10px;
 }
 
-.dropdown-content a,
-.dropdown-content button {
-    display: block;
-    width: 100%;
-    text-align: left;
-    padding: 4px 8px;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
+.icon-button:hover {
+    transform: scale(1.1);
 }
 
-.download-button {
-    display: inline-block;
-    padding: 10px 20px;
-    background-color: #00abc2;
+/* Стили для заголовка */
+.page-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 30px;
+    padding-bottom: 15px;
+    border-bottom: 1px solid #dee2e6;
+}
+
+.page-title {
+    font-size: 2rem;
+    font-weight: 600;
+    color: #212529;
+    display: flex;
+    align-items: center;
+}
+
+.page-title i {
+    margin-right: 15px;
+    color: #4da8da;
+}
+
+/* Стили для поиска */
+.search-container {
+    max-width: 400px;
+}
+
+/* Стили для кнопки добавления */
+.btn-add {
+    background: #4da8da;
     color: white;
-    border-radius: 10px;
-    text-decoration: none;
-    outline: none;
     border: none;
+    padding: 12px 24px;
+    border-radius: 6px;
+    font-weight: 500;
+    transition: all 0.3s;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 30px;
 }
 
-.download-button:hover {
+.btn-add:hover {
+    background: #3a92c4;
     color: white;
-    background-color: #007ba7;
+    transform: translateY(-2px);
 }
+
+/* Стили для модального окна */
+.modal-content {
+    border-radius: 12px;
+    border: none;
+    box-shadow: 0 8px 30px rgba(0,0,0,0.15);
+}
+
+.modal-header {
+    border-bottom: 1px solid #dee2e6;
+    padding: 20px 25px;
+}
+
+.modal-title {
+    font-weight: 600;
+    color: #212529;
+}
+
+.modal-body {
+    padding: 25px;
+}
+
+.form-label {
+    font-weight: 500;
+    color: #495057;
+    margin-bottom: 8px;
+}
+
+.form-control {
+    border-radius: 6px;
+    padding: 10px 15px;
+    border: 1px solid #ced4da;
+}
+
+.form-control:focus {
+    border-color: #4da8da;
+    box-shadow: 0 0 0 0.25rem rgba(77, 168, 218, 0.25);
+}
+
+/* Анимации */
+.animate-delay-1 { animation-delay: 0.1s; }
+.animate-delay-2 { animation-delay: 0.2s; }
+.animate-delay-3 { animation-delay: 0.3s; }
+    

@@ -1,90 +1,90 @@
 .bookings-container {
-            padding: 2rem 0;
-        }
+    padding: 2rem 0;
+}
 
-        .booking-card {
-            border-radius: 12px;
-            border: none;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
-            padding: 1.5rem;
-            margin-bottom: 1.5rem;
-            background-color: #f8f9fa;
-            border-left: 4px solid #4da8da;
-            transition: all 0.3s ease;
-        }
+.booking-card {
+    border-radius: 12px;
+    border: none;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+    padding: 1.5rem;
+    margin-bottom: 1.5rem;
+    background-color: #f8f9fa;
+    border-left: 4px solid #4da8da;
+    transition: all 0.3s ease;
+}
 
-        .booking-card:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.12);
-        }
+.booking-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.12);
+}
 
-        .booking-title {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 1rem;
-            padding-bottom: 0.75rem;
-            border-bottom: 1px solid rgba(0, 0, 0, 0.05);
-        }
+.booking-title {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+    padding-bottom: 0.75rem;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+}
 
-        .booking-title h3 {
-            font-size: 1.25rem;
-            font-weight: 600;
-            color: #333;
-            margin: 0;
-        }
+.booking-title h3 {
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: #333;
+    margin: 0;
+}
 
-        .booking-details {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-            gap: 1rem;
-            margin-bottom: 1.5rem;
-        }
+.booking-details {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+}
 
-        .booking-details p {
-            margin: 0;
-            font-size: 0.95rem;
-        }
+.booking-details p {
+    margin: 0;
+    font-size: 0.95rem;
+}
 
-        .booking-details span {
-            font-weight: 500;
-            color: #4da8da;
-        }
+.booking-details span {
+    font-weight: 500;
+    color: #4da8da;
+}
 
-        .download-button {
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            background-color: #4da8da;
-            color: white;
-            padding: 0.6rem 1.25rem;
-            border-radius: 6px;
-            text-decoration: none;
-            font-weight: 500;
-            transition: all 0.2s ease;
-            border: none;
-        }
+.download-button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background-color: #4da8da;
+    color: white;
+    padding: 0.6rem 1.25rem;
+    border-radius: 6px;
+    text-decoration: none;
+    font-weight: 500;
+    transition: all 0.2s ease;
+    border: none;
+}
 
-        .download-button:hover {
-            background-color: #3a92c4;
-            transform: translateY(-1px);
-            box-shadow: 0 2px 8px rgba(77, 168, 218, 0.3);
-            color: white;
-        }
+.download-button:hover {
+    background-color: #3a92c4;
+    transform: translateY(-1px);
+    box-shadow: 0 2px 8px rgba(77, 168, 218, 0.3);
+    color: white;
+}
 
-        .download-button i {
-            margin-right: 0.5rem;
-            font-size: 0.9rem;
-        }
+.download-button i {
+    margin-right: 0.5rem;
+    font-size: 0.9rem;
+}
 
-        .no-bookings {
-            text-align: center;
-            padding: 3rem;
-            color: #6c757d;
-        }
+.no-bookings {
+    text-align: center;
+    padding: 3rem;
+    color: #6c757d;
+}
 
-        .no-bookings i {
-            font-size: 2rem;
-            margin-bottom: 1rem;
-            color: #dee2e6;
-        }
+.no-bookings i {
+    font-size: 2rem;
+    margin-bottom: 1rem;
+    color: #dee2e6;
+}

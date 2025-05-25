@@ -38,7 +38,7 @@ public class WebSecurityConfig {
                         ).permitAll()
                         .requestMatchers(regexMatcher("/tours/[0-9]+")).permitAll()
                         .requestMatchers("/users/registration").not().fullyAuthenticated()
-                        .requestMatchers("/hotels/**").hasAuthority("ADMIN")
+                        .requestMatchers("/hotels/**").hasAnyAuthority("ADMIN", "MANAGER")
                         .anyRequest().authenticated()
                 )
                 .formLogin(form -> form
