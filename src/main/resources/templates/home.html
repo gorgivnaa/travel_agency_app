@@ -5,28 +5,48 @@
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
     <title>Антур - Путешествуйте с комфортом</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.2.3/css/bootstrap.min.css">
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <link rel="stylesheet" th:href="@{/styles/home-styles.css}">
 </head>
 <body class="full-dvh">
 <div class="container-fluid px-0">
     <header th:insert="~{blocks/header :: header}"></header>
 
-<!--    <section class="hero-section text-center">-->
-<!--        <div class="container">-->
-<!--            <h1 class="hero-title">Откройте мир с Антур</h1>-->
-<!--            <p class="hero-subtitle">Мы создаем незабываемые путешествия по лучшим направлениям мира. Находите идеальные туры по выгодным ценам.</p>-->
-
-<!--            <div class="search-box mx-auto">-->
-<!--                <div class="input-group">-->
-<!--                    <input type="text" class="form-control border-0" placeholder="Куда хотите поехать?">-->
-<!--                    <button class="btn btn-primary" type="button">Найти туры</button>-->
-<!--                </div>-->
-<!--            </div>-->
-<!--        </div>-->
-<!--    </section>-->
-
     <main class="container my-5">
+        <!-- Новая секция анкеты предпочтений -->
+        <section class="preference-survey mb-5 py-4 px-3 rounded-4">
+            <div class="row align-items-center">
+                <div class="col-md-8">
+                    <h3 class="mb-3"><i class="fas fa-clipboard-list me-2"></i>Поможем найти идеальный тур!</h3>
+                    <p class="mb-md-0">Заполните короткую анкету предпочтений, и мы подберем для вас лучшие варианты
+                        путешествий, соответствующие вашим интересам и бюджету.</p>
+                </div>
+                <div class="col-md-4 text-md-end mt-3 mt-md-0">
+                    <button class="btn btn-primary btn-lg px-4 py-2 rounded-pill survey-btn">
+                        <i class="fas fa-pencil-alt me-2"></i>Заполнить анкету
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <section class="mb-5">
+            <h2 class="text-center mb-5">Популярные направления</h2>
+            <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
+                <div th:each="el : ${countries}" class="col">
+                    <div class="country-card">
+                        <img th:src="@{'data:image/png;base64,'+${el.getImageBase64()}}"
+                             class="country-img w-100"
+                             th:alt="${el.name}">
+                        <div class="country-overlay">
+                            <a th:href="@{/tours/filter(countryName=${el.name})}"
+                               class="stretched-link text-white text-decoration-none">
+                                <h3 class="country-name" th:text="${el.name}"></h3>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
         <section class="mb-5">
             <h2 class="text-center mb-5">Популярные направления</h2>
             <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
@@ -109,6 +129,7 @@
     </main>
 
     <footer th:insert="~{blocks/footer :: footer}"></footer>
+    <div th:insert="~{blocks/survey-modal :: survey-modal}"></div>
 </div>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.2.3/js/bootstrap.bundle.min.js"></script>

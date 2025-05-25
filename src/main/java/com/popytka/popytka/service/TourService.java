@@ -6,6 +6,7 @@ import com.popytka.popytka.entity.Hotel;
 import com.popytka.popytka.entity.Tour;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.core.Authentication;
 
 import java.util.List;
 import java.util.Optional;
@@ -16,7 +17,7 @@ public interface TourService {
 
     List<Tour> getAllToursForOrders();
 
-    List<Tour> getAllTours(Long userId);
+    List<Tour> getAllTours(Authentication authentication);
 
     List<Tour> getSearchedTours(String titleOrDescription);
 

@@ -1,0 +1,288 @@
+<div th:fragment="survey-modal">
+    <link rel="stylesheet" th:href="@{/styles/blocks/survey-modal-styles.css}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.2.3/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+<div class="modal fade" id="surveyModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog survey-modal">
+        <div class="modal-content">
+            <div class="modal-header bg-primary text-white">
+                <h5 class="modal-title">
+                    <i class="fas fa-clipboard-list me-2"></i>Анкета путешественника
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form id="preferenceForm" th:action="@{/survey/submit}" method="POST">
+                <div class="modal-body">
+                    <div class="progress mb-4">
+                        <div id="surveyProgress" class="progress-bar bg-success" role="progressbar" style="width: 0%"></div>
+                    </div>
+
+                    <!-- Вопрос 1: Цель поездки -->
+                    <div class="survey-question" id="q1">
+                        <h4><span class="badge bg-primary me-2">1/6</span> Какую магию путешествия вы ищете? ✨</h4>
+                        <div class="options mt-3">
+                            <label class="option-card d-block">
+                                <input type="radio" name="purpose" value="Пляжный отдых,Релакс,Море">
+                                <span class="emoji-option">🏖️</span> Пляжный релакс - только море, солнце и шезлонг
+                            </label>
+                            <label class="option-card d-block">
+                                <input type="radio" name="purpose" value="Горнолыжный курорт,Трекинг">
+                                <span class="emoji-option">⛷️</span> Активный отдых - горы, лыжи и адреналин
+                            </label>
+                            <label class="option-card d-block">
+                                <input type="radio" name="purpose" value="Гастрономия,Вино,Экскурсия">
+                                <span class="emoji-option">🍷</span> Гастрономическое путешествие - вкусы и вина мира
+                            </label>
+                            <label class="option-card d-block">
+                                <input type="radio" name="purpose" value="Семейный,Все включено">
+                                <span class="emoji-option">👨‍👩‍👧‍👦</span> Семейный отдых - комфорт и развлечения для всех
+                            </label>
+                        </div>
+                    </div>
+
+                    <!-- Вопрос 2: Бюджет -->
+                    <div class="survey-question" id="q2" style="display:none;">
+                        <h4><span class="badge bg-primary me-2">2/6</span> Ваш бюджет похож на... 💰</h4>
+                        <div class="options mt-3">
+                            <label class="option-card d-block">
+                                <input type="radio" name="budget" value="Не нужна виза">
+                                <span class="emoji-option">🧳</span> Рюкзак - экономлю на всем, кроме впечатлений
+                            </label>
+                            <label class="option-card d-block">
+                                <input type="radio" name="budget" value="">
+                                <span class="emoji-option">💼</span> Чемодан - золотая середина комфорта и цены
+                            </label>
+                            <label class="option-card d-block">
+                                <input type="radio" name="budget" value="Люкс">
+                                <span class="emoji-option">🛳️</span> Яхта - только лучшие отели и сервис
+                            </label>
+                            <label class="option-card d-block">
+                                <input type="radio" name="budget" value="Нужна виза">
+                                <span class="emoji-option">✈️</span> Частный самолет - эксклюзивные направления
+                            </label>
+                        </div>
+                    </div>
+
+                    <!-- Вопрос 3: Время года -->
+                    <div class="survey-question" id="q3" style="display:none;">
+                        <h4><span class="badge bg-primary me-2">3/6</span> Какое время года в вашем сердце сейчас? 🌸</h4>
+                        <div class="options mt-3">
+                            <label class="option-card d-block">
+                                <input type="radio" name="season" value="Пляжный отдых,Море">
+                                <span class="emoji-option">🌞</span> Лето - только пляжи и море!
+                            </label>
+                            <label class="option-card d-block">
+                                <input type="radio" name="season" value="Горнолыжный курорт">
+                                <span class="emoji-option">❄️</span> Зима - снег, камины и горнолыжные курорты
+                            </label>
+                            <label class="option-card d-block">
+                                <input type="radio" name="season" value="Экскурсия">
+                                <span class="emoji-option">🍂</span> Осень/Весна - экскурсии без толп туристов
+                            </label>
+                            <label class="option-card d-block">
+                                <input type="radio" name="season" value="Не нужна виза">
+                                <span class="emoji-option">🌎</span> Мне все равно - готов(а) к любому сезону
+                            </label>
+                        </div>
+                    </div>
+
+                    <!-- Вопрос 4: Темп путешествия -->
+                    <div class="survey-question" id="q4" style="display:none;">
+                        <h4><span class="badge bg-primary me-2">4/6</span> Ваш идеальный темп путешествия: ⏱️</h4>
+                        <div class="options mt-3">
+                            <label class="option-card d-block">
+                                <input type="radio" name="pace" value="Релакс,Все включено">
+                                <span class="emoji-option">🐢</span> Черепаха - максимум релакса у бассейна
+                            </label>
+                            <label class="option-card d-block">
+                                <input type="radio" name="pace" value="Экскурсия">
+                                <span class="emoji-option">🚶</span> Пешеход - осмотр достопримечательностей в комфортном темпе
+                            </label>
+                            <label class="option-card d-block">
+                                <input type="radio" name="pace" value="Трекинг">
+                                <span class="emoji-option">🏃</span> Бегун - активные экскурсии и приключения
+                            </label>
+                            <label class="option-card d-block">
+                                <input type="radio" name="pace" value="Гастрономия,Вино">
+                                <span class="emoji-option">🍽️</span> Гурман - от ресторана к ресторану
+                            </label>
+                        </div>
+                    </div>
+
+                    <!-- Вопрос 5: Компания -->
+                    <div class="survey-question" id="q5" style="display:none;">
+                        <h4><span class="badge bg-primary me-2">5/6</span> С кем вы планируете путешествие? 👥</h4>
+                        <div class="options mt-3">
+                            <label class="option-card d-block">
+                                <input type="radio" name="company" value="Семейный">
+                                <span class="emoji-option">👨‍👩‍👧‍👦</span> Семьей - с детьми или родственниками
+                            </label>
+                            <label class="option-card d-block">
+                                <input type="radio" name="company" value="Пляжный отдых,Релакс">
+                                <span class="emoji-option">💑</span> Вдвоем - романтическое путешествие
+                            </label>
+                            <label class="option-card d-block">
+                                <input type="radio" name="company" value="Горнолыжный курорт,Трекинг">
+                                <span class="emoji-option">👯</span> С друзьями - весело и активно
+                            </label>
+                            <label class="option-card d-block">
+                                <input type="radio" name="company" value="Экскурсия,Гастрономия">
+                                <span class="emoji-option">🧘</span> Один/одна - время для себя
+                            </label>
+                        </div>
+                    </div>
+
+                    <!-- Вопрос 6: Виза -->
+                    <div class="survey-question" id="q6" style="display:none;">
+                        <h4><span class="badge bg-primary me-2">6/6</span> Ваше отношение к визам? 🛂</h4>
+                        <div class="options mt-3">
+                            <label class="option-card d-block">
+                                <input type="radio" name="visa" value="Не нужна виза">
+                                <span class="emoji-option">👍</span> Только безвизовые направления
+                            </label>
+                            <label class="option-card d-block">
+                                <input type="radio" name="visa" value="Нужна виза">
+                                <span class="emoji-option">✈️</span> Готов(а) оформлять визу ради крутого направления
+                            </label>
+                            <label class="option-card d-block">
+                                <input type="radio" name="visa" value="">
+                                <span class="emoji-option">🤷</span> Не принципиально - главное чтобы страна понравилась
+                            </label>
+                            <label class="option-card d-block">
+                                <input type="radio" name="visa" value="Люкс">
+                                <span class="emoji-option">💎</span> VIP-виза - если страна того стоит
+                            </label>
+                        </div>
+                    </div>
+
+                    <!-- Скрытые поля для тегов -->
+                    <input type="hidden" id="selectedTags" name="tags">
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-outline-secondary" id="prevBtn" style="display:none;">
+                        <i class="fas fa-arrow-left me-1"></i> Назад
+                    </button>
+                    <button type="button" class="btn btn-primary" id="nextBtn">
+                        Далее <i class="fas fa-arrow-right ms-1"></i>
+                    </button>
+                    <button type="submit" class="btn btn-success" id="submitBtn" style="display:none;">
+                        <i class="fas fa-paper-plane me-1"></i> Отправить анкету
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.2.3/js/bootstrap.bundle.min.js"></script>
+<script>
+    // Активация модального окна при клике на кнопку
+    document.addEventListener('DOMContentLoaded', function() {
+        const surveyBtn = document.querySelector('.survey-btn');
+        const surveyModal = new bootstrap.Modal(document.getElementById('surveyModal'));
+
+        if (surveyBtn) {
+            surveyBtn.addEventListener('click', function() {
+                surveyModal.show();
+            });
+        }
+
+        // Логика многостраничной анкеты
+        let currentQuestion = 1;
+        const totalQuestions = 6;
+        const progressBar = document.getElementById('surveyProgress');
+
+        function updateProgress() {
+            const progress = (currentQuestion / totalQuestions) * 100;
+            progressBar.style.width = `${progress}%`;
+            progressBar.setAttribute('aria-valuenow', progress);
+        }
+
+        document.getElementById('nextBtn').addEventListener('click', function() {
+            if (validateQuestion(currentQuestion)) {
+                document.getElementById('q' + currentQuestion).style.display = 'none';
+                currentQuestion++;
+
+                if (currentQuestion <= totalQuestions) {
+                    document.getElementById('q' + currentQuestion).style.display = 'block';
+                    document.getElementById('prevBtn').style.display = 'inline-block';
+
+                    if (currentQuestion === totalQuestions) {
+                        this.style.display = 'none';
+                        document.getElementById('submitBtn').style.display = 'inline-block';
+                    }
+
+                    updateProgress();
+                }
+            }
+        });
+
+        document.getElementById('prevBtn').addEventListener('click', function() {
+            document.getElementById('q' + currentQuestion).style.display = 'none';
+            currentQuestion--;
+            document.getElementById('q' + currentQuestion).style.display = 'block';
+
+            if (currentQuestion === 1) {
+                this.style.display = 'none';
+            }
+
+            document.getElementById('nextBtn').style.display = 'inline-block';
+            document.getElementById('submitBtn').style.display = 'none';
+
+            updateProgress();
+        });
+
+        function validateQuestion(questionNum) {
+            const questionDiv = document.getElementById('q' + questionNum);
+            const selectedOption = questionDiv.querySelector('input[type="radio"]:checked');
+
+            if (!selectedOption) {
+                alert('Пожалуйста, выберите один из вариантов ответа');
+                return false;
+            }
+            return true;
+        }
+
+        // Обработка выбора вариантов
+        const optionCards = document.querySelectorAll('.option-card');
+        optionCards.forEach(card => {
+            card.addEventListener('click', function() {
+                // Удаляем выделение у всех вариантов в этом вопросе
+                const allOptions = this.closest('.options').querySelectorAll('.option-card');
+                allOptions.forEach(opt => opt.classList.remove('selected'));
+
+                // Добавляем выделение к выбранному варианту
+                this.classList.add('selected');
+
+                // Автоматически выбираем radio-кнопку
+                const radio = this.querySelector('input[type="radio"]');
+                if (radio) radio.checked = true;
+            });
+        });
+
+        // Сбор всех тегов перед отправкой
+        document.getElementById('preferenceForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+
+            const allSelectedValues = [];
+            const radioGroups = ['purpose', 'budget', 'season', 'pace', 'company', 'visa'];
+
+            radioGroups.forEach(group => {
+                const selected = document.querySelector(`input[name="${group}"]:checked`);
+                if (selected && selected.value) {
+                    allSelectedValues.push(selected.value);
+                }
+            });
+
+            // Объединяем все теги, удаляем дубликаты
+            const allTags = allSelectedValues.join(',').split(',');
+            const uniqueTags = [...new Set(allTags)].filter(tag => tag.trim() !== '');
+
+            document.getElementById('selectedTags').value = uniqueTags.join(',');
+
+            // Здесь можно добавить AJAX-отправку или просто отправить форму
+            this.submit();
+        });
+    });
+</script>
+</div>

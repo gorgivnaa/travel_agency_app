@@ -1,0 +1,51 @@
+.survey-modal {
+    max-width: 800px;
+}
+
+.survey-question {
+    background: #f8f9fa;
+    border-radius: 15px;
+    padding: 25px;
+    margin-bottom: 20px;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+    transition: all 0.3s ease;
+}
+
+.survey-question:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+}
+
+.option-card {
+    border: 2px solid #dee2e6;
+    border-radius: 10px;
+    padding: 15px;
+    margin-bottom: 10px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.option-card:hover {
+    border-color: #4da8da;
+    background: rgba(77, 168, 218, 0.05);
+}
+
+.option-card.selected {
+    border-color: #4da8da;
+    background: rgba(77, 168, 218, 0.1);
+}
+
+.option-card input[type="radio"] {
+    display: none;
+}
+
+.progress-bar {
+    height: 10px;
+    border-radius: 5px;
+}
+
+.emoji-option {
+    font-size: 24px;
+    margin-right: 10px;
+}
+    

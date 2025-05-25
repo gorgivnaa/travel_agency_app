@@ -53,13 +53,7 @@ public class TourController {
 
     @GetMapping
     public String getAllTours(Authentication authentication, Model model) {
-        List<Tour> tours;
-        if (authentication == null) {
-            tours = tourService.getAllTours(null);
-        } else {
-            Long userId = ((CustomUserDetails) authentication.getPrincipal()).getId();
-            tours = tourService.getAllTours(userId);
-        }
+        List<Tour> tours = tourService.getAllTours(authentication);
         List<Country> countries = countryRepository.findAll();
 
         model.addAttribute("tours", tours);

@@ -146,4 +146,59 @@ body {
     color: #dc3545;
     font-weight: 500;
 }
-    
+
+.preference-survey {
+    background: linear-gradient(135deg, #4da8da, #3a8bc8);
+    color: white;
+    box-shadow: 0 10px 30px rgba(77, 168, 218, 0.3);
+    position: relative;
+    overflow: hidden;
+}
+
+.preference-survey::before {
+    content: "";
+    position: absolute;
+    top: -50px;
+    right: -50px;
+    width: 150px;
+    height: 150px;
+    background-color: rgba(255, 255, 255, 0.1);
+    border-radius: 50%;
+}
+
+.preference-survey::after {
+    content: "";
+    position: absolute;
+    bottom: -30px;
+    left: -30px;
+    width: 100px;
+    height: 100px;
+    background-color: rgba(255, 255, 255, 0.1);
+    border-radius: 50%;
+}
+
+.survey-btn {
+    background-color: white;
+    color: var(--primary-color);
+    font-weight: 600;
+    transition: all 0.3s ease;
+    position: relative;
+    z-index: 1;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+}
+
+.survey-btn:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
+    color: var(--primary-color);
+}
+
+@media (max-width: 768px) {
+    .preference-survey {
+        text-align: center;
+    }
+
+    .survey-btn {
+        width: 100%;
+    }
+}

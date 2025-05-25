@@ -37,6 +37,7 @@ public class WebSecurityConfig {
                                 "/users/edit-password"
                         ).permitAll()
                         .requestMatchers(regexMatcher("/tours/[0-9]+")).permitAll()
+                        .requestMatchers("/survey/**").permitAll()
                         .requestMatchers("/users/registration").not().fullyAuthenticated()
                         .requestMatchers("/hotels/**").hasAnyAuthority("ADMIN", "MANAGER")
                         .anyRequest().authenticated()
