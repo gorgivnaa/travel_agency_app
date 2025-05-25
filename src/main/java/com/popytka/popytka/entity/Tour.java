@@ -67,4 +67,8 @@ public class Tour {
     @JsonBackReference
     @OneToMany(mappedBy = "tour", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<ManagerTour> managers = new HashSet<>();
+
+    @JsonBackReference
+    @OneToMany(mappedBy = "tour", cascade = CascadeType.ALL, orphanRemoval = true)
+    private Set<TourTag> tags = new HashSet<>();
 }
