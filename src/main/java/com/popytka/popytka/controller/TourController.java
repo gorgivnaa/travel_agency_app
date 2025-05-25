@@ -12,9 +12,9 @@ import com.popytka.popytka.repository.AdditionalServiceRepository;
 import com.popytka.popytka.repository.CountryRepository;
 import com.popytka.popytka.repository.HotelRepository;
 import com.popytka.popytka.repository.TourRepository;
-import com.popytka.popytka.repository.UserRepository;
 import com.popytka.popytka.service.ManagerTourService;
 import com.popytka.popytka.service.TourService;
+import com.popytka.popytka.service.UserService;
 import com.popytka.popytka.util.FilterUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -44,7 +44,7 @@ public class TourController {
 
     private final FilterUtil filterUtil;
     private final TourService tourService;
-    private final UserRepository userRepository;
+    private final UserService userService;
     private final TourRepository tourRepository;
     private final HotelRepository hotelRepository;
     private final CountryRepository countryRepository;
@@ -53,10 +53,12 @@ public class TourController {
 
     @GetMapping
     public String getAllTours(Authentication authentication, Model model) {
+        boolean hasBookings = userService.hasBookings(authentication);
         List<Tour> tours = tourService.getAllTours(authentication);
         List<Country> countries = countryRepository.findAll();
 
         model.addAttribute("tours", tours);
+        model.addAttribute("hasBookings", hasBookings);
         model.addAttribute("countries", countries);
         return "tour/tour";
     }
@@ -91,7 +93,7 @@ public class TourController {
         User user = null;
         if (authentication != null) {
             Long userId = ((CustomUserDetails) authentication.getPrincipal()).getId();
-            user = userRepository.findById(userId).get();
+            user = userService.findById(userId).get();
         }
         Tour tour = tourService.getById(id).get();
         List<AdditionalService> additionalServices = additionalServiceRepository.findAll();

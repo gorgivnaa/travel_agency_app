@@ -1,11 +1,15 @@
 package com.popytka.popytka.service.impl;
 
+import com.popytka.popytka.config.security.CustomUserDetails;
+import com.popytka.popytka.entity.Booking;
 import com.popytka.popytka.entity.Role;
 import com.popytka.popytka.entity.User;
+import com.popytka.popytka.repository.BookingRepository;
 import com.popytka.popytka.repository.UserRepository;
 import com.popytka.popytka.service.RoleService;
 import com.popytka.popytka.service.UserService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -19,6 +23,7 @@ class UserServiceImpl implements UserService {
     private final RoleService roleService;
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
+    private final BookingRepository bookingRepository;
 
     @Override
     public List<User> getAllUsers() {
@@ -71,6 +76,17 @@ class UserServiceImpl implements UserService {
     @Override
     public List<User> getByRoleName(String role) {
         return userRepository.findByRoleName(role);
+    }
+
+    @Override
+    public boolean hasBookings(Authentication authentication) {
+        Long userId = ((CustomUserDetails) authentication.getPrincipal()).getId();
+        if (userId == null) {
+            return false;
+        }
+
+        List<Booking> userBookings = bookingRepository.findByUserId(userId);
+        return userBookings.isEmpty();
     }
 
     @Override

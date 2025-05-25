@@ -1,6 +1,7 @@
 package com.popytka.popytka.service;
 
 import com.popytka.popytka.entity.User;
+import org.springframework.security.core.Authentication;
 
 import java.util.List;
 import java.util.Optional;
@@ -22,4 +23,6 @@ public interface UserService {
     Optional<User> updatePassword(String email, String password, String copyPassword);
 
     List<User> getByRoleName(String role);
+
+    boolean hasBookings(Authentication authentication);
 }
