@@ -7,12 +7,24 @@
     <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels"></script>
     <link rel="stylesheet" th:href="@{/styles/statistic/all-statistic-styles.css}">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+
 </head>
 <body>
 <div class="container">
     <header th:insert="~{blocks/header :: header}"></header>
 
-    <h2 class="mt-4">Аналитика заявок</h2>
+    <div class="header-container">
+        <h2 class="mt-4">Аналитика заявок</h2>
+
+        <div class="export-btn-container">
+            <form th:action="@{/statistics/export/excel}" th:method="GET">
+                <button type="submit" class="export-btn">
+                    <i class="fas fa-file-excel"></i> Экспорт в Excel
+                </button>
+            </form>
+        </div>
+    </div>
 
     <div class="row mb-4">
         <div class="col-md-4">
@@ -40,36 +52,26 @@
 </div>
 
 <script th:inline="javascript">
-    let orders = /*[[${orders}]]*/ [];
-    let managerOrders = /*[[${managerOrders}]]*/ [];
-    let tours = /*[[${tours}]]*/ [];
-    let countries = /*[[${countries}]]*/ []; // Получаем список стран из Thymeleaf
+    let toursChartInstance;
+    let userActivityChartInstance;
+    let countriesChartInstance;
 
-    // Инициализация переменных для хранения экземпляров графиков
-    let toursChartInstance = null;
-    let userActivityChartInstance = null;
-    let countriesChartInstance = null;
+        async function initToursChart() {
+        const response = await fetch('/api/statistics/tours');
+        const tourStats = await response.json();
 
-    // Первая диаграмма - заявки по турам (остается без изменений)
-    function initToursChart() {
-        let stats = {};
-        orders.forEach(order => {
-            let tourId = order.tour.id;
-            stats[tourId] = (stats[tourId] || 0) + 1;
-        });
-
-        let labels = Object.keys(stats);
-        let data = Object.values(stats);
-        let tourNames = labels.map(tourId => {
-            let tour = tours.find(t => t.id === parseInt(tourId));
-            return tour ? tour.title : "Неизвестный тур";
-        });
+        const labels = tourStats.map(stat => stat.tourTitle);
+        const data = tourStats.map(stat => stat.orderCount);
 
         let toursCtx = document.getElementById('toursChart').getContext('2d');
+        if (toursChartInstance) {
+            toursChartInstance.destroy();
+        }
+
         toursChartInstance = new Chart(toursCtx, {
             type: 'bar',
             data: {
-                labels: tourNames,
+                labels: labels,
                 datasets: [{
                     label: 'Количество заявок',
                     data: data,
@@ -83,212 +85,150 @@
             options: {
                 responsive: true,
                 maintainAspectRatio: false,
-                scales: {
-                    y: {
-                        beginAtZero: true,
-                        title: { display: true, text: 'Количество заявок' }
-                    },
-                    x: {
-                        title: { display: true, text: 'Туры' }
-                    }
-                },
                 plugins: {
                     legend: { display: false },
                     title: {
                         display: true,
                         text: 'Заявки по турам',
                         font: { size: 16 }
-                    },
+                    }
+                }
+            }
+        });
+    }
+
+
+       async function initUserActivityChart() {
+        const response = await fetch('/api/statistics/managers');
+        const monthlyStats = await response.json();
+
+        const labels = monthlyStats.map(s => formatMonthName(s.month));
+        const data = monthlyStats.map(s => s.count);
+
+        let ctx = document.getElementById('userActivityChart').getContext('2d');
+        if (userActivityChartInstance) userActivityChartInstance.destroy();
+
+        userActivityChartInstance = new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: labels,
+                datasets: [{
+                    label: 'Обработанные заявки',
+                    data: data,
+                    borderColor: 'rgba(54, 162, 235, 1)',
+                    backgroundColor: 'rgba(54, 162, 235, 0.2)',
+                    borderWidth: 2,
+                    fill: true,
+                    tension: 0.2
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { display: false },
+                    title: { display: true, text: 'Активность менеджера по месяцам' }
+                }
+            }
+        });
+    }
+
+    function formatMonthName(monthYear) {
+        const [month, year] = monthYear.split('/');
+        const names = ['Январь', 'Февраль', 'Март', 'Апрель', 'Май', 'Июнь',
+                       'Июль', 'Август', 'Сентябрь', 'Октябрь', 'Ноябрь', 'Декабрь'];
+        return `${names[parseInt(month)-1]} ${year}`;
+    }
+
+
+    async function initCountriesChart() {
+        const response = await fetch('/api/statistics/countries');
+        const stats = await response.json();
+
+        const labels = stats.map(s => s.countryName);
+        const data = stats.map(s => s.count);
+
+        let ctx = document.getElementById('countriesChart').getContext('2d');
+        if (countriesChartInstance) countriesChartInstance.destroy();
+
+        countriesChartInstance = new Chart(ctx, {
+            type: 'pie',
+            data: {
+                labels: labels,
+                datasets: [{
+                    data: data,
+                    backgroundColor: data.map((_, i) => {
+                        const colors = [
+                            'rgba(255, 99, 132, 0.7)',
+                            'rgba(54, 162, 235, 0.7)',
+                            'rgba(255, 206, 86, 0.7)',
+                            'rgba(75, 192, 192, 0.7)',
+                            'rgba(153, 102, 255, 0.7)',
+                            'rgba(255, 159, 64, 0.7)'
+                        ];
+                        return colors[i % colors.length];
+                    })
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    title: { display: true, text: 'Популярность по странам' },
                     tooltip: {
                         callbacks: {
-                            label: function(context) {
-                                return `Заявок: ${context.raw}`;
+                            label: ctx => {
+                                const total = data.reduce((a, b) => a + b, 0);
+                                const percent = ((ctx.raw / total) * 100).toFixed(2);
+                                return `${ctx.label}: ${ctx.raw} заявок (${percent}%)`;
                             }
                         }
-                    }
-                }
-            }
-        });
-    }
-
-    // Вторая диаграмма - активность менеджера по месяцам (остается без изменений)
-    function initUserActivityChart() {
-        if (managerOrders && managerOrders.length > 0) {
-            let monthlyStats = {};
-
-            managerOrders.forEach(order => {
-                let date = new Date(order.orderDateTime);
-                let monthYear = `${date.getMonth()+1}/${date.getFullYear()}`;
-                monthlyStats[monthYear] = (monthlyStats[monthYear] || 0) + 1;
-            });
-
-            let months = Object.keys(monthlyStats).sort((a, b) => {
-                let [aMonth, aYear] = a.split('/').map(Number);
-                let [bMonth, bYear] = b.split('/').map(Number);
-                return aYear - bYear || aMonth - bMonth;
-            });
-
-            let monthNames = months.map(m => {
-                let [month, year] = m.split('/');
-                return `${getMonthName(month)} ${year}`;
-            });
-
-            let monthlyData = months.map(m => monthlyStats[m]);
-
-            let userCtx = document.getElementById('userActivityChart').getContext('2d');
-            userActivityChartInstance = new Chart(userCtx, {
-                type: 'line',
-                data: {
-                    labels: monthNames,
-                    datasets: [{
-                        label: 'Обработанные заявки',
-                        data: monthlyData,
-                        backgroundColor: 'rgba(54, 162, 235, 0.2)',
-                        borderColor: 'rgba(54, 162, 235, 1)',
-                        borderWidth: 2,
-                        tension: 0.1,
-                        fill: true
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    scales: {
-                        y: {
-                            beginAtZero: true,
-                            title: { display: true, text: 'Количество заявок' }
-                        },
-                        x: {
-                            title: { display: true, text: 'Месяц' }
-                        }
                     },
-                    plugins: {
-                        legend: { display: false },
-                        title: {
-                            display: true,
-                            text: 'Активность менеджера по месяцам',
-                            font: { size: 16 }
+                    datalabels: {
+                        display: true,
+                        formatter: (val, ctx) => {
+                            const total = data.reduce((a, b) => a + b, 0);
+                            return `${((val / total) * 100).toFixed(1)}%`;
                         },
-                        tooltip: {
-                            callbacks: {
-                                label: function(context) {
-                                    return `Заявок: ${context.raw}`;
-                                }
-                            }
-                        }
+                        color: '#fff'
                     }
                 }
+            },
+            plugins: [ChartDataLabels]
+        });
+    }
+
+
+        // Вспомогательная функция для получения названия месяца
+        function getMonthName(monthNum) {
+            const months = [
+                'Январь', 'Февраль', 'Март', 'Апрель',
+                'Май', 'Июнь', 'Июль', 'Август',
+                'Сентябрь', 'Октябрь', 'Ноябрь', 'Декабрь'
+            ];
+            return months[parseInt(monthNum)-1];
+        }
+
+        // Функция для переключения между графиками
+        function switchChart(selectedChart) {
+            document.querySelectorAll('.chart-container').forEach(container => {
+                container.classList.remove('active-chart');
             });
-        } else {
-            document.getElementById('userActivityChartContainer').innerHTML =
-                '<div class="alert alert-info">Нет данных об активности менеджера</div>';
+            document.getElementById(selectedChart + 'Container').classList.add('active-chart');
         }
-    }
 
-// Функция для инициализации круговой диаграммы - популярность по странам
-function initCountriesChart() {
-    let countryStats = {};
+        // Инициализация при загрузке страницы
+        document.addEventListener('DOMContentLoaded', function() {
+            initToursChart();
+            initUserActivityChart();
+            initCountriesChart();
 
-    // Подсчитываем количество заявок по странам
-    orders.forEach(order => {
-        let countryId = order.tour.country.id;
-        countryStats[countryId] = (countryStats[countryId] || 0) + 1;
-    });
+            switchChart('toursChart');
 
-    // Получаем названия стран и данные для диаграммы
-    let labels = [];
-    let data = [];
-
-    countries.forEach(country => {
-        if (countryStats[country.id]) {
-            labels.push(country.name); // предполагается, что у country есть поле name
-            data.push(countryStats[country.id]);
-        }
-    });
-
-    let countriesCtx = document.getElementById('countriesChart').getContext('2d');
-    countriesChartInstance = new Chart(countriesCtx, {
-        type: 'pie', // Круговая диаграмма
-        data: {
-            labels: labels,
-            datasets: [{
-                label: 'Количество заявок',
-                data: data,
-                backgroundColor: data.map((value, index) => {
-                    const colors = [
-                        'rgba(255, 99, 132, 0.7)',
-                        'rgba(54, 162, 235, 0.7)',
-                        'rgba(255, 206, 86, 0.7)',
-                        'rgba(75, 192, 192, 0.7)',
-                        'rgba(153, 102, 255, 0.7)',
-                        'rgba(255, 159, 64, 0.7)'
-                    ];
-                    return colors[index % colors.length];
-                })
-            }]
-        },
-        options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            plugins: {
-                legend: { display: true },
-                title: {
-                    display: true,
-                    text: 'Популярность по странам',
-                    font: { size: 16 }
-                },
-                tooltip: {
-                    callbacks: {
-                        label: function(context) {
-                            let percentage = ((context.raw / data.reduce((a, b) => a + b, 0)) * 100).toFixed(2);
-                            return `${context.label}: ${context.raw} заявок (${percentage}%)`;
-                        }
-                    }
-                },
-                datalabels: {
-                    display: true,
-                    formatter: (value, ctx) => {
-                        let percentage = ((value / data.reduce((a, b) => a + b, 0)) * 100).toFixed(2);
-                        return `${percentage}%`;
-                    },
-                    color: '#fff',
-                }
-            }
-        },
-        plugins: [ChartDataLabels] // Не забудьте подключить плагин ChartDataLabels
-    });
-}
-
-    // Вспомогательная функция для получения названия месяца
-    function getMonthName(monthNum) {
-        const months = [
-            'Январь', 'Февраль', 'Март', 'Апрель',
-            'Май', 'Июнь', 'Июль', 'Август',
-            'Сентябрь', 'Октябрь', 'Ноябрь', 'Декабрь'
-        ];
-        return months[parseInt(monthNum)-1];
-    }
-
-    // Функция для переключения между графиками
-    function switchChart(selectedChart) {
-        document.querySelectorAll('.chart-container').forEach(container => {
-            container.classList.remove('active-chart');
+            document.getElementById('chartSelector').addEventListener('change', function() {
+                switchChart(this.value);
+            });
         });
-        document.getElementById(selectedChart + 'Container').classList.add('active-chart');
-    }
-
-    // Инициализация при загрузке страницы
-    document.addEventListener('DOMContentLoaded', function() {
-        initToursChart();
-        initUserActivityChart();
-        initCountriesChart();
-
-        switchChart('toursChart');
-
-        document.getElementById('chartSelector').addEventListener('change', function() {
-            switchChart(this.value);
-        });
-    });
 </script>
 </body>
 </html>
