@@ -57,7 +57,9 @@ class TourTagServiceImpl implements TourTagService {
                     .collect(Collectors.toList());
         }
 
-        Set<Tag> assignedManagers = tourTagRepository.findByTourId(tourId);
+        Set<Tag> assignedManagers = tourTagRepository.findByTourId(tourId).stream()
+                .map(TourTag::getTag)
+                .collect(Collectors.toSet());
 
         return allTags.stream()
                 .map(tag -> new TagAssignmentDto(
@@ -69,7 +71,7 @@ class TourTagServiceImpl implements TourTagService {
     @Override
     public void saveTagsForTour(Tour tour, List<Long> tagIds) {
         Set<Long> currentTagIds = tourTagRepository.findByTourId(tour.getId()).stream()
-                .map(Tag::getId)
+                .map(tt -> tt.getTag().getId())
                 .collect(Collectors.toSet());
 
         Set<Long> newTagIds = new HashSet<>(tagIds);

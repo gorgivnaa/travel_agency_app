@@ -119,7 +119,7 @@ public class TourController {
         model.addAttribute("countries", countries);
         model.addAttribute("hotels", hotels);
         model.addAttribute("managers", managersWithStatus);
-        model.addAttribute("tags", tagsWithAssignmentStatus);
+        model.addAttribute("assignmentTags", tagsWithAssignmentStatus);
         return "tour/tour-edit";
     }
 
@@ -155,6 +155,7 @@ public class TourController {
             @RequestParam("hotelName") String hotelName,
             @RequestParam("countryName") String countryName,
             @RequestParam(required = false) List<Long> managerIds,
+            @RequestParam(required = false) List<Long> tagIds,
             Authentication authentication
     ) {
         Hotel hotel = hotelRepository.findByName(hotelName).get();
@@ -164,6 +165,7 @@ public class TourController {
                 .anyMatch(a -> a.getAuthority().equals("ADMIN"))
         ) {
             managerTourService.saveManagersForTour(savedTour, managerIds != null ? managerIds : Collections.emptyList());
+            tourTagService.saveTagsForTour(savedTour, tagIds != null ? tagIds : Collections.emptyList());
         }
         return "redirect:/tours";
     }

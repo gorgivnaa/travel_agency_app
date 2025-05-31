@@ -114,14 +114,14 @@
                         <div class="assignment-column">
                             <h5><i class="fas fa-tags me-2"></i>Теги</h5>
                             <div class="assignment-list">
-                                <div th:each="tag : ${tags}" class="form-check">
+                                <div th:each="assignmentTag : ${assignmentTags}" class="form-check">
                                     <input class="form-check-input" type="checkbox"
-                                           th:id="'tag-' + ${tag.id}"
+                                           th:id="'tag-' + ${assignmentTag.tag.id}"
                                            th:name="tagIds"
-                                           th:value="${tag.id}"
-                                           th:checked="${tag.isAssigned()}">
-                                    <label class="form-check-label" th:for="'tag-' + ${tag.id}"
-                                           th:text="${tag.name}">
+                                           th:value="${assignmentTag.tag.id}"
+                                           th:checked="${assignmentTag.isAssigned()}">
+                                    <label class="form-check-label" th:for="'tag-' + ${assignmentTag.tag.id}"
+                                           th:text="${assignmentTag.tag.name}">
                                     </label>
                                 </div>
                             </div>
