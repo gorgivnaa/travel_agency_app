@@ -3,6 +3,7 @@ package com.popytka.popytka.controller;
 import com.popytka.popytka.config.security.CustomUserDetails;
 import com.popytka.popytka.controller.filter.TourFilter;
 import com.popytka.popytka.dto.ManagerAssignmentDto;
+import com.popytka.popytka.dto.TagAssignmentDto;
 import com.popytka.popytka.entity.AdditionalService;
 import com.popytka.popytka.entity.Country;
 import com.popytka.popytka.entity.Hotel;
@@ -14,6 +15,7 @@ import com.popytka.popytka.repository.HotelRepository;
 import com.popytka.popytka.repository.TourRepository;
 import com.popytka.popytka.service.ManagerTourService;
 import com.popytka.popytka.service.TourService;
+import com.popytka.popytka.service.TourTagService;
 import com.popytka.popytka.service.UserService;
 import com.popytka.popytka.util.FilterUtil;
 import lombok.RequiredArgsConstructor;
@@ -46,6 +48,7 @@ public class TourController {
     private final TourService tourService;
     private final UserService userService;
     private final TourRepository tourRepository;
+    private final TourTagService tourTagService;
     private final HotelRepository hotelRepository;
     private final CountryRepository countryRepository;
     private final ManagerTourService managerTourService;
@@ -110,11 +113,13 @@ public class TourController {
         List<Country> countries = countryRepository.findAll();
         List<Hotel> hotels = hotelRepository.findAll();
         List<ManagerAssignmentDto> managersWithStatus = managerTourService.getManagersWithAssignmentStatus(id);
+        List<TagAssignmentDto> tagsWithAssignmentStatus = tourTagService.getTagsWithAssignmentStatus(id);
 
         model.addAttribute("tour", tour);
         model.addAttribute("countries", countries);
         model.addAttribute("hotels", hotels);
         model.addAttribute("managers", managersWithStatus);
+        model.addAttribute("tags", tagsWithAssignmentStatus);
         return "tour/tour-edit";
     }
 

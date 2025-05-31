@@ -48,7 +48,7 @@ public class BookingController {
     @GetMapping("/{userId}")
     public String getBookingsByUser(@PathVariable(value = "userId") Long userId, Model model) {
         User user = userRepository.findById(userId).get();
-        List<Booking> bookings = bookingRepository.findByUser(user);
+        List<Booking> bookings = bookingRepository.findByUserId(userId);
         model.addAttribute("user", user);
         model.addAttribute("bookings", bookings);
         return "bookings/bookings";

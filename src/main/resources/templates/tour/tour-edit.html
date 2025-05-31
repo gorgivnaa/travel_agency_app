@@ -91,15 +91,13 @@
                     <div class="invalid-feedback">Выберите дату окончания</div>
                 </div>
 
-                <div sec:authorize="hasAuthority('ADMIN')" class="col-12 mt-3">
-                    <div class="dropdown">
-                        <button class="btn btn-outline-secondary dropdown-toggle" type="button"
-                                data-bs-toggle="dropdown" aria-expanded="false">
-                            <i class="fas fa-users me-2"></i>Назначить менеджеров
-                        </button>
-                        <ul class="dropdown-menu p-3" style="width: 100%; max-height: 300px; overflow-y: auto;">
-                            <li th:each="manager : ${managers}">
-                                <div class="form-check">
+                <div sec:authorize="hasAuthority('ADMIN')" class="col-12">
+                    <div class="assignment-columns">
+                        <!-- Колонка с менеджерами -->
+                        <div class="assignment-column">
+                            <h5><i class="fas fa-users me-2"></i>Менеджеры</h5>
+                            <div class="assignment-list">
+                                <div th:each="manager : ${managers}" class="form-check">
                                     <input class="form-check-input" type="checkbox"
                                            th:id="'manager-' + ${manager.id}"
                                            th:name="managerIds"
@@ -109,8 +107,25 @@
                                            th:text="${manager.fullName}">
                                     </label>
                                 </div>
-                            </li>
-                        </ul>
+                            </div>
+                        </div>
+
+                        <!-- Колонка с тегами -->
+                        <div class="assignment-column">
+                            <h5><i class="fas fa-tags me-2"></i>Теги</h5>
+                            <div class="assignment-list">
+                                <div th:each="tag : ${tags}" class="form-check">
+                                    <input class="form-check-input" type="checkbox"
+                                           th:id="'tag-' + ${tag.id}"
+                                           th:name="tagIds"
+                                           th:value="${tag.id}"
+                                           th:checked="${tag.isAssigned()}">
+                                    <label class="form-check-label" th:for="'tag-' + ${tag.id}"
+                                           th:text="${tag.name}">
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
 
