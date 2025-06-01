@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org" lang="ru">
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.w3.org/1999/xhtml" lang="ru">
 <head>
     <meta charset="UTF-8">
     <title>Аналитика заявок</title>
@@ -35,6 +35,14 @@
             </select>
         </div>
     </div>
+    <div sec:authorize="hasAuthority('ADMIN')" class="row mb-4" id="managerSelectContainer" style="display: none;">
+        <div class="col-md-4">
+            <select id="managerSelect" class="form-select">
+                <option value="">Выберите менеджера</option>
+            </select>
+        </div>
+    </div>
+
 
     <div id="toursChartContainer" class="chart-container">
         <canvas id="toursChart"></canvas>
@@ -52,6 +60,7 @@
 </div>
 
 <script th:inline="javascript">
+    let managers = /*[[${managers}]]*/ [];
     let toursChartInstance;
     let userActivityChartInstance;
     let countriesChartInstance;
@@ -98,40 +107,46 @@
     }
 
 
-       async function initUserActivityChart() {
-        const response = await fetch('/api/statistics/managers');
-        const monthlyStats = await response.json();
-
-        const labels = monthlyStats.map(s => formatMonthName(s.month));
-        const data = monthlyStats.map(s => s.count);
-
-        let ctx = document.getElementById('userActivityChart').getContext('2d');
-        if (userActivityChartInstance) userActivityChartInstance.destroy();
-
-        userActivityChartInstance = new Chart(ctx, {
-            type: 'line',
-            data: {
-                labels: labels,
-                datasets: [{
-                    label: 'Обработанные заявки',
-                    data: data,
-                    borderColor: 'rgba(54, 162, 235, 1)',
-                    backgroundColor: 'rgba(54, 162, 235, 0.2)',
-                    borderWidth: 2,
-                    fill: true,
-                    tension: 0.2
-                }]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                plugins: {
-                    legend: { display: false },
-                    title: { display: true, text: 'Активность менеджера по месяцам' }
-                }
-            }
-        });
+async function initUserActivityChart(managerId = null) {
+    let url = '/api/statistics/managers';
+    if (managerId) {
+        url += `?managerId=${managerId}`;
     }
+
+    const response = await fetch(url);
+    const monthlyStats = await response.json();
+
+    const labels = monthlyStats.map(s => formatMonthName(s.month));
+    const data = monthlyStats.map(s => s.count);
+
+    const ctx = document.getElementById('userActivityChart').getContext('2d');
+    if (userActivityChartInstance) userActivityChartInstance.destroy();
+
+    userActivityChartInstance = new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels: labels,
+            datasets: [{
+                label: 'Обработанные заявки',
+                data: data,
+                borderColor: 'rgba(54, 162, 235, 1)',
+                backgroundColor: 'rgba(54, 162, 235, 0.2)',
+                borderWidth: 2,
+                fill: true,
+                tension: 0.2
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: { display: false },
+                title: { display: true, text: 'Активность менеджера по месяцам' }
+            }
+        }
+    });
+}
+
 
     function formatMonthName(monthYear) {
         const [month, year] = monthYear.split('/');
@@ -217,18 +232,47 @@
             document.getElementById(selectedChart + 'Container').classList.add('active-chart');
         }
 
-        // Инициализация при загрузке страницы
-        document.addEventListener('DOMContentLoaded', function() {
-            initToursChart();
-            initUserActivityChart();
-            initCountriesChart();
+        document.addEventListener('DOMContentLoaded', function () {
+    initToursChart();
+    initUserActivityChart();
+    initCountriesChart();
+    switchChart('toursChart');
 
-            switchChart('toursChart');
+    document.getElementById('chartSelector').addEventListener('change', function () {
+        switchChart(this.value);
+    });
 
-            document.getElementById('chartSelector').addEventListener('change', function() {
-                switchChart(this.value);
-            });
+    // Если админ — показать dropdown с менеджерами
+    if (typeof managers !== 'undefined' && managers.length > 0) {
+        populateManagerDropdown();
+
+        document.getElementById('managerSelect').addEventListener('change', function () {
+            const selectedManagerId = this.value;
+            if (selectedManagerId) {
+                initUserActivityChart(selectedManagerId);
+            }
         });
+    }
+});
+
+
+    function populateManagerDropdown() {
+    const select = document.getElementById('managerSelect');
+    if (!select) return;
+
+    select.innerHTML = '<option value="">Выберите менеджера</option>';
+
+    managers.forEach(manager => {
+        const option = document.createElement('option');
+        option.value = manager.id;
+        option.textContent = `${manager.firstName} ${manager.lastName}`;
+        select.appendChild(option);
+    });
+
+    // Покажем dropdown
+    document.getElementById('managerSelectContainer').style.display = 'block';
+}
+
 </script>
 </body>
 </html>

@@ -15,7 +15,6 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
-
 @Controller
 @RequiredArgsConstructor
 @RequestMapping("/additionalServices")
@@ -33,6 +32,7 @@ public class AdditionalServiceController {
                 additionalServiceFilter, pageable
         );
         CustomPage<AdditionalService> additionalServiceCustomPage = new CustomPage<>(additionalServicesPage);
+        model.addAttribute("newService", new AdditionalService());
         model.addAttribute("additionalServices", additionalServiceCustomPage);
         return "additional-service/services";
     }
@@ -41,6 +41,6 @@ public class AdditionalServiceController {
     @Transactional
     public String addNewService(@ModelAttribute AdditionalService additionalService) {
         additionalServiceService.createAS(additionalService);
-        return "additional-service/services";
+        return "redirect:/additionalServices";
     }
 }

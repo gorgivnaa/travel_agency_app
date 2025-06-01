@@ -9,6 +9,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
@@ -26,10 +27,19 @@ public class RestStatisticController {
     }
 
     @GetMapping("/managers")
-    public List<MonthlyManagerStatDto> getManagerMonthStats(Authentication authentication){
-        Long managerId = ((CustomUserDetails) authentication.getPrincipal()).getId();
-        return statisticService.getManagerStatistics(managerId);
+    public List<MonthlyManagerStatDto> getManagerMonthStats(
+            Authentication authentication,
+            @RequestParam(value = "managerId", required = false) Long managerId
+    ) {
+        CustomUserDetails user = (CustomUserDetails) authentication.getPrincipal();
+
+        return (user.getAuthorities().stream()
+                .anyMatch(a -> a.getAuthority().equals("ADMIN"))
+                && managerId != null)
+                ? statisticService.getManagerStatistics(managerId)
+                : statisticService.getManagerStatistics(user.getId());
     }
+
 
     @GetMapping("/countries")
     public List<CountryStatDto> getCountryStatistics() {
