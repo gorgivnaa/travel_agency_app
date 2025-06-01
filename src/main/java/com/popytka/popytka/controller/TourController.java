@@ -18,6 +18,7 @@ import com.popytka.popytka.service.TourService;
 import com.popytka.popytka.service.TourTagService;
 import com.popytka.popytka.service.UserService;
 import com.popytka.popytka.util.FilterUtil;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -55,7 +56,20 @@ public class TourController {
     private final AdditionalServiceRepository additionalServiceRepository;
 
     @GetMapping
-    public String getAllTours(Authentication authentication, Model model) {
+    public String getAllTours(Authentication authentication,
+                              HttpServletRequest request,
+                              Model model) {
+
+        if (authentication != null && authentication.isAuthenticated()) {
+            boolean hasBookings = userService.hasBookings(authentication);
+
+            if (!hasBookings && !isAdminOrManager(authentication)) {
+                // Добавляем флаг для показа модального окна
+                request.getSession().setAttribute("showSurveyModal", true);
+                return "redirect:/home";
+            }
+        }
+
         boolean hasBookings = userService.hasBookings(authentication);
         List<Tour> tours = tourService.getAllTours(authentication);
         List<Country> countries = countryRepository.findAll();
@@ -175,5 +189,11 @@ public class TourController {
     public String deleteTour(@PathVariable("id") Long id) {
         tourRepository.deleteById(id);
         return "redirect:/tours";
+    }
+
+    private boolean isAdminOrManager(Authentication authentication) {
+        return authentication.getAuthorities().stream()
+                .anyMatch(a -> a.getAuthority().equals("ADMIN") ||
+                        a.getAuthority().equals("MANAGER"));
     }
 }

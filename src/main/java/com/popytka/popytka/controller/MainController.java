@@ -28,9 +28,13 @@ public class MainController {
     private final CountryRepository countryRepository;
 
     @GetMapping("/home")
-    public String home(Model model) {
+    public String home(
+            @RequestParam(name = "showSurvey", required = false) Boolean showSurvey,
+                       Model model
+    ) {
         List<Country> countries = countryRepository.findAll();
         model.addAttribute("countries", countries);
+        model.addAttribute("showSurveyModal", showSurvey != null ? showSurvey : false);
         return "home";
     }
 

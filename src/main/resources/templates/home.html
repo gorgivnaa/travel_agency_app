@@ -114,5 +114,17 @@
 </div>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.2.3/js/bootstrap.bundle.min.js"></script>
+<script th:inline="javascript">
+    document.addEventListener('DOMContentLoaded', function() {
+        /*<![CDATA[*/
+        const showModal = /*[[${showSurveyModal}]]*/ false;
+        /*]]>*/
+
+        if (showModal) {
+            const modal = new bootstrap.Modal(document.getElementById('surveyModal'));
+            modal.show();
+        }
+    });
+</script>
 </body>
 </html>

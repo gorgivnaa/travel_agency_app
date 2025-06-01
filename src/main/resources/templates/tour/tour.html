@@ -12,6 +12,25 @@
 <body class="bg-light"
       th:classappend="${#authorization.expression('hasAnyAuthority(''ADMIN'', ''MANAGER'')')} ? 'admin-mode' : ''">
 
+<!-- Модальное окно для предложения заполнить анкету -->
+<div class="modal fade" id="surveyPromptModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header bg-primary text-white">
+                <h5 class="modal-title"><i class="bi bi-clipboard-check"></i> Заполните анкету предпочтений</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p>Мы видим, что у вас пока нет бронирований. Заполните короткую анкету, чтобы мы могли подобрать для вас лучшие варианты путешествий, соответствующие вашим интересам и бюджету.</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Позже</button>
+                <a th:href="@{/home?showSurvey=true}" class="btn btn-primary">Заполнить анкету</a>
+            </div>
+        </div>
+    </div>
+</div>
+
 <div class="container py-3">
     <header th:insert="~{blocks/header :: header}"></header>
 
@@ -190,5 +209,17 @@
 <footer th:insert="~{blocks/footer :: footer}"></footer>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.2.3/js/bootstrap.bundle.min.js"></script>
+<script>
+    // Показываем модальное окно, если нет бронирований
+    document.addEventListener('DOMContentLoaded', function() {
+        const hasBookings = [[${hasBookings}]];
+        const isAdminOrManager = [[${#authorization.expression('hasAnyAuthority(''ADMIN'', ''MANAGER'')')}]];
+
+        if (!hasBookings && !isAdminOrManager) {
+            const modal = new bootstrap.Modal(document.getElementById('surveyPromptModal'));
+            modal.show();
+        }
+    });
+</script>
 </body>
 </html>

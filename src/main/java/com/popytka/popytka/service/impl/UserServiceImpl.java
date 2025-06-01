@@ -80,6 +80,10 @@ class UserServiceImpl implements UserService {
 
     @Override
     public boolean hasBookings(Authentication authentication) {
+        if (authentication == null) {
+            return false;
+        }
+
         Long userId = ((CustomUserDetails) authentication.getPrincipal()).getId();
         if (userId == null) {
             return false;

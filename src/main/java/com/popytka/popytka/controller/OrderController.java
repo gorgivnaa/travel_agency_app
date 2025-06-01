@@ -98,6 +98,7 @@ public class OrderController {
 
     @Transactional
     @DeleteMapping("/{id}")
+    @PreAuthorize("hasAnyAuthority('ADMIN', 'MANAGER')")
     public String deleteOrder(@PathVariable("id") Long id) {
         orderRepository.deleteById(id);
         return "redirect:/orders";
