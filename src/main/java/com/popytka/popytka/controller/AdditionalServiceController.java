@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
 @Controller
 @RequiredArgsConstructor
@@ -33,6 +34,21 @@ public class AdditionalServiceController {
     ) {
         Page<AdditionalService> additionalServicesPage = additionalServiceService.getAdditionalServices(
                 additionalServiceFilter, pageable
+        );
+        CustomPage<AdditionalService> additionalServiceCustomPage = new CustomPage<>(additionalServicesPage);
+        model.addAttribute("newService", new AdditionalService());
+        model.addAttribute("additionalServices", additionalServiceCustomPage);
+        return "additional-service/services";
+    }
+
+    @GetMapping("/search")
+    public String searchAdditionalServices(
+            Model model,
+            @RequestParam("nameOrDescription") String nameOrDescription,
+            Pageable pageable
+    ) {
+        Page<AdditionalService> additionalServicesPage = additionalServiceService.searchAdditionalServices(
+                nameOrDescription, pageable
         );
         CustomPage<AdditionalService> additionalServiceCustomPage = new CustomPage<>(additionalServicesPage);
         model.addAttribute("newService", new AdditionalService());

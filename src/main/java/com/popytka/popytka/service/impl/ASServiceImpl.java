@@ -1,5 +1,6 @@
 package com.popytka.popytka.service.impl;
 
+import ch.qos.logback.core.util.StringUtil;
 import com.popytka.popytka.controller.filter.AdditionalServiceFilter;
 import com.popytka.popytka.entity.AdditionalService;
 import com.popytka.popytka.repository.AdditionalServiceRepository;
@@ -55,5 +56,12 @@ class ASServiceImpl implements ASService {
         foundAdditionalService.setDescription(updatedAS.getDescription());
         foundAdditionalService.setPrice(updatedAS.getPrice());
         return additionalServiceRepository.save(foundAdditionalService);
+    }
+
+    @Override
+    public Page<AdditionalService> searchAdditionalServices(String nameOrDescription, Pageable pageable) {
+        return StringUtil.isNullOrEmpty(nameOrDescription)
+                ? Page.empty()
+                : additionalServiceRepository.findByNameContainingOrDescriptionContaining(nameOrDescription, nameOrDescription, pageable);
     }
 }

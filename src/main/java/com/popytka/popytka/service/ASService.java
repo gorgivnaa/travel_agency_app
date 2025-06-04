@@ -16,4 +16,6 @@ public interface ASService {
     void deleteAS(Long additionalServiceId);
 
     AdditionalService updateAdditionalService(Long additionalServiceId, AdditionalService updatedAS);
+
+    Page<AdditionalService> searchAdditionalServices(String nameOrDescription, Pageable pageable);
 }

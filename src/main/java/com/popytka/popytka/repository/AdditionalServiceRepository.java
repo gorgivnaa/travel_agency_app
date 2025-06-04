@@ -1,6 +1,8 @@
 package com.popytka.popytka.repository;
 
 import com.popytka.popytka.entity.AdditionalService;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 
@@ -10,4 +12,6 @@ public interface AdditionalServiceRepository extends JpaRepository<AdditionalSer
         JpaSpecificationExecutor<AdditionalService> {
 
     Optional<AdditionalService> findByName(String serviceName);
+
+    Page<AdditionalService> findByNameContainingOrDescriptionContaining(String name, String description, Pageable pageable);
 }

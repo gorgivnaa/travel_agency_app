@@ -32,6 +32,7 @@ public class WebSecurityConfig {
                                 "/tours/filter",
                                 "/tours/search",
                                 "/additionalServices",
+                                "/additionalServices/search",
                                 "/users/check-email",
                                 "/users/verification",
                                 "/users/edit-password"

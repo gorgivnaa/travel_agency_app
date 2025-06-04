@@ -203,3 +203,38 @@ body {
 .options-dropdown:hover .dropdown-content {
     display: block;
 }
+
+/* Стили для сообщения "ничего не найдено" */
+.no-results-container {
+    text-align: center;
+    padding: 60px 20px;
+    background-color: white;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+    margin: 30px 0;
+}
+
+.no-results-icon {
+    font-size: 4rem;
+    color: #adb5bd;
+    margin-bottom: 20px;
+}
+
+.no-results-title {
+    font-size: 1.8rem;
+    font-weight: 600;
+    color: #495057;
+    margin-bottom: 15px;
+}
+
+.no-results-text {
+    font-size: 1.1rem;
+    color: #6c757d;
+    margin-bottom: 25px;
+}
+
+.search-suggestions {
+    font-size: 0.95rem;
+    color: #6c757d;
+    margin-top: 20px;
+}
