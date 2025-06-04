@@ -2,7 +2,6 @@ package com.popytka.popytka.config.security;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -38,8 +37,6 @@ public class WebSecurityConfig {
                                 "/users/edit-password"
                         ).permitAll()
                         .requestMatchers(regexMatcher("/tours/[0-9]+")).permitAll()
-                        .requestMatchers(HttpMethod.DELETE,"/orders/**").hasAnyAuthority("ADMIN", "MANAGER")
-                        .requestMatchers(HttpMethod.POST,"/orders/**").hasAnyAuthority("ADMIN", "MANAGER")
                         .requestMatchers("/survey/**").permitAll()
                         .requestMatchers("/users/registration").not().fullyAuthenticated()
                         .requestMatchers("/hotels/**").hasAnyAuthority("ADMIN", "MANAGER")
