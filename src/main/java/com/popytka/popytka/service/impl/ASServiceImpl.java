@@ -34,7 +34,26 @@ class ASServiceImpl implements ASService {
     }
 
     @Override
-    public AdditionalService getByName(String serviceName) {
-        return additionalServiceRepository.findByName(serviceName).orElse(null);
+    public AdditionalService getByName(String additionalServiceName) {
+        return additionalServiceRepository.findByName(additionalServiceName).orElse(null);
+    }
+
+    @Override
+    public void deleteAS(Long additionalServiceId) {
+        if (additionalServiceId == null) {
+            return;
+        }
+        additionalServiceRepository.deleteById(additionalServiceId);
+    }
+
+    @Override
+    public AdditionalService updateAdditionalService(Long additionalServiceId, AdditionalService updatedAS) {
+        AdditionalService foundAdditionalService = additionalServiceRepository.findById(additionalServiceId)
+                .orElseThrow(() -> new RuntimeException("Дополнительной услуги с id = " + additionalServiceId + " не найдено!"));
+
+        foundAdditionalService.setName(updatedAS.getName());
+        foundAdditionalService.setDescription(updatedAS.getDescription());
+        foundAdditionalService.setPrice(updatedAS.getPrice());
+        return additionalServiceRepository.save(foundAdditionalService);
     }
 }

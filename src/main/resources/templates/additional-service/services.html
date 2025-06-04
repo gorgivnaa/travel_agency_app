@@ -96,14 +96,23 @@
                                 <i class="bi bi-three-dots-vertical"></i> Действия
                             </button>
                             <div class="dropdown-content">
-                                <a href="#" class="dropdown-item">
+                                <button type="button" class="dropdown-item edit-button"
+                                        data-bs-toggle="modal"
+                                        data-bs-target="#editServiceModal"
+                                        th:data-id="${el.id}"
+                                        th:data-name="${el.name}"
+                                        th:data-description="${el.description}"
+                                        th:data-price="${el.price}">
                                     <i class="bi bi-pencil"></i> Редактировать
-                                </a>
-                                <form th:action="@{/additionalServices/{id}(id=${el.id})}" th:method="DELETE">
-                                    <button type="submit" class="dropdown-item delete-button">
-                                        <i class="bi bi-trash"></i> Удалить
-                                    </button>
-                                </form>
+                                </button>
+                                <!-- Кнопка для открытия модального окна -->
+                                <button type="button" class="dropdown-item delete-button"
+                                        data-bs-toggle="modal"
+                                        data-bs-target="#deleteServiceModal"
+                                        th:data-id="${el.id}"
+                                        th:data-name="${el.name}">
+                                    <i class="bi bi-trash"></i> Удалить
+                                </button>
                             </div>
                         </div>
                     </div>
@@ -150,6 +159,63 @@
     </div>
 </div>
 
+<!-- Модальное окно редактирования услуги -->
+<div class="modal fade" id="editServiceModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <form id="editServiceForm" th:object="${editService}" th:method="PUT">
+                <div class="modal-header">
+                    <h5 class="modal-title">Редактировать услугу</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Закрыть"></button>
+                </div>
+                <div class="modal-body">
+                    <input type="hidden" id="edit-id" name="id"/>
+                    <div class="mb-3">
+                        <label for="edit-name" class="form-label">Название услуги</label>
+                        <input id="edit-name" name="name" type="text" class="form-control" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="edit-description" class="form-label">Описание услуги</label>
+                        <textarea id="edit-description" name="description" class="form-control" rows="3" required></textarea>
+                    </div>
+                    <div class="mb-3">
+                        <label for="edit-price" class="form-label">Стоимость (руб)</label>
+                        <input id="edit-price" name="price" type="number" class="form-control" required min="0" step="0.01">
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Отмена</button>
+                    <button type="submit" class="btn btn-primary">Сохранить изменения</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Модальное окно подтверждения удаления -->
+<div class="modal fade" id="deleteServiceModal" tabindex="-1" aria-labelledby="deleteServiceModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <form id="deleteServiceForm" th:method="DELETE">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="deleteServiceModalLabel">Подтвердите удаление</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Закрыть"></button>
+                </div>
+                <div class="modal-body">
+                    <p>Вы уверены, что хотите удалить услугу <strong id="serviceName"></strong>?</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Отмена</button>
+                    <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+                    <button type="submit" class="btn btn-danger">Удалить</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+
 <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.2.3/js/bootstrap.bundle.min.js"></script>
 <script>
     // Инициализация dropdown
@@ -163,5 +229,56 @@
         });
     });
 </script>
+<script>
+    document.querySelectorAll('.options-dropdown').forEach(dropdown => {
+     dropdown.addEventListener('mouseenter', () => {
+         dropdown.querySelector('.dropdown-content').style.display = 'block';
+     });
+
+     dropdown.addEventListener('mouseleave', () => {
+         dropdown.querySelector('.dropdown-content').style.display = 'none';
+     });
+ });
+
+ // Установка данных в модалку удаления
+ const deleteModal = document.getElementById('deleteServiceModal');
+ deleteModal.addEventListener('show.bs.modal', function (event) {
+     const button = event.relatedTarget;
+     const serviceId = button.getAttribute('data-id');
+     const serviceName = button.getAttribute('data-name');
+
+     // Обновить текст, если элемент есть
+     const nameElement = deleteModal.querySelector('#serviceName');
+     if (nameElement) {
+         nameElement.textContent = serviceName;
+     }
+
+     // Установка action формы
+     const form = deleteModal.querySelector('#deleteServiceForm');
+     form.setAttribute('action', `/additionalServices/${serviceId}`);
+ });
+</script>
+<script>
+    // Заполнение модального окна редактирования
+    const editModal = document.getElementById('editServiceModal');
+    editModal.addEventListener('show.bs.modal', function (event) {
+        const button = event.relatedTarget;
+        const id = button.getAttribute('data-id');
+        const name = button.getAttribute('data-name');
+        const description = button.getAttribute('data-description');
+        const price = button.getAttribute('data-price');
+
+        // Установить значения в поля формы
+        document.getElementById('edit-id').value = id;
+        document.getElementById('edit-name').value = name;
+        document.getElementById('edit-description').value = description;
+        document.getElementById('edit-price').value = price;
+
+        // Обновить action формы
+        const form = document.getElementById('editServiceForm');
+        form.setAttribute('action', `/additionalServices/${id}`);
+    });
+</script>
+
 </body>
 </html>

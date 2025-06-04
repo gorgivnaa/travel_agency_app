@@ -14,7 +14,7 @@ body {
     border-radius: 12px;
     box-shadow: 0 4px 12px rgba(0,0,0,0.08);
     margin-bottom: 30px;
-    overflow: hidden;
+    overflow: visible;
     transition: all 0.3s ease;
     border-left: 5px solid #4da8da;
 }
@@ -186,4 +186,20 @@ body {
 .animate-delay-1 { animation-delay: 0.1s; }
 .animate-delay-2 { animation-delay: 0.2s; }
 .animate-delay-3 { animation-delay: 0.3s; }
-    
+
+/* Скрыть выпадающее меню по умолчанию */
+.dropdown-content {
+    display: none;
+    position: absolute;
+    background-color: white;
+    min-width: 160px;
+    box-shadow: 0px 4px 12px rgba(0,0,0,0.1);
+    z-index: 1000;
+    border-radius: 8px;
+    padding: 10px 0;
+}
+
+/* Показывать при наведении */
+.options-dropdown:hover .dropdown-content {
+    display: block;
+}

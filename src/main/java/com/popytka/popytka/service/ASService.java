@@ -11,5 +11,9 @@ public interface ASService {
 
     AdditionalService createAS(AdditionalService additionalService);
 
-    AdditionalService getByName(String serviceName);
+    AdditionalService getByName(String additionalServiceName);
+
+    void deleteAS(Long additionalServiceId);
+
+    AdditionalService updateAdditionalService(Long additionalServiceId, AdditionalService updatedAS);
 }

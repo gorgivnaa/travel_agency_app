@@ -10,9 +10,12 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 @Controller
@@ -41,6 +44,20 @@ public class AdditionalServiceController {
     @Transactional
     public String addNewService(@ModelAttribute AdditionalService additionalService) {
         additionalServiceService.createAS(additionalService);
+        return "redirect:/additionalServices";
+    }
+
+    @Transactional
+    @DeleteMapping("/{id}")
+    public String deleteAdditionalService(@PathVariable("id") Long additionalServiceId) {
+        additionalServiceService.deleteAS(additionalServiceId);
+        return "redirect:/additionalServices";
+    }
+
+    @Transactional
+    @PutMapping("/{id}")
+    public String updateAdditionalService(@PathVariable("id") Long additionalServiceId, @ModelAttribute AdditionalService additionalService) {
+        additionalServiceService.updateAdditionalService(additionalServiceId, additionalService);
         return "redirect:/additionalServices";
     }
 }
