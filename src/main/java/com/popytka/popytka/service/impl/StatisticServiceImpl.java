@@ -29,7 +29,6 @@ class StatisticServiceImpl implements StatisticService {
                 .toList();
     }
 
-
     @Override
     public List<CountryStatDto> getCountriesStatistic() {
         return orderRepository.countOrdersByCountry();

@@ -36,7 +36,6 @@ public interface OrderRepository extends JpaRepository<Order, Long> {
     """, nativeQuery = true)
     List<Object[]> getRawMonthlyStatsByManager(@Param("managerId") Long managerId);
 
-
     @Query("""
             SELECT new com.popytka.popytka.dto.statistic.CountryStatDto(o.tour.country.name, COUNT(o))
             FROM Order o

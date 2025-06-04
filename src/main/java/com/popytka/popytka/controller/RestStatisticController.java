@@ -40,7 +40,6 @@ public class RestStatisticController {
                 : statisticService.getManagerStatistics(user.getId());
     }
 
-
     @GetMapping("/countries")
     public List<CountryStatDto> getCountryStatistics() {
         return statisticService.getCountriesStatistic();

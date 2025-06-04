@@ -124,7 +124,7 @@
                     <small class="text-muted">
                         <i class="bi bi-info-circle"></i> Статус:
                         <span th:if="${el.status.name() == 'PROCESSING'}" class="text-warning">В обработке</span>
-                        <span th:if="${el.status.name() == 'ACCEPTED'}" class="text-success">Принята</span>
+                        <span th:if="${el.status.name() == 'CONFIRMED'}" class="text-success">Принята</span>
                         <span th:if="${el.status.name() == 'REJECTED'}" class="text-danger">Отклонена</span>
                     </small>
                 </div>
