@@ -18,7 +18,6 @@ import com.popytka.popytka.service.TourService;
 import com.popytka.popytka.service.TourTagService;
 import com.popytka.popytka.service.UserService;
 import com.popytka.popytka.util.FilterUtil;
-import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -56,26 +55,19 @@ public class TourController {
     private final AdditionalServiceRepository additionalServiceRepository;
 
     @GetMapping
-    public String getAllTours(Authentication authentication,
-                              HttpServletRequest request,
-                              Model model) {
-
+    public String getAllTours(Authentication authentication, Model model) {
         if (authentication != null && authentication.isAuthenticated()) {
             boolean hasBookings = userService.hasBookings(authentication);
 
             if (!hasBookings && !isAdminOrManager(authentication)) {
-                // Добавляем флаг для показа модального окна
-                request.getSession().setAttribute("showSurveyModal", true);
-                return "redirect:/home";
+                model.addAttribute("hasBookings", hasBookings);
             }
         }
 
-        boolean hasBookings = userService.hasBookings(authentication);
         List<Tour> tours = tourService.getAllTours(authentication);
         List<Country> countries = countryRepository.findAll();
 
         model.addAttribute("tours", tours);
-        model.addAttribute("hasBookings", hasBookings);
         model.addAttribute("countries", countries);
         return "tour/tour";
     }
@@ -152,8 +144,8 @@ public class TourController {
     public String createTour(
             @ModelAttribute Tour tour,
             @RequestParam("countryName") String countryName,
-            @RequestParam("hotelName") String hotelName,
-            Model model) {
+            @RequestParam("hotelName") String hotelName
+    ) {
         Country country = countryRepository.findByName(countryName).get();
         Hotel hotel = hotelRepository.findByName(hotelName).get();
         Tour createdTour = tourService.createTour(tour, country, hotel);

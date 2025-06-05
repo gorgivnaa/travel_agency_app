@@ -229,8 +229,6 @@
 </div>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.2.3/js/bootstrap.bundle.min.js"></script>
 
-
-
 <script>
     document.addEventListener('DOMContentLoaded', function () {
         const deleteModal = new bootstrap.Modal(document.getElementById('deleteTourModal'));
@@ -245,7 +243,6 @@
         });
     });
 
-    // Показываем модальное окно, если нет бронирований
     document.addEventListener('DOMContentLoaded', function() {
         const hasBookings = [[${hasBookings}]];
         const isAdminOrManager = [[${#authorization.expression('hasAnyAuthority(''ADMIN'', ''MANAGER'')')}]];

@@ -90,7 +90,7 @@ class UserServiceImpl implements UserService {
         }
 
         List<Booking> userBookings = bookingRepository.findByUserId(userId);
-        return userBookings.isEmpty();
+        return !userBookings.isEmpty();
     }
 
     @Override

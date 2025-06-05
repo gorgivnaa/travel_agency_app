@@ -72,7 +72,10 @@ public class AdditionalServiceController {
 
     @Transactional
     @PutMapping("/{id}")
-    public String updateAdditionalService(@PathVariable("id") Long additionalServiceId, @ModelAttribute AdditionalService additionalService) {
+    public String updateAdditionalService(
+            @PathVariable("id") Long additionalServiceId,
+            @ModelAttribute AdditionalService additionalService
+    ) {
         additionalServiceService.updateAdditionalService(additionalServiceId, additionalService);
         return "redirect:/additionalServices";
     }
